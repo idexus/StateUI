@@ -86,13 +86,12 @@
               let mine = made[key]?.first(where: { $0.mount == element.mount })?.patch
         else { return nil }
         let left = (sources[key] ?? []).filter { $0.patch == mine }
-        let entering = (made[key] ?? []).filter { $0.patch == mine }
         guard !left.isEmpty else { return nil }
         defer {
             sources[key]?.removeAll { $0.patch == mine }
             made[key]?.removeAll { $0.patch == mine }
         }
-        guard left.count == 1, entering.count == 1, let source = left.first,
+        guard pairs(key, in: mine), let source = left.first,
               source.window == element.enclosing(type: .window)?.mount,
               source.page == element.enclosing(type: .page)?.mount,
               let destination = placeInWindow(of: element, scope: key.scope, in: tree),
@@ -102,6 +101,19 @@
             return nil
         }
         return (source.drawn, destination, source.element)
+    }
+
+    /// Whether a view made under `element`, by the patch that made it, sets out from the one view that patch
+    /// dropped wearing its key: `element` then comes as it stands, as its fade would hide where that one sets out.
+    func holdsAPartner(_ element: MountedElement) -> Bool {
+        made.contains { key, entering in
+            entering.contains { pairs(key, in: $0.patch) && element.first(mount: $0.mount) != nil }
+        }
+    }
+
+    /// Whether the patch `patch` dropped one view wearing `key` and made one: the two are one.
+    private func pairs(_ key: Key, in patch: Int) -> Bool {
+        (sources[key] ?? []).count { $0.patch == patch } == 1 && (made[key] ?? []).count { $0.patch == patch } == 1
     }
 
     /// A display frame ended: the notes of a patch laid out by now are let go.

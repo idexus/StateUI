@@ -336,7 +336,9 @@ moving at all, and hands the entry on with the view (`FadingView`).
 
 An element of no transition fades in from nothing under the layout's law,
 where that animates, its view presents opacity and no state owns it; an
-opacity already on its way keeps its motion.
+opacity already on its way keeps its motion. One holding a view made with it
+that sets out from its partner comes as it stands
+([a shared transition](#a-shared-transition)).
 
 An element declaring a transition
 ([a transition](../views/transitions.md#a-transition)) comes from its
@@ -438,6 +440,14 @@ and so goes on from there.
 The trap is the leaving view's place. Its layout's rectangle is where it
 would stand; a view half way through its own entry is drawn elsewhere, and
 the partner must set out from what the user sees.
+
+The trap is what holds the made view. A holder the same patch makes - the
+row a thumbnail comes back in - joins a layout that stands, and would fade in
+from nothing under the application's law: the view setting out inside it,
+whole where its partner was drawn, would be drawn at none of its opacity,
+the partner already gone. So a holder of a view that sets out from its
+partner comes as it stands (`SharedTransitions.holdsAPartner`); a transition
+it declares is its own still.
 
 ## Showing and hiding
 

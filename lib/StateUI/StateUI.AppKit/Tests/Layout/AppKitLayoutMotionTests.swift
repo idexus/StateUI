@@ -403,6 +403,58 @@ final class AppKitLayoutMotionTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(b.layer).transform.m42, 40, accuracy: 0.001, "where it sets out, at once")
     }
 
+    /// A thumbnail coming back from its picture - made in a row the same patch makes, under an application that
+    /// moves - is drawn over the picture's rectangle from the layout pass that places it, the row unfaded: the
+    /// picture gone, nothing else stands in for it.
+    @MainActor
+    func testAThumbnailComingBackIsDrawnOverItsPictureFromItsFirstPass() throws {
+        let renderer = testRenderer(
+            resourceDirectory: nil, presentsWindows: false, clock: { 0 }, reducesMotion: { false })
+        defer { renderer.finish() }
+        renderer.runtime.layoutMotion.applicationMotion = .eased(.milliseconds(200), curve: .linear)
+        let law = HostLayoutMotion(motion: .eased(.milliseconds(700), curve: .linear), lanes: .all)
+        func keyed(_ id: String, _ key: Int, width: Double?, height: Double) -> HostPatch {
+            var box = HostPatch(id: .manual(id), type: .rectangle)
+            box.properties[.sharedTransition] = .number(Double(key))
+            if let width { box.properties[VisualElementContract.width.token] = .number(width) }
+            box.properties[VisualElementContract.height.token] = .number(height)
+            box.motion = law
+            return box
+        }
+        func scope(_ children: [HostPatch]) -> HostPatch {
+            var scope = HostPatch(id: .manual("scope"), type: .zStack)
+            scope.properties[.transitionScope] = .number(1)
+            scope.children = .arranged(children)
+            return scope
+        }
+        var row = HostPatch(id: .manual("row"), type: .hStack)
+        row.properties[.horizontalAlignment] = .enumeration(Alignment.start.rawValue)
+        row.properties[.verticalAlignment] = .enumeration(Alignment.start.rawValue)
+        row.children = .arranged((0..<3).map { keyed("thumbnail\($0)", $0, width: 56, height: 40) })
+
+        renderer.applyForTesting(scope([keyed("picture", 1, width: nil, height: 150)]))
+        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("scope")))
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 300, height: 150), styleMask: .borderless, backing: .buffered,
+            defer: false)
+        window.contentView?.addSubview(native)
+        native.frame = NSRect(x: 0, y: 0, width: 300, height: 150)
+        native.layoutSubtreeIfNeeded()
+
+        renderer.applyForTesting(scope([row]))
+        native.layoutSubtreeIfNeeded()
+        let thumbnail = try XCTUnwrap(renderer.viewForTesting(id: .manual("thumbnail1")))
+        let layer = try XCTUnwrap(thumbnail.layer)
+        XCTAssertEqual(layer.transform.m11, 300.0 / 56, accuracy: 0.01, "as wide as the picture, at once")
+        XCTAssertEqual(layer.transform.m22, 150.0 / 40, accuracy: 0.01, "as tall as the picture, at once")
+        var shown: NSView? = thumbnail
+        while let view = shown, view !== native {
+            XCTAssertFalse(view.isHidden, "\(view) hidden")
+            XCTAssertEqual(view.alphaValue, 1, accuracy: 0.001, "\(view) faded")
+            shown = view.superview
+        }
+    }
+
     /// Where the user asks for less movement, every child arrives and none
     /// fades in.
     @MainActor

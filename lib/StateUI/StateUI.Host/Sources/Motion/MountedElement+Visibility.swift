@@ -45,8 +45,9 @@ extension MountedElement {
 
     /// The element enters on `view` as it is given its first place. Declaring a transition, it comes from the
     /// entry's effect under its own motion: as it joins a layout already standing, and as it appears with its
-    /// layout where the transition says so. Declaring none, it fades in under the law of the layout it joins.
-    /// An element a message made again enters by no transition.
+    /// layout where the transition says so. Declaring none, it fades in under the law of the layout it joins -
+    /// unless a view made with it, under it, sets out from its partner: then it comes as it stands. An element a
+    /// message made again enters by no transition.
     /// Design: docs/design/host/motion.md#a-view-that-enters
     public func enter(_ view: some FadingView, as entry: LayoutEntry) {
         if let returned {
@@ -59,7 +60,9 @@ extension MountedElement {
             return enter(from: shared.from, to: shared.to, on: view)
         }
         guard let transition = transition?.host else {
-            if case .joining(let law) = entry, law.animates { fadeIn(view, under: law) }
+            if case .joining(let law) = entry, law.animates, tree?.shared.holdsAPartner(self) != true {
+                fadeIn(view, under: law)
+            }
             return
         }
         guard !isRemade, entry != .appearing || transition.entersInitially else { return }

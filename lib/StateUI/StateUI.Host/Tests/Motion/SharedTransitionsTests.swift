@@ -188,6 +188,21 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertNil(bench.drawn(.scaleX, of: "detail"))
     }
 
+    /// A HOLDER MADE WITH A VIEW SETTING OUT FROM ITS PARTNER COMES AS IT STANDS: joining a layout that stands, it
+    /// does not fade in - its fade would hide where that view sets out. A holder made with no partner in it fades in.
+    func testAHolderMadeWithAViewSettingOutFromItsPartnerComesAsItStands() {
+        let bench = Bench()
+        listed(bench)
+        paged(bench)
+        XCTAssertNil(bench.drawn(.opacity, of: "page"), "drawn at once, around the detail setting out")
+        XCTAssertNotNil(bench.drawn(.scaleX, of: "detail"), "the detail sets out from the thumbnail")
+
+        let alone = Bench()
+        listed(alone)
+        paged(alone, details: [Bench.keyed("detail", 6)])
+        XCTAssertEqual(alone.drawn(.opacity, of: "page") ?? .nan, 0, accuracy: 0.001, "no partner in it: it fades in")
+    }
+
     /// A KEY THAT MEETS NO SINGLE PARTNER IS EACH VIEW'S OWN: two views dropped under it, or the made one standing
     /// where nothing is known of yet, enter as any view does - and a change waiting for the patch hears
     /// `.unsupported`.
