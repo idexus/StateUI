@@ -36,23 +36,49 @@ class GTKLayoutView: GTKPanelView {
     /// The views the panel holds, in the order it draws them, back to front.
     private var held: [GTKView] = []
 
+    /// The views of children kept as they leave: held after the items', each allocated where it stood; whether
+    /// they changed since the panel last held its children.
+    /// Design: docs/design/platforms/gtk/layout.md#a-view-kept-as-it-leaves
+    private(set) var leaving: [GTKView] = []
+    private var keptChanged = false
+
+    /// Says the views of children kept as they leave, before the items are set: the panel holds them on, after
+    /// its items' views, and lets go of one kept no more.
+    /// Design: docs/design/platforms/gtk/layout.md#a-view-kept-as-it-leaves
+    func keep(_ leaving: [GTKView]) {
+        guard leaving.count != self.leaving.count || !zip(leaving, self.leaving).allSatisfy({ $0 === $1 })
+        else { return }
+
+        self.leaving = leaving
+        keptChanged = true
+    }
+
     /// Puts `items` in the panel, in order, where they differ from the children it holds; whether they did.
     @discardableResult
     func setItems(_ items: [GTKLayoutItem]) -> Bool {
-        guard items.count != self.items.count
+        let changed = items.count != self.items.count
             || !zip(items, self.items).allSatisfy({ $0.arranges(like: $1) })
-        else { return false }
+        guard changed || keptChanged else { return false }
 
-        self.items = items
-        for item in items { item.view.placingLayout = self }
-        setChildren(heldViews())
-        invalidateMeasurements()
-        return true
+        keptChanged = false
+        if changed {
+            self.items = items
+            for item in items { item.view.placingLayout = self }
+        }
+        holdChildren()
+        if changed { invalidateMeasurements() } else { gtk_widget_queue_allocate(widget) }
+        return changed
     }
 
     /// The views the panel holds, in the order it draws them: every child's, unless a layout orders them.
     func heldViews() -> [GTKView] {
         items.map(\.view)
+    }
+
+    /// Holds the views `heldViews()` answers and, after them, those kept as they leave.
+    func holdChildren() {
+        let own = heldViews()
+        setChildren(own + leaving.filter { kept in !own.contains { $0 === kept } })
     }
 
     /// What fills the box: a color or a brush; nil for nothing.
@@ -142,6 +168,10 @@ class GTKLayoutView: GTKPanelView {
         defer { GTKView.allocating -= 1 }
         let room = arrangementRoom ?? LayoutSize(width: width, height: height)
         arrange(in: Rect(x: 0, y: 0, width: room.width, height: room.height))
+        // GTK draws only what a pass allocated: a view kept as it leaves is no item's, and stands where it stood.
+        for view in leaving {
+            if let place = view.placed { view.layout(place) }
+        }
     }
 
     /// The size the layout is bound for while its place travels: its children stand there meanwhile, as they will

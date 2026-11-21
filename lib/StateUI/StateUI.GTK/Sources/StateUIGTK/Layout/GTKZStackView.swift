@@ -12,7 +12,7 @@ final class GTKZStackView: GTKTravelingLayout {
     var placement: HostPlacementRun? {
         didSet {
             guard placement != oldValue else { return }
-            setChildren(heldViews())
+            holdChildren()
 
             // A run moving on asks only for an allocation in the room it last stood its children in: nothing around
             // is measured.

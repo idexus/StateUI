@@ -13,6 +13,30 @@ pass GTK runs. A child's size is whole logical pixels, and never less than the
 least GTK measured it at; its position is a translation, which may fall
 between pixels, so a traveling child moves smoothly.
 
+## A view kept as it leaves
+
+A stack, a grid and a ZStack keep a child that left
+(`GTKElement.keepsExits`). The tree hands a layout its active children as
+items and, apart from them, the views of those kept as they leave
+([a view kept as it leaves](../../host/tree.md#a-view-kept-as-it-leaves));
+the layout is told the kept first (`keep(_:)`), then its items, and its
+panel holds both - the items' views, then the kept (`holdChildren`). A kept
+view is no item's, so the arithmetic neither measures it nor gives it a
+place; the panel allocates it again in each pass at the place it last had,
+with the move and the scale its exit gives it, while the rows around it
+close over its place. Found leaving, it takes no pointer - a press goes to
+whatever stands behind it - and assistive technology meets nothing of it.
+As its exit ends the tree arranges its holder again, and the panel lets the
+widget go.
+
+The trap is leaving a kept widget out of the pass: GTK draws only what the
+pass allocated, and a move or a scale is part of the allocation, so a
+widget left alone would neither travel nor be drawn. The other is the early
+return of an arrangement of the same items - an exit ending changes none,
+so a change of the kept alone holds the children again. There is one
+`setItems`: a scroller, a split view, tabs and a stack of pages set their
+own.
+
 ## A place between passes
 
 A child is allocated only inside its parent's allocation, so a view keeps the

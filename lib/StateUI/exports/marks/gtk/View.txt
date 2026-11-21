@@ -35,7 +35,7 @@ Button.swipeThreshold: ✅
 Button.swiped: ✅
 Button.tapCount: ✅
 Button.tapped: ✅
-Button.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Button.transition: ✅
 Button.verticalAlignment: ✅
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.area: ✅
@@ -73,7 +73,7 @@ Canvas.swipeThreshold: ✅
 Canvas.swiped: ✅
 Canvas.tapCount: ✅
 Canvas.tapped: ✅
-Canvas.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Canvas.transition: ✅
 Canvas.verticalAlignment: ✅
 Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.area: ✅
@@ -111,7 +111,7 @@ Capsule.swipeThreshold: ✅
 Capsule.swiped: ✅
 Capsule.tapCount: ✅
 Capsule.tapped: ✅
-Capsule.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Capsule.transition: ✅
 Capsule.verticalAlignment: ✅
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.area: ✅
@@ -149,7 +149,7 @@ CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
-CheckBox.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+CheckBox.transition: ✅
 CheckBox.verticalAlignment: ✅
 ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.area: ✅
@@ -187,7 +187,7 @@ ColorPicker.swipeThreshold: ✅
 ColorPicker.swiped: ✅
 ColorPicker.tapCount: ✅
 ColorPicker.tapped: ✅
-ColorPicker.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+ColorPicker.transition: ✅
 ColorPicker.verticalAlignment: ✅
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.area: ✅
@@ -225,7 +225,7 @@ DatePicker.swipeThreshold: ✅
 DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
-DatePicker.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+DatePicker.transition: ✅
 DatePicker.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.area: ✅
@@ -263,7 +263,7 @@ Ellipse.swipeThreshold: ✅
 Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
 Ellipse.tapped: ✅
-Ellipse.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Ellipse.transition: ✅
 Ellipse.verticalAlignment: ✅
 Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.area: ✅
@@ -301,7 +301,7 @@ Fill.swipeThreshold: ✅
 Fill.swiped: ✅
 Fill.tapCount: ✅
 Fill.tapped: ✅
-Fill.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Fill.transition: ✅
 Fill.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.area: ✅
@@ -339,7 +339,7 @@ Grid.swipeThreshold: ✅
 Grid.swiped: ✅
 Grid.tapCount: ✅
 Grid.tapped: ✅
-Grid.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Grid.transition: ✅
 Grid.verticalAlignment: ✅
 HStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.area: ✅
@@ -377,7 +377,7 @@ HStack.swipeThreshold: ✅
 HStack.swiped: ✅
 HStack.tapCount: ✅
 HStack.tapped: ✅
-HStack.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+HStack.transition: ✅
 HStack.verticalAlignment: ✅
 Image.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.area: ✅
@@ -415,7 +415,7 @@ Image.swipeThreshold: ✅
 Image.swiped: ✅
 Image.tapCount: ✅
 Image.tapped: ✅
-Image.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Image.transition: ✅
 Image.verticalAlignment: ✅
 ItemsView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.area: ✅
@@ -453,7 +453,7 @@ ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
-ItemsView.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+ItemsView.transition: ✅
 ItemsView.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.area: ✅
@@ -491,7 +491,7 @@ Line.swipeThreshold: ✅
 Line.swiped: ✅
 Line.tapCount: ✅
 Line.tapped: ✅
-Line.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Line.transition: ✅
 Line.verticalAlignment: ✅
 Link.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.area: ✅
@@ -529,7 +529,7 @@ Link.swipeThreshold: ✅
 Link.swiped: ✅
 Link.tapCount: ✅
 Link.tapped: ✅
-Link.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Link.transition: ✅
 Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
@@ -605,7 +605,7 @@ MotionLayout.swipeThreshold: ✅
 MotionLayout.swiped: ✅
 MotionLayout.tapCount: ✅
 MotionLayout.tapped: ✅
-MotionLayout.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+MotionLayout.transition: ✅
 MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.area: ✅
@@ -643,7 +643,7 @@ Path.swipeThreshold: ✅
 Path.swiped: ✅
 Path.tapCount: ✅
 Path.tapped: ✅
-Path.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Path.transition: ✅
 Path.verticalAlignment: ✅
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.area: ✅
@@ -681,7 +681,7 @@ Picker.swipeThreshold: ✅
 Picker.swiped: ✅
 Picker.tapCount: ✅
 Picker.tapped: ✅
-Picker.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Picker.transition: ✅
 Picker.verticalAlignment: ✅
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.area: ✅
@@ -719,7 +719,7 @@ Polygon.swipeThreshold: ✅
 Polygon.swiped: ✅
 Polygon.tapCount: ✅
 Polygon.tapped: ✅
-Polygon.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Polygon.transition: ✅
 Polygon.verticalAlignment: ✅
 Polyline.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.area: ✅
@@ -757,7 +757,7 @@ Polyline.swipeThreshold: ✅
 Polyline.swiped: ✅
 Polyline.tapCount: ✅
 Polyline.tapped: ✅
-Polyline.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Polyline.transition: ✅
 Polyline.verticalAlignment: ✅
 ProgressBar.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.area: ✅
@@ -795,7 +795,7 @@ ProgressBar.swipeThreshold: ✅
 ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
 ProgressBar.tapped: ✅
-ProgressBar.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+ProgressBar.transition: ✅
 ProgressBar.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.area: ✅
@@ -833,7 +833,7 @@ Rectangle.swipeThreshold: ✅
 Rectangle.swiped: ✅
 Rectangle.tapCount: ✅
 Rectangle.tapped: ✅
-Rectangle.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Rectangle.transition: ✅
 Rectangle.verticalAlignment: ✅
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.area: ✅
@@ -871,7 +871,7 @@ ScrollView.swipeThreshold: ✅
 ScrollView.swiped: ✅
 ScrollView.tapCount: ✅
 ScrollView.tapped: ✅
-ScrollView.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+ScrollView.transition: ✅
 ScrollView.verticalAlignment: ✅
 SearchField.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.area: ✅
@@ -909,7 +909,7 @@ SearchField.swipeThreshold: ✅
 SearchField.swiped: ✅
 SearchField.tapCount: ✅
 SearchField.tapped: ✅
-SearchField.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+SearchField.transition: ✅
 SearchField.verticalAlignment: ✅
 Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.area: ✅
@@ -947,7 +947,7 @@ Separator.swipeThreshold: ✅
 Separator.swiped: ✅
 Separator.tapCount: ✅
 Separator.tapped: ✅
-Separator.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Separator.transition: ✅
 Separator.verticalAlignment: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.area: ✅
@@ -985,7 +985,7 @@ Slider.swipeThreshold: ✅
 Slider.swiped: ✅
 Slider.tapCount: ✅
 Slider.tapped: ✅
-Slider.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Slider.transition: ✅
 Slider.verticalAlignment: ✅
 Space.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.area: ✅
@@ -1023,7 +1023,7 @@ Space.swipeThreshold: ✅
 Space.swiped: ✅
 Space.tapCount: ✅
 Space.tapped: ✅
-Space.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Space.transition: ✅
 Space.verticalAlignment: ✅
 Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.area: ✅
@@ -1061,7 +1061,7 @@ Spinner.swipeThreshold: ✅
 Spinner.swiped: ✅
 Spinner.tapCount: ✅
 Spinner.tapped: ✅
-Spinner.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Spinner.transition: ✅
 Spinner.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.area: ✅
@@ -1099,7 +1099,7 @@ Stepper.swipeThreshold: ✅
 Stepper.swiped: ✅
 Stepper.tapCount: ✅
 Stepper.tapped: ✅
-Stepper.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Stepper.transition: ✅
 Stepper.verticalAlignment: ✅
 Switch.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.area: ✅
@@ -1137,7 +1137,7 @@ Switch.swipeThreshold: ✅
 Switch.swiped: ✅
 Switch.tapCount: ✅
 Switch.tapped: ✅
-Switch.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Switch.transition: ✅
 Switch.verticalAlignment: ✅
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.area: ✅
@@ -1175,7 +1175,7 @@ Text.swipeThreshold: ✅
 Text.swiped: ✅
 Text.tapCount: ✅
 Text.tapped: ✅
-Text.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+Text.transition: ✅
 Text.verticalAlignment: ✅
 TextEditor.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.area: ✅
@@ -1213,7 +1213,7 @@ TextEditor.swipeThreshold: ✅
 TextEditor.swiped: ✅
 TextEditor.tapCount: ✅
 TextEditor.tapped: ✅
-TextEditor.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+TextEditor.transition: ✅
 TextEditor.verticalAlignment: ✅
 TextField.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.area: ✅
@@ -1251,7 +1251,7 @@ TextField.swipeThreshold: ✅
 TextField.swiped: ✅
 TextField.tapCount: ✅
 TextField.tapped: ✅
-TextField.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+TextField.transition: ✅
 TextField.verticalAlignment: ✅
 TimePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.area: ✅
@@ -1289,7 +1289,7 @@ TimePicker.swipeThreshold: ✅
 TimePicker.swiped: ✅
 TimePicker.tapCount: ✅
 TimePicker.tapped: ✅
-TimePicker.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+TimePicker.transition: ✅
 TimePicker.verticalAlignment: ✅
 VStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.area: ✅
@@ -1327,7 +1327,7 @@ VStack.swipeThreshold: ✅
 VStack.swiped: ✅
 VStack.tapCount: ✅
 VStack.tapped: ✅
-VStack.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+VStack.transition: ✅
 VStack.verticalAlignment: ✅
 WebView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.area: ✅
@@ -1365,7 +1365,7 @@ WebView.swipeThreshold: ✅
 WebView.swiped: ✅
 WebView.tapCount: ✅
 WebView.tapped: ✅
-WebView.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+WebView.transition: ✅
 WebView.verticalAlignment: ✅
 ZStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.area: ✅
@@ -1403,5 +1403,5 @@ ZStack.swipeThreshold: ✅
 ZStack.swiped: ✅
 ZStack.tapCount: ✅
 ZStack.tapped: ✅
-ZStack.transition: ☑️ A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.
+ZStack.transition: ✅
 ZStack.verticalAlignment: ✅

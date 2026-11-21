@@ -36,7 +36,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>47 ✅ · 3 ☑️ · 36 ✓ · 1 –</td><td>custom <code>UIView</code> masked by a <code>CAShapeLayer</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>69 ✅ · 5 ☑️ · 10 ✓ · 2 –</td><td>custom <code>View</code> drawing <code>Path</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>49 ✅ · 2 ☑️ · 29 ✓ · 7 –</td><td><code>Shapes.Path</code> in a custom <code>Grid</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 5 ☑️ · 22 ✓ · 7 –</td><td><code>GskPath</code> in a snapshot</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>54 ✅ · 4 ☑️ · 22 ✓ · 7 –</td><td><code>GskPath</code> in a snapshot</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>60 ✅ · 3 ☑️ · 21 ✓ · 3 –</td><td>inline SVG <code>&lt;path&gt;</code></td></tr></tbody>
 </table>
 
@@ -189,8 +189,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: tap on Line: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on Line: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: tap on Line: the relay's report of the tap handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on Line: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on Line: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on Line: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">☑️</td></tr>
-<tr><td colspan="9">GTK 4, Web: A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td></tr>
+<tr><td colspan="9">Web: A view the tree drops goes at once: the host's layouts keep no view that left, so its exit is not drawn.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

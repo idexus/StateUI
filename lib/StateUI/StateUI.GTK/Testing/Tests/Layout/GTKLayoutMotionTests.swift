@@ -202,6 +202,57 @@ final class GTKLayoutMotionTests: XCTestCase {
         }
     }
 
+    /// A row leaving a standing stack by its exit stays drawn where it stood - held by its stack still, allocated
+    /// each pass, fading as its effect says - while the row below it closes over its place; as the exit lands the
+    /// stack holds it no more.
+    func testARowLeavingByItsExitIsDrawnUntilItLands() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let host = GTKRenderer.bare(clock: clock)
+            let leaving = Transition(enter: .identity, exit: .opacity.combined(with: .translation(x: 40)))
+            let law = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
+            func rows(_ order: [String]) -> HostPatch {
+                var stack = HostPatch(id: .manual("stack"), type: .vStack)
+                stack.motion = law
+                stack.children = .arranged(order.map { name in
+                    var row = HostPatch(id: .manual(name), type: .text)
+                    row.properties = [
+                        .text: .string(name), VisualElementContract.width.token: .number(100),
+                        VisualElementContract.height.token: .number(40),
+                    ]
+                    if name == "b" { row.properties[.transition] = leaving.propValue }
+                    row.motion = law
+                    return row
+                })
+                return stack
+            }
+            host.apply(rows(["a", "b", "c"]))
+            host.layOut()
+            let layout = try XCTUnwrap(host.view(id: .manual("stack")) as? GTKLayoutView)
+            let gone = try XCTUnwrap(host.view(id: .manual("b")))
+            let below = try XCTUnwrap(host.view(id: .manual("c")))
+            XCTAssertEqual(below.frame.y, 80)
+
+            host.apply(rows(["a", "c"]))
+            host.layOut()
+            XCTAssertTrue(layout.leaving.contains { $0 === gone }, "still held by its stack")
+            XCTAssertEqual(gone.frame.y, 40, "where it stood")
+
+            clock.now = 100
+            host.frame()
+            host.layOut()
+            XCTAssertEqual(gone.drawnOpacity, 0.5, accuracy: GTKView.opacityStep, "half way out")
+            XCTAssertEqual(gone.frame.y, 40, "no layout places it any more")
+            XCTAssertEqual(below.frame.y, 60, "the row below closes meanwhile")
+
+            clock.now = 200
+            host.frame()
+            host.layOut()
+            XCTAssertTrue(layout.leaving.isEmpty, "held no more as its exit lands")
+            XCTAssertEqual(below.frame.y, 40, "and the row below stands in its place")
+        }
+    }
+
     func testWithLessMotionEveryChildArrives() throws {
         try onUIThread {
             let host = GTKRenderer.bare(clock: TestClock(), reducesMotion: true)

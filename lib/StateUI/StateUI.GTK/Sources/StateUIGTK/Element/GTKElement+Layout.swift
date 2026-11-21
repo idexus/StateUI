@@ -24,7 +24,26 @@ extension GTKElement {
         (view as? GTKSplitView)?.framedPanes = arranged.map { Self.framedTypes.contains($0.type) }
         let layout = view as? GTKLayoutView
         layout?.direction = element.layoutDirection
+        if keepsExits { layout?.keep(leavingViews()) }
         layout?.setItems(arranged.compactMap(\.layoutItem))
+    }
+
+    /// The views of the children kept as they leave, each made deaf to the pointer and taken out of what
+    /// assistive technology meets as it is found leaving.
+    /// Design: docs/design/platforms/gtk/layout.md#a-view-kept-as-it-leaves
+    private func leavingViews() -> [GTKView] {
+        element.presentedChildren.filter { $0.lifecycle == .exiting }.compactMap { child -> GTKView? in
+            guard let view = child.gtk.view else { return nil }
+            view.setIgnoresInput(child.ignoresInput)
+            view.setAccessibility(child.accessibilityWords)
+            return view
+        }
+    }
+
+    /// A stack, a grid and a ZStack keep a child that left: its view stands until the tree releases it.
+    /// Design: docs/design/platforms/gtk/layout.md#a-view-kept-as-it-leaves
+    var keepsExits: Bool {
+        view is GTKTravelingLayout
     }
 
     /// A label's spans as runs of its words (`MountedElement.textRuns`); without spans, its own words, once the runs
