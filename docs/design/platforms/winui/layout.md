@@ -11,6 +11,26 @@ and measures and places each child through the relay. WinUI lays out by
 asking: a child is placed only inside its parent's arrangement
 ([a place between passes](#a-place-between-passes)).
 
+## A view kept as it leaves
+
+A stack, a grid and a ZStack keep a child that left
+(`WinUIElement.keepsExits`). The tree hands a layout its active children as
+items and, apart from them, the views of those kept as they leave
+([a view kept as it leaves](../../host/tree.md#a-view-kept-as-it-leaves));
+the layout is told the kept first (`keep(_:)`), then its items, and its
+panel holds both - the items' views, then the kept (`holdChildren`). A kept
+view is no item's: no pass measures it or places it, and it stands where it
+was last arranged while its opacity, its move and its scale travel to its
+exit's effect and the rows around it close over its place. Found leaving, it
+takes no pointer - a press goes to whatever stands behind it - and
+assistive technology meets nothing of it. As its exit ends the tree
+arranges its holder again, and the panel holds it no more.
+
+The trap is the early return of an arrangement of the same items: an exit
+ending changes no item, so a change of the kept alone holds the children
+again. There is one `setItems`: a scroller, a split view and a stack of
+pages set their own.
+
 ## Measured every pass
 
 WinUI keeps each element's measure itself, and a child left unmeasured in a

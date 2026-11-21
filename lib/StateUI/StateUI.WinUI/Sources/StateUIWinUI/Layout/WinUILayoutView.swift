@@ -42,22 +42,42 @@ class WinUILayoutView: WinUIView {
     private var held: [WinUIView] = []
     private var heldBox: WinUIShapeView?
 
+    /// The views of children kept as they leave: held after the items', and laid out by nobody; whether they
+    /// changed since the panel last held its children.
+    /// Design: docs/design/platforms/winui/layout.md#a-view-kept-as-it-leaves
+    private(set) var leaving: [WinUIView] = []
+    private var keptChanged = false
+
     init() {
         super.init { number in stateui_winui_panel_make(number) }
+    }
+
+    /// Says the views of children kept as they leave, before the items are set: the panel holds them on, after
+    /// its items' views, and lets go of one kept no more.
+    /// Design: docs/design/platforms/winui/layout.md#a-view-kept-as-it-leaves
+    func keep(_ leaving: [WinUIView]) {
+        guard leaving.count != self.leaving.count || !zip(leaving, self.leaving).allSatisfy({ $0 === $1 })
+        else { return }
+
+        self.leaving = leaving
+        keptChanged = true
     }
 
     /// Puts `items` in the panel, in order, where they differ from the children it holds; whether they did.
     @discardableResult
     func setItems(_ items: [WinUILayoutItem]) -> Bool {
-        guard items.count != self.items.count
+        let changed = items.count != self.items.count
             || !zip(items, self.items).allSatisfy({ $0.arranges(like: $1) })
-        else { return false }
+        guard changed || keptChanged else { return false }
 
-        self.items = items
-        for item in items { item.view.placingLayout = self }
+        keptChanged = false
+        if changed {
+            self.items = items
+            for item in items { item.view.placingLayout = self }
+        }
         holdChildren()
-        invalidateMeasurements()
-        return true
+        if changed { invalidateMeasurements() }
+        return changed
     }
 
     /// The views the panel holds, in the order it draws them: every child's, unless a layout shows fewer.
@@ -65,9 +85,11 @@ class WinUILayoutView: WinUIView {
         items.map(\.view)
     }
 
-    /// Holds the views this layout shows now, under the title heading it where a page or a tab view is headed.
+    /// Holds the views this layout shows now, under the title heading it where a page or a tab view is headed,
+    /// and after them those kept as they leave.
     func holdChildren() {
-        setChildren((heading?.views ?? []) + heldViews())
+        let own = heldViews()
+        setChildren((heading?.views ?? []) + own + leaving.filter { kept in !own.contains { $0 === kept } })
     }
 
     /// The title heading the page or tab view this layout is; nil for none.

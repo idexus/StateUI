@@ -21,7 +21,26 @@ extension WinUIElement {
         let arranged = element.arrangedChildren.map(\.winUI)
         let layout = view as? WinUILayoutView
         layout?.direction = element.layoutDirection
+        if keepsExits { layout?.keep(leavingViews()) }
         layout?.setItems(arranged.compactMap(\.layoutItem))
+    }
+
+    /// The views of the children kept as they leave, each made deaf to the pointer and taken out of what
+    /// assistive technology meets as it is found leaving.
+    /// Design: docs/design/platforms/winui/layout.md#a-view-kept-as-it-leaves
+    private func leavingViews() -> [WinUIView] {
+        element.presentedChildren.filter { $0.lifecycle == .exiting }.compactMap { child -> WinUIView? in
+            guard let view = child.winUI.view else { return nil }
+            view.setIgnoresInput(child.ignoresInput)
+            view.setAccessibility(child.accessibilityWords)
+            return view
+        }
+    }
+
+    /// A stack, a grid and a ZStack keep a child that left: its view stands until the tree releases it.
+    /// Design: docs/design/platforms/winui/layout.md#a-view-kept-as-it-leaves
+    var keepsExits: Bool {
+        view is WinUITravelingLayout
     }
 
     /// A label's spans as runs of its words (`MountedElement.textRuns`); without spans, its own words, once the runs
