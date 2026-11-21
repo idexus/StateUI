@@ -24,7 +24,7 @@ extension Differ {
         var patches: [HostPatch] = []
 
         for index in node.children.indices {
-            let next = identified(node.children[index], at: index, by: matching)
+            let next = identified(node.children[index], at: index, by: matching, under: patch.id)
             describesPagePlacer = placer
             let (child, childPatch) = element(id: next.id, rendered: next.match, node: next.node)
 
@@ -48,7 +48,7 @@ extension Differ {
     /// position's - and the rendered element it continues, matched by `matching`.
     @inline(never)
     private func identified(
-        _ written: Node, at index: Int, by matching: ChildMatching
+        _ written: Node, at index: Int, by matching: ChildMatching, under holder: ElementID
     ) -> (id: ElementID, match: RenderedNode?, node: Node) {
         // A repeated identity takes a stable variant: the value and its occurrence.
         // Design: docs/design/core/identity-and-diffing.md#repeated-ids
@@ -87,6 +87,10 @@ extension Differ {
         }
 
         matching.used.insert(id)
+        // One of an authored identity that is no name is born: it may come back as one that left this holder.
+        if match == nil, let identity = childNode.identity, case .auto = id {
+            departures.born(id, of: identity, under: holder)
+        }
         return (id, match, childNode)
     }
 
@@ -97,6 +101,9 @@ extension Differ {
         _ children: [RenderedNode], _ patches: [HostPatch], after matching: ChildMatching, into patch: inout HostPatch
     ) {
         for child in matching.rendered where !matching.claimed.contains(child.id) {
+            if let identity = child.identity, case .auto = child.id, child.props[.transition] != nil {
+                departures.left(child.id, of: identity, from: patch.id)
+            }
             forget(child)
         }
 

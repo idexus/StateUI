@@ -159,6 +159,9 @@ final class Renders {
         return result.patch
     }
 
+    /// The id the standing element `id` returns as, as a render hands it to the host; nil where its own says it.
+    func returnsAs(_ id: ElementID) -> ElementID? { differ.departures.returned[id] }
+
     /// How many times each composed view of the type named `name` - its generic arguments left off - has been
     /// described, one number a view, in the tree's order.
     func builds(of name: String) -> [Int] {

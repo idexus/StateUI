@@ -1,4 +1,4 @@
-# revision 40.2
+# revision 41.2
 Button.rotationUpdated: ✓ rotate on Button: the relay's report of the manipulation handed to the host, no touch sent
 Button.tapped: ✓ pressDown on Button: the relay's report of the press handed to the host, no pointer sent
 Canvas.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.

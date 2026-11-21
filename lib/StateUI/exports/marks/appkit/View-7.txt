@@ -1,4 +1,4 @@
-# revision 40.1
+# revision 41.1
 Button.longPressed: ✓ longPress on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.rotationUpdated: ✓ rotate on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session

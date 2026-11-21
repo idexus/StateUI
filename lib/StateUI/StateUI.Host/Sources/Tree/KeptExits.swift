@@ -7,7 +7,7 @@
 /// Design: docs/design/host/tree.md#a-view-kept-as-it-leaves
 @_spi(Host) @MainActor public final class KeptExits {
     /// The most views leaving at once a window keeps.
-    public static let rootLimit = 32
+    public static let rootLimit = Transition.keptAtOnce
 
     /// The most mounted elements a window keeps under the views leaving it.
     public static let mountLimit = 2_048

@@ -137,11 +137,13 @@
     private func render() {
         let rendered = HostProbe.timed(.render) { core.render(baseline: intake.baseline) }
 
+        tree.returnsAs = rendered.returnsAs
         if !intake.take(rendered.root, generation: rendered.generation, apply: { patch in
             HostProbe.timed(.apply) { tree.apply(patch, complete: rendered.complete) }
         }) {
             log("the interface drifted and is asked for whole: \(intake.lastDrift ?? "")")
             let complete = core.render(baseline: 0)
+            tree.returnsAs = complete.returnsAs
             intake.take(complete.root, generation: complete.generation, apply: {
                 tree.apply($0, complete: complete.complete)
             })

@@ -163,6 +163,10 @@
     var exitPlace: Rect?
     var returned: Returned?
 
+    /// The id a view of the element's authored identity is known by as it comes back: the one its render said it
+    /// returns as, else its own - a name is the same in every life.
+    let returnID: ElementID
+
     /// Whether a view standing in the element may be thrown out of it: the room it leaves is this element's.
     private(set) var holdsDismissing = false
 
@@ -330,6 +334,7 @@
     init(_ patch: HostPatch, tree: MountedTree, parent: MountedElement?) {
         Self.liveCount += 1
         id = patch.id
+        returnID = tree.returnsAs[patch.id] ?? patch.id
         type = patch.type
         menuKey = patch.menuKey
         self.tree = tree

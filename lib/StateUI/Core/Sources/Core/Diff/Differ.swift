@@ -16,6 +16,9 @@ final class Differ {
 
     let menuKeys = MenuKeys()
 
+    /// What left its holder and may come back.
+    var departures = Departures()
+
     /// The next handler id, under the same rule.
     private var nextHandlerId = 1
 
@@ -334,6 +337,8 @@ final class Differ {
 
         // Its conversions: the graph works them out for one wearer fewer.
         node.conversions.forEach(Renderer.shared.board.conversions.unwear)
+
+        departures.forget(node.id)
 
         for child in node.children {
             forget(child)

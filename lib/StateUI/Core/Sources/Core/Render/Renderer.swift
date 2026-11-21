@@ -445,7 +445,8 @@ public final class Renderer {
             emptyRenders += 1
         }
 
-        let message = HostRender(generation: generation, complete: describeAll, root: patch)
+        let message = HostRender(
+            generation: generation, complete: describeAll, root: patch, returnsAs: differ.departures.returned)
 
         // A render the inspector's own state alone caused is not kept, whichever road
         // it took.

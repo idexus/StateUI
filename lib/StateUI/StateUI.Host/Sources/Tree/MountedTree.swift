@@ -148,6 +148,11 @@
     /// The views kept as they leave, and the budget of them.
     public let exits = KeptExits()
 
+    /// The elements that came back where one of their authored identity left, each with the id that one is known
+    /// by: the render's table, set before its patch is applied and read as an element is made.
+    /// Design: docs/design/host/tree.md#the-same-view-coming-back
+    public var returnsAs: [ElementID: ElementID] = [:]
+
     /// Called when a property animation starts, so the frame clock is held while it runs.
     public var onAnimation: () -> Void = {}
 

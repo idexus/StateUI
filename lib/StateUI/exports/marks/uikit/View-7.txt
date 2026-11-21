@@ -1,4 +1,4 @@
-# revision 40.1
+# revision 41.1
 Button.longPressed: ✓ longPress on Button: the view's listening handed the recognizer's states, no touch sent
 Button.rotationUpdated: ✓ rotate on Button: the view's listening handed the recognizer's states, no touch sent
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session

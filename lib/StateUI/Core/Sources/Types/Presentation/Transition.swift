@@ -75,4 +75,8 @@ extension Transition {
     @_spi(Host) public var host: (enter: HostTransitionEffect, exit: HostTransitionEffect, entersInitially: Bool) {
         (enter.host, exit.host, entersInitially)
     }
+
+    /// The most views leaving at once a window keeps drawn, and so the most that left one holder the differ
+    /// remembers.
+    @_spi(Host) public static let keptAtOnce = 32
 }

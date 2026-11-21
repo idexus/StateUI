@@ -214,12 +214,12 @@ released.
 
 ## The same view coming back
 
-A view that comes back while the one of its name is still leaving takes
+A view that comes back while the one of its identity is still leaving takes
 that one's place in the drawing - a line toggled off and on again does not
 stand twice, nor jump (`MountedElement.takeBack`):
 
 ```text
-  the patch brings a child      of a name an author gave, and the type of one its holder keeps leaving
+  the patch brings a child      known by the id of one its holder keeps leaving, and of its type
   the leaving one               is read: each number its exit moved, where it is drawn and how fast
                                 ends, interrupted - its view goes as the patch arranges the holder
   the new child                 another element: its own handlers, its own state, nothing of the old
@@ -227,11 +227,15 @@ stand twice, nor jump (`MountedElement.takeBack`):
                                 its move from where the old one stood, should its layout place it elsewhere
 ```
 
-Only a name an author gave matches (`ElementID.isManual`). A number the
-differ gave is never given again, so it cannot return; nothing is matched
-by position, and a view of the same name and another type is an exit and
-an entry apart. The holder is the scope: a holder made again keeps no
-leaving view, so nothing of it is found.
+A view is known by the id its render says it returns as, else by its own
+(`MountedElement.returnID`, read off `MountedTree.returnsAs` as the element
+is made): a name is the same id in every life, and for any other authored
+identity - a number, a UUID, a list's item - the differ names the id the
+one that left is known by
+([an identity that comes back](../core/identity-and-diffing.md#an-identity-that-comes-back)).
+Nothing is matched by position, and a view of the same identity and another
+type is an exit and an entry apart. The holder is the scope: a holder made
+again keeps no leaving view, so nothing of it is found.
 
 The trap is bringing the old element back. Its handlers were revoked as it
 left and its state let go; the continuity is in what is drawn - the place,

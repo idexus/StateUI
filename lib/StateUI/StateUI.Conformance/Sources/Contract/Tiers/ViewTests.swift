@@ -344,9 +344,10 @@
         }
     }
 
-    /// A view that comes back under its name while it is still leaving goes on from how the leaving one is drawn:
-    /// another element, the leaving one over, one view of it standing, and its drawn frame setting out where that
-    /// one was - not at its entry's effect. Where nothing keeps a leaving view, it was gone at once.
+    /// A view that comes back under its identity - a number here, which only its patch tells a host - while it is
+    /// still leaving goes on from how the leaving one is drawn: another element, the leaving one over, one view
+    /// of it standing, and its drawn frame setting out where that one was - not at its entry's effect. Where
+    /// nothing keeps a leaving view, it was gone at once.
     @MainActor
     static func returned(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aViewComingBackGoesOnFromWhereItLeft", proves: [
@@ -368,6 +369,7 @@
                             Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
                         ])
                         .motion(.eased(.milliseconds(600), curve: .linear))
+                        .id(7)
                     }
                 }
                 .horizontalAlignment(.start)
@@ -376,12 +378,15 @@
             s.frames(of: clock, until: 200)
             s.settle { drawn.values.last.map(FrameReport.size) == [120, 40] }
             let home = drawn.values.last.map(FrameReport.place) ?? []
-            let leaving = try s.element("specimen")
-            let holder = leaving.parent
+            let holder = try s.element(ofType: .vStack)
+            // The view under the button: a number names no element for a case to ask for.
+            guard holder.children.count == 2, let leaving = holder.children.last else {
+                throw Session.Missing(id: "the view of id 7")
+            }
 
             try s.perform(.activate, on: s.element("toggle"))
             s.settle { leaving.lifecycle != .active }
-            guard holder?.native.keepsExits == true, !NodeType.engineTypes.contains(leaving.type) else {
+            guard holder.native.keepsExits, !NodeType.engineTypes.contains(leaving.type) else {
                 s.expect(leaving.lifecycle == .released, true, "gone at once, where nothing keeps it")
                 return
             }
@@ -391,10 +396,13 @@
             let heard = drawn.values.count
             try s.perform(.activate, on: s.element("toggle"))
             s.settle { drawn.values.count > heard }
-            let back = try s.element("specimen")
+            guard holder.children.count == 2, let back = holder.children.last else {
+                throw Session.Missing(id: "the view of id 7 come back")
+            }
             s.expect(back === leaving, false, "another element")
+            s.expect(back.id == leaving.id, false, "under a number of its own")
             s.expect(leaving.lifecycle == .released, true, "the leaving one is over")
-            s.expect(holder?.presentedChildren.filter { $0.id == back.id }.count, 1, "one view of it stands")
+            s.expect(holder.presentedChildren.count, 2, "the button and one view of it stand")
             let across = drawn.values.dropFirst(heard).first.map { ($0.first ?? .nan) - (home.first ?? .nan) }
             s.expect(across.map { $0.rounded() }, 20, "it sets out where the leaving one was drawn, not at its entry's effect")
 

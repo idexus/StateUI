@@ -371,8 +371,9 @@ in, and the entry moves the others.
 
 A view that comes back is another view: its state starts anew and its
 handlers are its own. What goes on is the drawing alone, and only for a view
-an author named - `.id("details")` - so a line toggled off and on again
-neither stands twice nor jumps.
+an author identified - `.id("details")`, `.id(item.id)`, or a `ForEach`
+item under its own id - so a line toggled off and on again, or a row removed
+and put back, neither stands twice nor jumps.
 
 A view that has left hears nothing and tells nothing while its exit is
 drawn: its handlers, its bindings and its place in the layout ended as the

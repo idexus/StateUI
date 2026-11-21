@@ -47,7 +47,7 @@ Page 10
 PageElement 7
 IconElement 2
 BackgroundElement 2
-View 40
+View 41
 RefreshElement 2
 VisualElement 32
 Shape 6

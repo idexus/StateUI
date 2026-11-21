@@ -172,6 +172,45 @@ by a resync. A stale host control can never be mistaken for a new one that
 lands on the same number, and an event arriving late never reaches the wrong
 closure.
 
+## An identity that comes back
+
+A view an author identified that leaves and is written again is another
+element: its state starts anew and its handlers are new. A host may still
+be drawing the one that left
+([a view kept as it leaves](../host/tree.md#a-view-kept-as-it-leaves)), and
+the new one goes on from how that one is drawn only if the host can tell
+they are one view. A name tells it by itself - `.manual` is the same id in
+every life. Any other identity - a number, a UUID, a list's item - is a
+number never given again, so the differ says it (`Departures`):
+
+```text
+  a child is dropped         of an identity that is no name, declaring a transition
+                             its holder remembers the identity, and the id it is known by
+  a child is born            under that holder, of an equal identity
+                             a number of its own, as ever; the render names the id the one
+                             that left is known by (`HostRender.returnsAs`)
+  it leaves again            remembered by that same id, not its own
+```
+
+The render carries the table beside the patch - every standing element that
+came back, with the id it returns as - and a host reads it as it makes an
+element. A patch is copied at every level a host's mount goes down
+([the mount's stack](../host/runtime.md#the-mounts-stack)), so a fact one
+element in thousands has is not a field of every patch.
+
+The id a line of lives is known by is the one its earliest remembered life
+had: a host that never saw a life in between - born and dropped within one
+message - still finds the one it keeps. A holder remembers as many as a
+window keeps leaving at once (`Transition.keptAtOnce`, which the host
+layer's budget reads), the oldest forgotten first, and nothing of a child
+that declared no transition, which no host keeps. A holder forgotten
+forgets what left it, so one made again - under the same name too - starts
+with nothing.
+
+The trap is giving the returning view its old number. The control of that
+number is still alive on the host, which is exactly what
+[ids never reused](#ids-are-never-reused) rules out.
+
 ## Repeated ids
 
 Two siblings written with one value cannot both keep it: the host matches

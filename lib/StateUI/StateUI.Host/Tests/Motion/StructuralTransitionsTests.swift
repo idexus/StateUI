@@ -153,7 +153,8 @@ final class StructuralTransitionsTests: XCTestCase {
 
     /// THE SAME VIEW COMING BACK AS IT LEAVES TAKES OVER HOW THE LEAVING ONE WAS DRAWN: another element, the
     /// leaving one ended as interrupted, its numbers going on from where they stood and at their speed onto what
-    /// it declares - while a view of no name of its own, or of another type, comes as any other.
+    /// it declares - a name by its own id, a number by the id its render says it returns as - while a view
+    /// returning as nobody, or of another type, comes as any other.
     func testTheSameViewComingBackTakesOverHowItWasDrawn() {
         let bench = Bench()
         let comes = Transition(enter: .translation(y: 40), exit: .opacity.combined(with: .translation(y: 12)))
@@ -180,16 +181,36 @@ final class StructuralTransitionsTests: XCTestCase {
         XCTAssertEqual(back.number(.opacity) ?? 1, 1, "onto what it declares")
         XCTAssertNil(bench.shown(.translationY, of: back))
 
-        // A view an author gave no name, and one of another type under the same name, come as any other.
-        let unnamed = Bench()
-        var auto = HostPatch(id: .auto(7), type: .text)
-        auto.properties = [.transition: comes.propValue]
-        unnamed.show([Bench.text("a"), auto], complete: true)
-        let first = unnamed.root.children[1]
-        unnamed.show([Bench.text("a")])
-        unnamed.show([Bench.text("a"), auto])
-        XCTAssertEqual(first.lifecycle, .exiting, "no name: nothing is guessed by its number")
-        XCTAssertNil(unnamed.root.children[1].returned)
+        // A view of a number comes back as the one its render names - whichever life of that line is leaving - and
+        // one it names nobody for, like one of another type under the same name, comes as any other.
+        func row(_ number: Int) -> HostPatch {
+            var patch = HostPatch(id: .auto(number), type: .text)
+            patch.properties = [.transition: comes.propValue]
+            return patch
+        }
+        let numbered = Bench()
+        numbered.show([Bench.text("a"), row(7)], complete: true)
+        let first = numbered.root.children[1]
+        numbered.show([Bench.text("a")])
+        numbered.runtime.tree.returnsAs = [.auto(9): .auto(7)]
+        numbered.show([Bench.text("a"), row(9)])
+        let second = numbered.root.children[1]
+        XCTAssertEqual(first.lifecycle, .released, "the one its render names is over")
+        XCTAssertNotNil(second.returned, "and it is handed how that one was drawn")
+        numbered.show([Bench.text("a")])
+        numbered.runtime.tree.returnsAs = [.auto(10): .auto(7)]
+        numbered.show([Bench.text("a"), row(10)])
+        XCTAssertEqual(second.lifecycle, .released, "a later life leaving is known by the same id")
+        XCTAssertNotNil(numbered.root.children[1].returned)
+        XCTAssertEqual(numbered.ended.map(\.result), [.interrupted, .interrupted])
+
+        let stranger = Bench()
+        stranger.show([Bench.text("a"), row(7)], complete: true)
+        let left = stranger.root.children[1]
+        stranger.show([Bench.text("a")])
+        stranger.show([Bench.text("a"), row(8)])
+        XCTAssertEqual(left.lifecycle, .exiting, "a render naming nobody: nothing is guessed")
+        XCTAssertNil(stranger.root.children[1].returned)
 
         let typed = Bench()
         typed.show([Bench.text("a"), Bench.text("b", comes)], complete: true)

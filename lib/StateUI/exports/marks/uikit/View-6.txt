@@ -1,4 +1,4 @@
-# revision 40.1
+# revision 41.1
 Button.pinchUpdated: ✓ pinch on Button: the view's listening handed the recognizer's states, no touch sent
 Button.tapped: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the drag and drop interactions' handlers called, no drag session

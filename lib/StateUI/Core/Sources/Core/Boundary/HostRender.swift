@@ -11,4 +11,9 @@
 
     /// The root element's sparse patch.
     public let root: HostPatch
+
+    /// The elements standing that came back where one of their authored identity left, each with the id a host
+    /// knows that one by - the whole table in every render, read as an element is made.
+    /// Design: docs/design/core/identity-and-diffing.md#an-identity-that-comes-back
+    public let returnsAs: [ElementID: ElementID]
 }
