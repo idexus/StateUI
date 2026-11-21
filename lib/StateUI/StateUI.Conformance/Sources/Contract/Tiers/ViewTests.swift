@@ -607,7 +607,8 @@
     }
 
     /// A view its layout's motion carries to a new place: the layout's stage hears where it is going, alone and
-    /// before the view is there; the presentation's hears the way.
+    /// before the view is there; the presentation's hears the way - and the change that sent it, made through
+    /// the layout's aim, is settled once the presentation has said the whole way, not before.
     @MainActor
     static var carriedToItsPlace: ConformanceCase {
         ConformanceCase("aViewCarriedToItsPlaceSaysItsWayToThePresentationAlone", proves: [
@@ -618,10 +619,16 @@
             let far = State(wrappedValue: false)
             let placed = Received<[Double]>()
             let drawn = Received<[Double]>()
+            let settled = Received<PresentationResult>()
+            let layout = Aim(VStack.self)
             s.start(clock: clock) {
                 VStack {
-                    Carried(far: far.projectedValue, placed: placed, drawn: drawn)
-                    Button("Move").onClicked { far.wrappedValue = true }.id("move")
+                    Carried(far: far.projectedValue, placed: placed, drawn: drawn, aim: layout)
+                    Button("Move").onClicked(policy: .ignoreWhileRunning) {
+                        let change = try layout.presentationChange { far.wrappedValue = true }
+                        settled.values.append(try await change.settled())
+                    }
+                    .id("move")
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
@@ -636,9 +643,15 @@
             let early = try s.place(of: s.element("specimen"))
             s.expect(placed.values.last.map(FrameReport.place), [160, 0, 40, 40], "where it is going, said")
             s.expect(early.x < 150, true, "before it is there: \(early.x)")
+            s.expect(settled.values, [], "the change is not settled: its view has not set out")
+
+            // Five sixths of the way: the place set out in a layout pass after the patch, and is waited for.
+            s.frames(of: clock, until: 700)
+            s.expect(settled.values, [], "nor while the view is on its way")
 
             s.frames(of: clock, until: 1_400)
-            s.settle { drawn.values.last.map(FrameReport.place) == [160, 0, 40, 40] }
+            s.settle { drawn.values.last.map(FrameReport.place) == [160, 0, 40, 40] && !settled.values.isEmpty }
+            s.expect(settled.values, [.settled], "the change is settled once the view stands")
             let places = Set(placed.values.dropFirst(heard).map(FrameReport.place))
             let way = drawn.values.dropFirst(seen).map { $0.first ?? 0 }
             s.expect(places, [[160, 0, 40, 40]], "the layout's stage hears its destination alone")
@@ -1417,6 +1430,7 @@ private struct Carried: View {
     let far: Binding<Bool>
     let placed: Received<[Double]>
     let drawn: Received<[Double]>
+    let aim: Aim<VStack>
 
     var body: some View {
         VStack {
@@ -1433,5 +1447,6 @@ private struct Carried: View {
         .height(40)
         .horizontalAlignment(.start)
         .motion(.eased(.milliseconds(600), curve: .linear))
+        .aim(aim)
     }
 }

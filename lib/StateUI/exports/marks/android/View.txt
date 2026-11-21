@@ -1,4 +1,4 @@
-# revision 41.1
+# revision 42.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Button.area: ✅
 Button.dismissed: ✅

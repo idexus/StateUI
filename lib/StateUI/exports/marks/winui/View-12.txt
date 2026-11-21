@@ -1,4 +1,4 @@
-# revision 41.2
+# revision 42.2
 Button.gridColumn: ✅
 Button.gridRow: ✅
 Button.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
