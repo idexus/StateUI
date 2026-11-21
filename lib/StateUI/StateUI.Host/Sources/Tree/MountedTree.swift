@@ -153,6 +153,9 @@
     /// Design: docs/design/host/tree.md#the-same-view-coming-back
     public var returnsAs: [ElementID: ElementID] = [:]
 
+    /// The presentation changes the renders carry, and what each waits for.
+    public let changes: PresentationChanges
+
     /// Called when a property animation starts, so the frame clock is held while it runs.
     public var onAnimation: () -> Void = {}
 
@@ -322,6 +325,12 @@
         self.reducesMotion = reducesMotion
         self.makeNative = makeNative
         self.diagnostics = diagnostics
+        changes = PresentationChanges(core: core)
+        describedMotion.born = { [weak self] key in
+            guard let self, let element = byMount[key.mount]?.element else { return }
+            changes.born(key, on: element)
+        }
+        describedMotion.ended = { [weak self] key, end in self?.changes.ended(key, as: end) }
         // The first take starts the recording, so the log holds every pass from here on.
         if diagnostics.inspects { _ = core.takeInspectionLog() }
     }

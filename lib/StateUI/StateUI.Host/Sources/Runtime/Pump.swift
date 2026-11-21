@@ -138,6 +138,7 @@
         let rendered = HostProbe.timed(.render) { core.render(baseline: intake.baseline) }
 
         tree.returnsAs = rendered.returnsAs
+        tree.changes.begin(rendered.changes, in: tree)
         if !intake.take(rendered.root, generation: rendered.generation, apply: { patch in
             HostProbe.timed(.apply) { tree.apply(patch, complete: rendered.complete) }
         }) {
@@ -148,6 +149,7 @@
                 tree.apply($0, complete: complete.complete)
             })
         }
+        tree.changes.close()
 
         displayCycle.presentStateChannels()
         let touchedChrome = tree.takeChromeTouched()

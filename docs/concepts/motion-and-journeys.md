@@ -388,6 +388,60 @@ Hiding a view with `isVisible(_:)` keeps the view and its state, and crosses
 as [visibility](#visibility-and-layout-motion) does, whatever transition the
 view declares.
 
+## A change and what it started
+
+One write often moves several things - a panel fades, the lines in it fade
+with it. `presentationChange` on a view's aim runs the writes and answers a
+`PresentationChange` to await: what those writes start under the aimed view
+is what it watches.
+
+```swift
+struct Notice: View {
+    @State private var shown = true
+    @State private var said = "shown"
+    @Aim(VStack.self) private var panel
+
+    var body: some View {
+        VStack {
+            VStack {
+                Text("Saved")
+            }
+            .opacity(shown ? 1 : 0)
+            .motion(.eased(.milliseconds(300)))
+            .aim(panel)
+
+            Button("Hide").onClicked(policy: .ignoreWhileRunning) {
+                let hiding = try panel.presentationChange { shown = false }
+                if try await hiding.settled() == .settled { said = "hidden" }
+            }
+
+            Text(said)
+        }
+    }
+}
+```
+
+The writes run at once, as plain assignments do. `applied()` waits until the
+host took them and answers a `PresentationApplication`; `settled()` waits
+until every movement they started has ended and answers a
+`PresentationResult`, whose `.interrupted` names each
+`PresentationInterruption` once:
+
+| Answer | Meaning |
+| --- | --- |
+| `applied()` is `.applied` | the host took the writes |
+| `settled()` is `.settled` | every movement came to rest where the change sent it, or it started none |
+| `settled()` is `.interrupted([.superseded])` | a later write sent a view elsewhere first |
+| `settled()` is `.interrupted([.detached])` | a view it moved left first |
+| either is `.notPresented` | nothing shows the aimed view; the writes stand |
+
+A change watches the properties its writes move under a view's own
+`.motion(_:)`, on the aimed view and every view in it. It stops nothing and
+owns nothing: a movement started later is no part of it, so a new animation
+never prolongs an old wait, and a task cancelled while it waits stops
+waiting while the movements go on. An aim that reached no view throws before
+the writes are run.
+
 ## An engine that animates
 
 `@State(animatedBy: .engine)` - the one `AnimationOwner` - fixes who animates

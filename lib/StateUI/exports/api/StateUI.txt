@@ -18,6 +18,7 @@ swift.class Gate: @MainActor final class Gate
 swift.class LocaleInfo: @MainActor final class LocaleInfo
 swift.class Localization: @MainActor final class Localization<Catalog> where Catalog : LocalizationCatalog
 swift.class MotionRun: @MainActor final class MotionRun
+swift.class PresentationChange: @MainActor final class PresentationChange
 swift.class SceneSession: @MainActor final class SceneSession
 swift.class State: @MainActor @propertyWrapper final class State<Value>
 swift.class Ticker: @MainActor final class Ticker
@@ -680,8 +681,17 @@ swift.conformance PopupElementContract: Swift.Sendable
 swift.conformance PositionDots: StateUI.View
 swift.conformance PositionDots: StateUI.Views
 swift.conformance PositionDots: Swift.Sendable
+swift.conformance PresentationApplication: Swift.Equatable
+swift.conformance PresentationApplication: Swift.Hashable
+swift.conformance PresentationApplication: Swift.Sendable
+swift.conformance PresentationChange: Swift.Sendable
+swift.conformance PresentationInterruption: Swift.Equatable
+swift.conformance PresentationInterruption: Swift.Hashable
+swift.conformance PresentationInterruption: Swift.Sendable
 swift.conformance PresentationOffset: Swift.Equatable
 swift.conformance PresentationOffset: Swift.Sendable
+swift.conformance PresentationResult: Swift.Equatable
+swift.conformance PresentationResult: Swift.Sendable
 swift.conformance PresentationSample: Swift.Equatable
 swift.conformance PresentationSample: Swift.Sendable
 swift.conformance PresentationValues: Swift.Equatable
@@ -1197,6 +1207,9 @@ swift.enum PolygonContract: enum PolygonContract
 swift.enum PolylineContract: enum PolylineContract
 swift.enum PopoverContract: enum PopoverContract
 swift.enum PopupElementContract: enum PopupElementContract
+swift.enum PresentationApplication: enum PresentationApplication
+swift.enum PresentationInterruption: enum PresentationInterruption
+swift.enum PresentationResult: enum PresentationResult
 swift.enum PresentedElementContract: enum PresentedElementContract
 swift.enum PressElementContract: enum PressElementContract
 swift.enum ProgressBarContract: enum ProgressBarContract
@@ -1525,6 +1538,13 @@ swift.enum.case Orientation.vertical: case vertical
 swift.enum.case PickerPresentation.menu: case menu
 swift.enum.case PickerPresentation.radio: case radio
 swift.enum.case PickerPresentation.segmented: case segmented
+swift.enum.case PresentationApplication.applied: case applied
+swift.enum.case PresentationApplication.notPresented: case notPresented
+swift.enum.case PresentationInterruption.detached: case detached
+swift.enum.case PresentationInterruption.superseded: case superseded
+swift.enum.case PresentationResult.interrupted(_:): case interrupted([PresentationInterruption])
+swift.enum.case PresentationResult.notPresented: case notPresented
+swift.enum.case PresentationResult.settled: case settled
 swift.enum.case ScrollAnchor.center: case center
 swift.enum.case ScrollAnchor.end: case end
 swift.enum.case ScrollAnchor.nearest: case nearest
@@ -2000,6 +2020,7 @@ swift.method Aim.evaluateJavaScript(_:): @MainActor func evaluateJavaScript(_ sc
 swift.method Aim.focus(): @discardableResult @MainActor func focus() async throws -> Bool
 swift.method Aim.goBack(): @MainActor func goBack() async throws
 swift.method Aim.goForward(): @MainActor func goForward() async throws
+swift.method Aim.presentationChange(_:): @MainActor func presentationChange(_ update: () -> Void) throws -> PresentationChange
 swift.method Aim.presentationSample(): @MainActor func presentationSample() async throws -> PresentationSample
 swift.method Aim.reload(): @MainActor func reload() async throws
 swift.method Aim.scroll(to:anchor:): @MainActor func scroll<ID>(to item: ID, anchor: ScrollAnchor = .nearest) async throws where Target == ItemsView<ID>, ID : Hashable
@@ -8214,6 +8235,8 @@ swift.method PositionDots.translationY(_:): @MainActor func translationY(_ state
 swift.method PositionDots.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method PositionDots.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
+swift.method PresentationChange.applied(): @discardableResult @MainActor func applied() async throws -> PresentationApplication
+swift.method PresentationChange.settled(): @discardableResult @MainActor func settled() async throws -> PresentationResult
 swift.method PressElement.onPressed(_:): @MainActor func onPressed(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method PressElement.onPressed(gate:_:): @MainActor func onPressed(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method PressElement.onPressed(policy:_:): @MainActor func onPressed(policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified

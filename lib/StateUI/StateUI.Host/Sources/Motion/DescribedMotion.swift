@@ -41,6 +41,10 @@
     private var transitions: [DescribedKey: DescribedTransition] = [:]
     private var outputs: [DescribedOutput] = []
 
+    /// Told as a motion is born, and as each ends: what watches the movements a change started.
+    var born: ((DescribedKey) -> Void)?
+    var ended: ((DescribedKey, PresentationChanges.End) -> Void)?
+
     /// Described motion whose animations `animator` advances.
     public init(animator: Animator) {
         self.animator = animator
@@ -80,6 +84,7 @@
             carriedLanes = running.lanes
             carriedVelocity = running.velocity
             running.landed?()
+            ended?(key, .superseded)
         }
 
         guard let source,
@@ -107,6 +112,7 @@
         transitions[key] = DescribedTransition(
             plan: plan, velocity: animation.velocity, landed: landed)
         animator.start(animation, for: .described(key))
+        born?(key)
         return true
     }
 
@@ -131,18 +137,21 @@
                 transitions[key] = nil
                 animator.halt(.described(key))
                 transition.landed?()
+                ended?(key, .rested)
             }
         }
     }
 
     /// Drops every animation of an element that leaves.
     public func remove(mount: UInt64) {
+        let leaving = transitions.keys.filter { $0.mount == mount }.sorted()
         transitions = transitions.filter { $0.key.mount != mount }
         outputs.removeAll { $0.key.mount == mount }
         animator.retain { target in
             guard case .described(let key) = target else { return true }
             return key.mount != mount
         }
+        for key in leaving { ended?(key, .detached) }
     }
 
     /// Takes the values drawn since the previous take.

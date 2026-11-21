@@ -33,7 +33,9 @@ final class NoView: NativeElement {
         self.presentsView = presentsView
     }
     func standingValue(_ property: Prop) -> HostValue? { nil }
-    func animates(_ property: Prop) -> Bool { false }
+    /// Whether the view takes its properties' movements; a test that moves one says so.
+    var animatesProperties = false
+    func animates(_ property: Prop) -> Bool { animatesProperties }
     func applied(changed: Set<Prop>, wasDescribed: Bool) {}
     func presentFrame(_ changed: Set<Prop>) {}
 

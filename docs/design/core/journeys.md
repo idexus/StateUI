@@ -202,6 +202,52 @@ as it is made and taken back as the waiter runs again
 waits on one already answered. A waiter the application's end takes hears
 `.detached`.
 
+## A change and what it started
+
+`MotionRun` answers for one state's movement. A write often starts more
+than one - a panel's opacity, its children's - and what an author waits for
+is all of it. `Aim.presentationChange(_:)` runs the writes and answers a
+`PresentationChange`: what those writes start under the aimed view is what
+it watches.
+
+```text
+  presentationChange { … }   the aim is resolved first: one that reached no view throws, the writes not run
+                             the writes run, at once
+                             two waiters are booked, and a record queued for the next render
+  the next render            carries the record beside its patch (`HostRender.changes`):
+                             where the aimed view stands, and the two waiters
+  the host                   answers the first once the patch is applied   -> applied()
+                             answers the second once every movement that patch started
+                             under the aimed view has ended                -> settled()
+```
+
+The change asks for its render itself (`Renderer.setNeedsTurn`): a write no
+view reads asks for none, and one a host carries crosses as lanes and not
+as a patch, so the writes alone would leave the record waiting.
+
+```text
+  applied()   .applied            a host took the writes
+              .notPresented       nothing shows the aimed view; the writes stand
+  settled()   .settled            every movement rested where the change sent it - or it started none
+              .interrupted(why)   at least one did not: each reason once, in the order declared
+              .notPresented       nothing shows the aimed view
+```
+
+The two answers are `Reply`s to booked waiters, as a movement's end is
+(`HostBoundary.answer(_:applied:)`, `answer(_:settled:)`); a host that went
+answers neither, and both end `.notPresented`. A waiting task that is
+cancelled hears its own cancellation; the change, and what it watches, go
+on (`Awaited`, which a `MotionRun` waits by too).
+
+The record is no field of a patch, as
+[the id a view returns as](identity-and-diffing.md#an-identity-that-comes-back)
+is none: a patch is copied at every level a host's mount goes down.
+
+The trap is reading the change as an owner of the movements. It stops
+nothing and prolongs nothing: a later write that sends a view elsewhere ends
+the change `.interrupted([.superseded])`, and the movement that write
+started belongs to no earlier change.
+
 ## Stopping
 
 `stop()` raises the stop counter, leaving the value where the animation stood;

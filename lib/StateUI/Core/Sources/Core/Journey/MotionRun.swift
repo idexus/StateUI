@@ -15,22 +15,20 @@
 public final class MotionRun {
     /// How it ended, or nil while it is under way. Read at any time; a body
     /// reading it is not rebuilt when it changes.
-    public private(set) var outcome: MotionResult?
+    public var outcome: MotionResult? { awaited.outcome }
 
-    /// Who waits for the end, each under a number of its own, so a cancelled one leaves alone.
-    private var waiting: [(number: Int, continuation: CheckedContinuation<MotionResult?, Never>)] = []
-
-    /// The number the next waiter waits under.
-    private var nextWaiter = 0
+    /// The end, and who waits for it.
+    private let awaited: Awaited<MotionResult>
 
     /// A movement under way, the host to answer its end.
     init() {
+        awaited = Awaited()
         Self.open += 1
     }
 
     /// A movement that ended as it began: refused, or there already.
     init(ended result: MotionResult) {
-        outcome = result
+        awaited = Awaited(ended: result)
     }
 
     /// How many movements are under way - what a test of leaks counts.
@@ -44,52 +42,12 @@ public final class MotionRun {
     /// - Throws: `CancellationError` where the waiting task is cancelled.
     @discardableResult
     public func result() async throws -> MotionResult {
-        if let outcome { return outcome }
-
-        let number = nextWaiter
-        nextWaiter += 1
-        let end = await withTaskCancellationHandler {
-            await withCheckedContinuation { (continuation: CheckedContinuation<MotionResult?, Never>) in
-                if Task.isCancelled {
-                    Renderer.shared.resumesPending += 1
-                    continuation.resume(returning: nil)
-                } else {
-                    waiting.append((number, continuation))
-                }
-            }
-        } onCancel: {
-            libraryTask { self.letGo(number) }
-        }
-
-        // Counted as each waiter is resumed, lowered as it runs again - whatever it carries.
-        // Design: docs/design/core/journeys.md#a-movements-result
-        Renderer.shared.resumesPending -= 1
-        guard let end else { throw CancellationError() }
-        return end
-    }
-
-    /// A waiter whose task was cancelled, let go with its cancellation; one already resumed is gone.
-    private func letGo(_ number: Int) {
-        guard let place = waiting.firstIndex(where: { $0.number == number }) else { return }
-
-        let waiter = waiting.remove(at: place)
-        Renderer.shared.resumesPending += 1
-        waiter.continuation.resume(returning: nil)
+        try await awaited.value()
     }
 
     /// Ends the movement with its one result; a second word is no word.
     func end(_ result: MotionResult) {
-        guard outcome == nil else { return }
-
-        outcome = result
-        Self.open -= 1
-        let resumed = waiting
-        waiting.removeAll()
-        Renderer.shared.resumesPending += resumed.count
-
-        for waiter in resumed {
-            waiter.continuation.resume(returning: result)
-        }
+        if awaited.end(result) { Self.open -= 1 }
     }
 
     /// The host's answer to the waiter this run was booked under.

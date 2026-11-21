@@ -1954,6 +1954,47 @@ enum Listings {
             }
         }
         """#,
+        "ChangeAwaited": #"""
+        // Sources/Samples/Animation/MotionSample.swift
+        @State private var shown = true
+        @State private var said = "-"
+
+        // THE VIEW A CHANGE WATCHES: everything its writes move in here.
+        @Aim(VStack.self) private var panel
+
+        var body: some View {
+            VStack {
+                VStack {
+                    Text("Saved to the drafts")
+
+                    Text("A moment ago")
+                        // A LINE OF ITS OWN PACE, inside the panel: the change
+                        // waits for it as it does for the panel.
+                        .opacity(shown ? 1 : 0)
+                        .motion(.eased(.milliseconds(1400)))
+                }
+                .opacity(shown ? 1 : 0.15)
+                .motion(.eased(.milliseconds(700)))
+                .aim(panel)
+
+                // THE WRITES RUN AT ONCE; what is awaited is what they started.
+                // Pressed again before the fade has ended, the first change ends
+                // interrupted - the second press's movement is the second's.
+                // Each press is a run of its own, so both are heard.
+                Button(shown ? "Hide" : "Show").onClicked(policy: .runConcurrently) {
+                    let change = try panel.presentationChange { shown.toggle() }
+                    said = "under way"
+                    switch try await change.settled() {
+                    case .settled: said = "settled"
+                    case .interrupted: said = "interrupted"
+                    case .notPresented: said = "not presented"
+                    }
+                }
+
+                Text("the change · \(said)")
+            }
+        }
+        """#,
         "ChangesAcrossBranches": #"""
         // Sources/Samples/State/OnChangedSample.swift
         @State private var signedIn = false

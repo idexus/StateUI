@@ -110,6 +110,9 @@ public final class Renderer {
     /// Continuations waiting for an act or an animation to finish, by negative id.
     /// Design: docs/design/core/acts.md#completion-ids
     var completions: [Int: (Reply) -> Void] = [:]
+
+    /// The presentation changes booked since the last render.
+    var changes: [HostPresentationChange] = []
     var nextCompletionId = -1
 
     /// How many handlers were told their act is over and have not run a line since;
@@ -206,6 +209,13 @@ public final class Renderer {
     func setNeedsBuild() {
         dirty = true
         untracked = true
+        UIThreadExecutor.shared.askForTurn()
+    }
+
+    /// Asks for a render that builds nothing anew: one to carry what is no view's - a presentation change. It
+    /// asks the host for a turn.
+    func setNeedsTurn() {
+        dirty = true
         UIThreadExecutor.shared.askForTurn()
     }
 
@@ -446,7 +456,8 @@ public final class Renderer {
         }
 
         let message = HostRender(
-            generation: generation, complete: describeAll, root: patch, returnsAs: differ.departures.returned)
+            generation: generation, complete: describeAll, root: patch, returnsAs: differ.departures.returned,
+            changes: takeChanges())
 
         // A render the inspector's own state alone caused is not kept, whichever road
         // it took.

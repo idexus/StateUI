@@ -97,6 +97,38 @@ same - a gradient moves its geometry, stops and colors, never its kind or
 stop count. A brush property moves only between two colors or two well-formed
 brushes of one shape; anything else snaps. A themed value never moves.
 
+## A change and what it started
+
+A render may carry presentation changes
+([the core's half](../core/journeys.md#a-change-and-what-it-started)). The
+host layer keeps one group for each (`PresentationChanges`, the tree's
+`changes`), and no host adds to it:
+
+```text
+  before the patch    each change finds its view by its place, as it stands now
+                      none, or one that left: both waiters answered `.notPresented`
+                      else a group opens on that view's mount
+  the patch applied   a described motion born on that mount or under it joins every open group
+  after the patch     the groups close: `applied` is answered; a group with no member settles at once
+  a member ends       rested: nothing said of it
+                      a new destination for the same property: `.superseded`
+                      its element released: `.detached`
+  the last one ends   `settled` is answered: `.settled`, or `.interrupted` with the reasons gathered
+```
+
+A group closes with its render. What is born later joins nothing - the
+movement a later write starts in place of a member is that write's own - so
+new animations never prolong an old wait. Two changes whose renders start
+movements of the same view each have their own members, and a movement
+running since before a change opened is no member of it.
+
+A member is a described motion today: the movement of a property the patch
+moved under the view's motion. `DescribedMotion` tells each birth and each
+end (`born`, `ended`), which is all a group hears.
+
+The trap is finding the view after the patch. A change may remove the very
+view it aims at; the group holds its mount from before.
+
 ## What travels
 
 A host moves frame by frame only what its views present and whose values

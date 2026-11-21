@@ -88,7 +88,7 @@ MaterialsSample.swift 9bec51fd1229db7f
 MenuBarSample.swift d88594b78fedd72a
 ModalSample.swift da3fe595d009b093
 MotionLayoutSample.swift 479501305ba6138b
-MotionSample.swift 484c5ee826f9f851
+MotionSample.swift 022e933c9761814b
 MultiWindowSample.swift 4e527c3fa84658e1
 NavigationSample.swift 8a1e25122e6b3073
 NextFieldSample.swift b365cbd1626b4437

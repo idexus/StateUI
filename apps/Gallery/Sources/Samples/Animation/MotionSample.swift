@@ -7,6 +7,10 @@ struct MotionSample: SampleContent, ExampleContent {
     static let title = "Motion"
     static let summary = "Assign the state and the control travels there - at a length, on a spring, or not at all."
 
+    var examples: [Example] {
+        [Example(self), Example(ChangeAwaited())]
+    }
+
     // listing: MotionSample
     static let laws = ["Eased 200ms", "Spring", "Long and slow", "None"]
 
@@ -131,5 +135,68 @@ struct MotionSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
         }
         .spacing(8)
+    }
+}
+
+/// A change of the presentation awaited: what its writes started under one view, and how that ended.
+struct ChangeAwaited: ExampleContent {
+    // listing: ChangeAwaited
+    @State private var shown = true
+    @State private var said = "-"
+
+    // THE VIEW A CHANGE WATCHES: everything its writes move in here.
+    @Aim(VStack.self) private var panel
+
+    var body: some View {
+        VStack {
+            VStack {
+                Text("Saved to the drafts")
+                    .fontSize(15)
+
+                Text("A moment ago")
+                    .fontSize(12)
+                    .textColor(Palette.subtle)
+                    // A LINE OF ITS OWN PACE, inside the panel: the change
+                    // waits for it as it does for the panel.
+                    .opacity(shown ? 1 : 0)
+                    .motion(.eased(.milliseconds(1400)))
+            }
+            .spacing(4)
+            .padding(16)
+            .background(Palette.selected)
+            .opacity(shown ? 1 : 0.15)
+            .motion(.eased(.milliseconds(700)))
+            .aim(panel)
+
+            // THE WRITES RUN AT ONCE; what is awaited is what they started.
+            // Pressed again before the fade has ended, the first change ends
+            // interrupted - the second press's movement is the second's.
+            // Each press is a run of its own, so both are heard.
+            Button(shown ? "Hide" : "Show").onClicked(policy: .runConcurrently) {
+                let change = try panel.presentationChange { shown.toggle() }
+                said = "under way"
+                switch try await change.settled() {
+                case .settled: said = "settled"
+                case .interrupted: said = "interrupted"
+                case .notPresented: said = "not presented"
+                }
+            }
+            .accessibilityIdentifier("change.toggle")
+
+            Text("the change · \(said)")
+                .accessibilityIdentifier("change.said")
+                .fontSize(13)
+                .horizontalTextAlignment(.center)
+        }
+        .spacing(12)
+    }
+    // listing: end
+
+    var notes: (any View)? {
+        Text("Press Hide: the line reads `under way` until the slower of the two fades has ended, then "
+            + "`settled`. Press again before that: the first change says `interrupted`, and the second "
+            + "goes on to `settled`.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

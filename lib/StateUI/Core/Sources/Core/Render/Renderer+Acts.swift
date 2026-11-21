@@ -20,6 +20,24 @@ extension Renderer {
         return issued
     }
 
+    /// Books a presentation change aimed at the view standing at `place`: its two waiters, and the record the
+    /// next render carries. It asks for that render - a write no view reads, or one a host carries, asks for none.
+    /// Design: docs/design/core/journeys.md#a-change-and-what-it-started
+    func change(aimedAt place: [ElementID]) -> PresentationChange {
+        let change = PresentationChange()
+        let applied = book { change.land(applied: $0) }
+        let settled = book { change.land(settled: $0) }
+        changes.append(HostPresentationChange(place: place, applied: applied, settled: settled))
+        setNeedsTurn()
+        return change
+    }
+
+    /// Takes the changes booked since the last take, for the render that carries them.
+    func takeChanges() -> [HostPresentationChange] {
+        defer { changes.removeAll() }
+        return changes
+    }
+
     /// The completions nobody has answered yet - what a test playing the host answers.
     var waiting: [Int] { Array(completions.keys) }
 

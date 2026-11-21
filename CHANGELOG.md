@@ -219,6 +219,14 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### New
 
+- **A change says how what it started ended.** `Aim.presentationChange { ... }`, on the aim of any view, runs
+  the writes at once and answers a `PresentationChange`: `applied()` waits until the host took them, and
+  `settled()` until every movement they started under the aimed view has ended - `.settled`,
+  `.interrupted` with why (`.superseded` by a later write, `.detached` as a view left), or `.notPresented`
+  where nothing shows the view. It watches the properties the writes move under a view's own `.motion(_:)`;
+  a movement started later is no part of it, and it stops nothing. For a host: nothing to write - a render
+  carries the change beside its patch (`HostRender.changes`) and the host layer answers it.
+
 - **A view's aim says how it stands now.** `Aim.presentationSample()`, on the aim of any view, answers a
   `PresentationSample`: `layoutFrame`, where its layout puts it; `frame`, the rectangle around what is drawn of
   it; and `translation`, `scaleX`, `scaleY`, `rotation` and `opacity` as it is drawn at that moment -

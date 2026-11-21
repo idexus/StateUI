@@ -299,6 +299,32 @@
         return Renderer.shared.dispatch(completion)
     }
 
+    /// Answers the waiter of a presentation change's application, once.
+    ///
+    /// - Parameters:
+    ///   - completion: The change's `applied` waiter.
+    ///   - application: Whether anything shows the aimed view.
+    /// - Returns: Whether a continuation still waited under that id.
+    @discardableResult
+    public static func answer(_ completion: Int, applied application: PresentationApplication) -> Bool {
+        guard completion < 0 else { return false }
+        ReplyBuffer.current = .finished([.number(application == .applied ? 1 : 0)])
+        return Renderer.shared.dispatch(completion)
+    }
+
+    /// Answers the waiter of a presentation change's end, once.
+    ///
+    /// - Parameters:
+    ///   - completion: The change's `settled` waiter.
+    ///   - result: How the movements it started ended.
+    /// - Returns: Whether a continuation still waited under that id.
+    @discardableResult
+    public static func answer(_ completion: Int, settled result: PresentationResult) -> Bool {
+        guard completion < 0 else { return false }
+        ReplyBuffer.current = .finished(PresentationChange.code(of: result).map { .number($0) })
+        return Renderer.shared.dispatch(completion)
+    }
+
     /// Runs the display's cycle and returns the state values it published.
     public static func cycle(now: Double, reducesMotion: Bool) -> HostCycle {
         Renderer.shared.hostCycle(now: now, reducesMotion: reducesMotion)

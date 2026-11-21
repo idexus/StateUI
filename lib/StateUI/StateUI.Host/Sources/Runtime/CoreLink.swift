@@ -90,6 +90,18 @@
         HostBoundary.complete(completion, as: outcome)
     }
 
+    /// Answers the caller awaiting a presentation change's application.
+    @discardableResult
+    public func answer(_ completion: Int, applied application: PresentationApplication) -> Bool {
+        HostBoundary.answer(completion, applied: application)
+    }
+
+    /// Answers the caller awaiting a presentation change's end with how its movements ended.
+    @discardableResult
+    public func answer(_ completion: Int, settled result: PresentationResult) -> Bool {
+        HostBoundary.answer(completion, settled: result)
+    }
+
     // MARK: - Events, jobs and acts
 
     /// Reports a native event and runs its handler.

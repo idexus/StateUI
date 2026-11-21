@@ -16,4 +16,9 @@
     /// knows that one by - the whole table in every render, read as an element is made.
     /// Design: docs/design/core/identity-and-diffing.md#an-identity-that-comes-back
     public let returnsAs: [ElementID: ElementID]
+
+    /// The presentation changes made since the render before, in the order made: what this render's writes
+    /// start under each aimed view is what each waits for.
+    /// Design: docs/design/core/journeys.md#a-change-and-what-it-started
+    public let changes: [HostPresentationChange]
 }
