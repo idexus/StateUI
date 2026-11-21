@@ -13500,6 +13500,7 @@ enum Listings {
         }
 
         @State private var cards: [Int] = []
+        @State private var removed: [Int] = []
         @State private var next = 1
         @State private var way = 0
         @State private var detailed = false
@@ -13543,10 +13544,22 @@ enum Listings {
                     // under it close over its place - and is drawn until it has
                     // gone where its transition says.
                     Button("Remove").onClicked {
-                        if !cards.isEmpty { cards.removeFirst() }
+                        if !cards.isEmpty { removed.append(cards.removeFirst()) }
+                    }
+                }
+
+                HStack {
+                    // THE SAME NOTE PUT BACK while it is still leaving goes on
+                    // from where it is drawn. A list's item is known by its id
+                    // - its number here - as a named view is by its name.
+                    Button("Put back").onClicked {
+                        if let number = removed.popLast() { cards.insert(number, at: 0) }
                     }
 
-                    Button("Clear").onClicked { cards.removeAll() }
+                    Button("Clear").onClicked {
+                        cards.removeAll()
+                        removed.removeAll()
+                    }
                 }
 
                 SwitchRow("Details", $detailed)

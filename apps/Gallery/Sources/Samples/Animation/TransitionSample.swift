@@ -20,6 +20,7 @@ struct TransitionSample: SampleContent, ExampleContent {
     }
 
     @State private var cards: [Int] = []
+    @State private var removed: [Int] = []
     @State private var next = 1
     @State private var way = 0
     @State private var detailed = false
@@ -69,12 +70,26 @@ struct TransitionSample: SampleContent, ExampleContent {
                 // under it close over its place - and is drawn until it has
                 // gone where its transition says.
                 Button("Remove").onClicked {
-                    if !cards.isEmpty { cards.removeFirst() }
+                    if !cards.isEmpty { removed.append(cards.removeFirst()) }
                 }
                 .accessibilityIdentifier("transition.remove")
+            }
+            .spacing(8)
 
-                Button("Clear").onClicked { cards.removeAll() }
-                    .accessibilityIdentifier("transition.clear")
+            HStack {
+                // THE SAME NOTE PUT BACK while it is still leaving goes on
+                // from where it is drawn. A list's item is known by its id
+                // - its number here - as a named view is by its name.
+                Button("Put back").onClicked {
+                    if let number = removed.popLast() { cards.insert(number, at: 0) }
+                }
+                .accessibilityIdentifier("transition.putBack")
+
+                Button("Clear").onClicked {
+                    cards.removeAll()
+                    removed.removeAll()
+                }
+                .accessibilityIdentifier("transition.clear")
             }
             .spacing(8)
 
@@ -120,7 +135,9 @@ struct TransitionSample: SampleContent, ExampleContent {
 
             Text("Remove takes the top note away. It goes where its transition "
                 + "says while the notes under it close over its place; where a "
-                + "platform keeps no leaving view, it is gone at once.")
+                + "platform keeps no leaving view, it is gone at once. Put back "
+                + "returns it: pressed before the note has gone, it comes back "
+                + "from where it is.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
