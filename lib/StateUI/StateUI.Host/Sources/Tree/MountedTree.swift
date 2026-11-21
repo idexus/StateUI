@@ -57,6 +57,11 @@
     /// Places the element's children again.
     func arrangeChildren()
 
+    /// Draws the element's children again in the order its layout draws them, at once - a child a shared entry
+    /// carries in front of the others, with nothing placed again.
+    /// Design: docs/design/host/layout.md#drawing-order
+    func orderChildren()
+
     /// The element's size may change outside a patch - a child faded out and its layout closes over it: this
     /// layout and every one around it forget what they measured and lay out again.
     func invalidateMeasurements()

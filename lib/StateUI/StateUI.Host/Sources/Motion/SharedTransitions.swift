@@ -80,8 +80,10 @@
     /// wearing its key was drawn, in its window's coordinates, with where `element` is placed there - and that
     /// view, should it still be leaving. Nil where the patch dropped none wearing the key; nil too, and said,
     /// where it dropped or made more than one, they stood in other windows or pages, or where `element` stands
-    /// is not known yet.
-    func source(for element: MountedElement, in tree: MountedTree) -> (from: Rect, to: Rect, leaving: MountedElement?)? {
+    /// is not known yet. The scope the two are one in, by its mount.
+    func source(
+        for element: MountedElement, in tree: MountedTree
+    ) -> (from: Rect, to: Rect, leaving: MountedElement?, scope: UInt64)? {
         guard let key = Self.key(of: element),
               let mine = made[key]?.first(where: { $0.mount == element.mount })?.patch,
               sources[key]?.contains(where: { $0.patch == mine }) == true
@@ -97,8 +99,11 @@
             refused?(element)
             return nil
         }
-        return (source.drawn, destination, source.element)
+        return (source.drawn, destination, source.element, key.scope)
     }
+
+    /// Whether `element` was made with a patch whose notes are kept: what came with a view setting out.
+    func isNew(_ element: MountedElement) -> Bool { born.contains(element.mount) }
 
     /// Whether a view made under `element`, by the patch that made it, sets out from its partner, as far as is known
     /// before it is placed: `element` then comes as it stands, as its fade would hide where that view sets out.

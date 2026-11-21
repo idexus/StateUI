@@ -32,7 +32,6 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
     var onLaidOut: (@MainActor () -> Void)?
 
     private var items: [AppKitLayoutItem] = []
-    private var drawingOrder: [ObjectIdentifier] = []
 
     override var isFlipped: Bool { true }
 
@@ -44,14 +43,18 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
     /// subviews in that order: a view no item names stands where it stood.
     /// Design: docs/design/platforms/appkit/views.md#a-view-kept-as-it-leaves
     func setItems(_ items: [AppKitLayoutItem], presenting views: [NSView]) {
-        let standing = subviews.filter { !($0 is any AppKitBoxSurface) }
-        replaceSubviews(with: views)
-        if standing.count != views.count || !zip(standing, views).allSatisfy({ $0 === $1 }) { drawingOrder = [] }
-        guard !AppKitLayoutItem.sameArrangement(self.items, items) else { return }
+        presented = views
+        let same = AppKitLayoutItem.sameArrangement(self.items, items)
+        if !same { self.items = items }
+        orderChildren()
+        if !same { invalidateMeasurements() }
+    }
 
-        self.items = items
-        drawingOrder = []
-        invalidateMeasurements()
+    /// A ZStack draws its children as its run ranks them, else in the tree's order, a child a shared entry carries
+    /// last. Turned in place, a child taken out and put back leaves the window, and a gesture under way on it is
+    /// cancelled: the order is stood again only where it moved. Design: docs/design/platforms/appkit/views.md#a-child-turned-in-place
+    override func orderChildren() {
+        standInDrawingOrder(of: items, placedBy: placement?.placements ?? [])
     }
 
     override var intrinsicContentSize: NSSize {
@@ -90,19 +93,7 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
     private func apply(_ run: HostPlacementRun) {
         let placements = run.placements
         let count = min(items.count, placements.count)
-        let ordered = ZStackArithmetic.drawingOrder(of: items.count, placedBy: placements)
-        let identities = ordered.map { ObjectIdentifier(items[$0].view) }
-
-        // Turned in place: a child taken out and put back leaves the window, and a gesture under way on it is
-        // cancelled. Design: docs/design/platforms/appkit/views.md#a-child-turned-in-place
-        if identities != drawingOrder {
-            // A view kept as it leaves is no item's: it stays, over the views the run orders.
-            let leaving = subviews.filter { view in
-                !(view is any AppKitBoxSurface) && !items.contains { $0.view === view }
-            }
-            subviews = subviews.filter { $0 is any AppKitBoxSurface } + ordered.map { items[$0].view } + leaving
-            drawingOrder = identities
-        }
+        orderChildren()
 
         for index in 0..<count {
             let placement = placements[index]

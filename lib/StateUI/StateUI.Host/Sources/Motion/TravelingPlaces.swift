@@ -73,4 +73,9 @@
             view, mount: mount, at: place, stated: stated, words: values.words, natural: natural,
             enter: enter, in: arrangement, room: room)
     }
+
+    /// The children of `mounts` back to front as the layout draws them, run by `placements` (`DrawingOrder`).
+    public func drawingOrder(of mounts: [UInt64], placedBy placements: [HostPlacement]) -> [Int] {
+        DrawingOrder.of(mounts.count, placedBy: placements) { layoutMotion?.drawsInFront(mounts[$0]) == true }
+    }
 }

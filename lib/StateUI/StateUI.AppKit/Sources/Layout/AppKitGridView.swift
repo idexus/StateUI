@@ -38,11 +38,16 @@ final class AppKitGridView: AppKitTravelingLayout, AppKitWidthConstrainedMeasuri
     /// subviews in that order: a view no item names stands where it stood.
     /// Design: docs/design/platforms/appkit/views.md#a-view-kept-as-it-leaves
     func setItems(_ items: [AppKitLayoutItem], presenting views: [NSView]) {
-        replaceSubviews(with: views)
-        guard !AppKitLayoutItem.sameArrangement(self.items, items) else { return }
+        presented = views
+        let same = AppKitLayoutItem.sameArrangement(self.items, items)
+        if !same { self.items = items }
+        orderChildren()
+        if !same { invalidateMeasurements() }
+    }
 
-        self.items = items
-        invalidateMeasurements()
+    /// A grid draws its children in the tree's order - its `zIndex` order - a child a shared entry carries last.
+    override func orderChildren() {
+        standInDrawingOrder(of: items, placedBy: [])
     }
 
     /// Applies a placed layout's shade to its guaranteed second child.

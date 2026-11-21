@@ -472,6 +472,29 @@ way to the scope - the same rule that view's own entry asks first
 (`partner(of:key:patch:)`). A view refused all the same - its place found
 empty - leaves its holder unfaded, never faded over a view setting out.
 
+## Drawn in front
+
+A view setting out from its partner passes over what stands around it, so
+it is drawn in front of it until it lands: in front of its siblings in each
+layout holding it, up to its scope (`MountedElement.drawInFront`). In a
+layout that does not layer its children - a stack - in front of them all;
+in one that does - a grid, a ZStack, a motion layout - in front of those
+that stood before it, while what came with it keeps the layers its author
+gave them, so an app's surface stays under its own words. As the entry's
+last number lands, or the view leaves first, each layout draws its children
+in its own order again.
+
+The host layer keeps who is in front (`LayoutMotion.drawsInFront`) and tells
+each layout to draw its children again (`NativeElement.orderChildren`); a
+host draws them in the order `DrawingOrder` gives
+([drawing order](layout.md#drawing-order)), by its toolkit's own way of
+ordering what it draws, with nothing placed again.
+
+The trap is a holder made with the view. The rule that keeps an app's words
+over its surface would, by "what stood before", keep a row of thumbnails
+made with the one coming back over it; a stack is no layering, so there the
+view is in front of every sibling.
+
 ## Showing and hiding
 
 An element's showing moves by one rule on every host (`MountedElement`'s

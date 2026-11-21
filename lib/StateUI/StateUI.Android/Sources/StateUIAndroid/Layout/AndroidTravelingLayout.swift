@@ -22,4 +22,25 @@ class AndroidTravelingLayout: AndroidLayoutView {
             item.view, mount: item.mount, at: place, values: item.values, natural: { item.size(offered: nil) },
             enter: item.enter)
     }
+
+    @discardableResult
+    override func setItems(_ items: [AndroidLayoutItem]) -> Bool {
+        defer { orderChildren() }
+        return super.setItems(items)
+    }
+
+    /// Draws the children again as the layout draws them: in the tree's order, a child a shared entry carries last.
+    func orderChildren() {
+        holdInDrawingOrder(placedBy: [])
+    }
+
+    /// Draws the children, and hands them touches, back to front as the layout draws them - a run's ranks where
+    /// `placements` say them, a child a shared entry carries last - with nothing moved and nothing laid out again;
+    /// the views kept as they leave stand after the items', and are drawn over them.
+    /// Design: docs/design/host/layout.md#drawing-order
+    func holdInDrawingOrder(placedBy placements: [HostPlacement]) {
+        let ordered = places.drawingOrder(of: items.map(\.mount), placedBy: placements)
+        setDrawingOrder(
+            ordered == Array(items.indices) ? nil : ordered + Array(items.count..<(items.count + leaving.count)))
+    }
 }

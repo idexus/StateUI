@@ -14,6 +14,10 @@ extension AndroidElement {
         (view as? AndroidTextualView)?.direction = element.layoutDirection
     }
 
+    func orderChildren() {
+        (view as? AndroidTravelingLayout)?.orderChildren()
+    }
+
     /// Hands a layout its children's items, in order, and a label the runs of its spans.
     func arrangeChildren() {
         if let items = view as? AndroidItemsView { return items.childrenChanged() }

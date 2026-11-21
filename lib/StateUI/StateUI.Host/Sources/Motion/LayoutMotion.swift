@@ -79,7 +79,20 @@ extension PlacedView {
     private var seats: [UInt64: Seat] = [:]
 
     /// How many views have a seat.
-    var entries: Int { seats.count }
+    var entries: Int { seats.count + inFront.count }
+
+    /// The children a shared entry draws in front of their siblings, by mount, each with how many entries do.
+    private var inFront: [UInt64: Int] = [:]
+
+    /// Whether a shared entry draws the child `mount` in front of its siblings.
+    public func drawsInFront(_ mount: UInt64) -> Bool { inFront[mount] != nil }
+
+    /// A shared entry draws the child `mount` in front, or no longer does.
+    func raise(_ mount: UInt64) { inFront[mount, default: 0] += 1 }
+    func lower(_ mount: UInt64) {
+        guard let count = inFront[mount] else { return }
+        inFront[mount] = count > 1 ? count - 1 : nil
+    }
 
     /// The application's motion, which a layout that says nothing of its own animates under.
     public var applicationMotion: Motion = .none

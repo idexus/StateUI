@@ -15,11 +15,12 @@ final class PlacingRunTests: XCTestCase {
     }
 
     /// Children are drawn back to front by their z-index, the earlier first among equals, those the run places
-    /// none of after them.
+    /// none of after them - and last, in that order, those a shared entry draws in front.
     func testChildrenAreDrawnByTheirZIndexThenInTheirOrder() {
-        let order = ZStackArithmetic.drawingOrder(of: 5, placedBy: [placed(z: 2), placed(z: 0), placed(z: 2)])
-        XCTAssertEqual(order, [1, 0, 2, 3, 4])
-        XCTAssertEqual(ZStackArithmetic.drawingOrder(of: 2, placedBy: []), [0, 1])
+        let placements = [placed(z: 2), placed(z: 0), placed(z: 2)]
+        XCTAssertEqual(DrawingOrder.of(5, placedBy: placements, inFront: { _ in false }), [1, 0, 2, 3, 4])
+        XCTAssertEqual(DrawingOrder.of(2, placedBy: [], inFront: { _ in false }), [0, 1])
+        XCTAssertEqual(DrawingOrder.of(5, placedBy: placements, inFront: { [1, 3].contains($0) }), [0, 2, 4, 1, 3])
     }
 
     /// A placed child has no size below nothing, and its opacity stands between 0 and 1.

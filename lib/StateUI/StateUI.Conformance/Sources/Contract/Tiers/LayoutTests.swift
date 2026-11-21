@@ -17,7 +17,7 @@
                 Aspects.holds(LayoutContract.clipsContent, on: element, false, then: true),
                 Aspects.holds(LayoutContract.letsInputThrough, on: element, false, then: true),
                 bodied(element), unbodied(element), scoped(element),
-            ]
+            ] + (SettingOut.kinds.contains(element) ? [drawnInFront(element)] : [])
         }
     }
 
@@ -273,6 +273,45 @@ extension LayoutTests {
         }
     }
 
+    /// A layout that is a scope draws a view setting out in it from its partner in front of the views beside it
+    /// until it lands, and in its own order again then.
+    @MainActor
+    static func drawnInFront(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aViewSettingOutInItIsDrawnInFrontUntilItLands", proves: [
+            Covered(LayoutContract.transitionScope, on: element),
+        ], needs: [
+            Covered(ViewContract.sharedTransition, on: RectangleContract.self),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+        ]) { s in
+            let clock = TestClock()
+            let detailed = State(wrappedValue: false)
+            s.start(clock: clock) {
+                VStack {
+                    Button("Toggle").onClicked { detailed.wrappedValue.toggle() }.id("toggle")
+                    SettingOut.layout(element, detailed: detailed.wrappedValue)
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.frames(of: clock, until: 200)
+
+            // Read as the patch is laid out, no frame passing first: a toolkit lays a patch out within its frame.
+            let layout = try s.element("layout")
+            let traveling = { () -> [ElementID] in
+                let written = layout.children.map(\.id)
+                return written.count == 3 ? [written[0], written[2], written[1]] : []
+            }
+            try s.perform(.activate, on: s.element("toggle"))
+            try s.settle { try s.drawingOrder(of: layout) == traveling() }
+            s.expect(try s.drawingOrder(of: layout), traveling(), "the one setting out, in front")
+            let written = layout.children.map(\.id)
+
+            s.frames(of: clock, until: 1_400)
+            try s.settle { try s.drawingOrder(of: layout) == written }
+            s.expect(try s.drawingOrder(of: layout), written, "landed: in its layout's order")
+        }
+    }
+
     /// A layout whose bodies are none stands a child at its new place at once, though the layout's own motion
     /// would take it there in time.
     @MainActor
@@ -416,5 +455,55 @@ private struct Swapped: View {
         }
         .horizontalAlignment(.start)
         .verticalAlignment(.start)
+    }
+}
+
+/// Three views side by side in a layout of each kind that holds several, the scope: the middle one small, or large
+/// once `detailed`, each wearing one key.
+@MainActor
+enum SettingOut {
+    /// The layouts whose children are its own views, side by side or over each other.
+    static let kinds: Set<String> = ["VStack", "HStack", "Grid", "ZStack", "MotionLayout"]
+
+    static func layout(_ element: String, detailed: Bool) -> AnyView {
+        let dressing = Dressing([Write(LayoutContract.transitionScope, 1)], id: "layout")
+        let layout: any View = switch element {
+        case "HStack": dressing.dress(HStack { box("before"); picture(detailed); box("after") })
+        case "Grid": dressing.dress(Grid { box("before"); picture(detailed); box("after") })
+        case "ZStack": dressing.dress(ZStack { box("before"); picture(detailed); box("after") })
+        case "MotionLayout":
+            dressing.dress(MotionLayout([0, 1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { index in
+                if index == 1 { picture(detailed) } else { box("box\(index)") }
+            } placements: { _, _ in
+                (0..<3).map { Placement(Rect(x: Double($0) * 30, y: 0, width: 160, height: 80)) }
+            }
+            .width(240).height(80))
+        default: dressing.dress(VStack { box("before"); picture(detailed); box("after") })
+        }
+        return AnyView(layout)
+    }
+
+    private static func box(_ id: String) -> some View {
+        Rectangle().fill(.blue).width(40).height(40).id(id)
+    }
+
+    @ViewBuilder
+    private static func picture(_ detailed: Bool) -> some View {
+        if detailed {
+            Rectangle()
+                .fill(.red)
+                .width(160)
+                .height(80)
+                .id("large")
+                .sharedTransition("picture")
+                .motion(.eased(.milliseconds(600), curve: .linear))
+        } else {
+            Rectangle()
+                .fill(.red)
+                .width(40)
+                .height(40)
+                .id("small")
+                .sharedTransition("picture")
+        }
     }
 }

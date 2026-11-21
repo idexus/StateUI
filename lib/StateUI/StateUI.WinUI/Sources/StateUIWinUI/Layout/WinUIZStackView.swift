@@ -12,7 +12,7 @@ final class WinUIZStackView: WinUITravelingLayout {
     var placement: HostPlacementRun? {
         didSet {
             guard placement != oldValue else { return }
-            holdInDrawingOrder()
+            orderChildren()
 
             // A run moving on asks only for an arrangement in the room it last stood its children in: nothing around
             // is measured.
@@ -44,11 +44,6 @@ final class WinUIZStackView: WinUITravelingLayout {
     /// Design: docs/design/host/layout.md#a-view-its-toolkit-sized-anew
     var onLaidOut: (@MainActor () -> Void)?
 
-    @discardableResult
-    override func setItems(_ items: [WinUILayoutItem]) -> Bool {
-        defer { holdInDrawingOrder() }
-        return super.setItems(items)
-    }
 
     override func contentSize(width: Double?) -> LayoutSize {
         ZStackArithmetic.size(of: items, padding: padding, width: width, motionLayout: motionLayout, program: programSize)
@@ -70,13 +65,10 @@ final class WinUIZStackView: WinUITravelingLayout {
         }
     }
 
-    /// Draws the children back to front as the run ranks them, or in their order without one - the order a click
-    /// reaches them in too, with nothing moved and nothing laid out again.
-    private func holdInDrawingOrder() {
-        let ordered = ZStackArithmetic.drawingOrder(of: items.count, placedBy: placement?.placements ?? [])
-        for (rank, index) in ordered.enumerated() {
-            items[index].view.setZIndex(ordered == Array(items.indices) ? 0 : Int32(rank))
-        }
+    /// A ZStack draws its children as its run ranks them, else in the tree's order, a child a shared entry
+    /// carries last.
+    override func orderChildren() {
+        holdInDrawingOrder(placedBy: placement?.placements ?? [])
     }
 
     /// Stands each child where the run says, drawn as it says: at once inside a pass, and between passes in the

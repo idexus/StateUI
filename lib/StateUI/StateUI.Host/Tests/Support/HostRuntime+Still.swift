@@ -66,6 +66,9 @@ final class NoView: NativeElement {
     var measuredAgain = 0
     var travels = 0
     func arrangeChildren() { arranged += 1 }
+    /// How many times the element's children were drawn again in their layout's order.
+    var ordered = 0
+    func orderChildren() { ordered += 1 }
     func invalidateMeasurements() { measuredAgain += 1 }
     func configureLayoutMotion() { travels += 1 }
 }

@@ -44,11 +44,8 @@ final class GTKZStackView: GTKTravelingLayout {
     /// Design: docs/design/host/layout.md#a-view-its-toolkit-sized-anew
     var onLaidOut: (@MainActor () -> Void)?
 
-    /// The children back to front as the run ranks them, or in their order without one: GTK draws a panel's
-    /// children in that order and a click reaches the last first.
-    override func heldViews() -> [GTKView] {
-        ZStackArithmetic.drawingOrder(of: items.count, placedBy: placement?.placements ?? []).map { items[$0].view }
-    }
+    /// A ZStack's children are ranked by its run, where it runs one.
+    override var rankedBy: [HostPlacement] { placement?.placements ?? [] }
 
     override func contentSize(width: Double?) -> LayoutSize {
         ZStackArithmetic.size(of: items, padding: padding, width: width, motionLayout: motionLayout, program: programSize)

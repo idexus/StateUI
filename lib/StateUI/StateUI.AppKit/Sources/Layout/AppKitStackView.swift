@@ -46,11 +46,16 @@ final class AppKitStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasur
     /// Design: docs/design/platforms/appkit/views.md#a-view-kept-as-it-leaves
     func setItems(_ items: [AppKitLayoutItem], presenting views: [NSView]) {
         arrangementCountForTesting += 1
-        replaceSubviews(with: views)
-        guard !AppKitLayoutItem.sameArrangement(self.items, items) else { return }
+        presented = views
+        let same = AppKitLayoutItem.sameArrangement(self.items, items)
+        if !same { self.items = items }
+        orderChildren()
+        if !same { invalidateMeasurements() }
+    }
 
-        self.items = items
-        invalidateMeasurements()
+    /// A stack draws its children in the tree's order, a child a shared entry carries last.
+    override func orderChildren() {
+        standInDrawingOrder(of: items, placedBy: [])
     }
 
     override var intrinsicContentSize: NSSize {

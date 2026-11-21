@@ -8,13 +8,14 @@
 /// change of visibility crossed - each by the host layer's rule.
 /// Design: docs/design/host/motion.md#layout-motion
 extension WebElement {
-    /// Hands a traveling layout what its children travel under and who reads their places, and tells it a patch
-    /// reached it.
+    /// Hands a layout the runtime's layout motion - which child a shared entry draws in front - and a traveling one
+    /// what its children travel under and who reads their places, and tells it a patch reached it.
     func configureLayoutMotion() {
-        guard let layout = view as? WebLayoutView, layout.travels, let host else { return }
+        guard let layout = view as? WebLayoutView, let host else { return }
+        layout.places.layoutMotion = host.runtime.layoutMotion
+        guard layout.travels else { return }
         layout.placing = host.placements
         host.placements.follow(layout)
-        layout.places.layoutMotion = host.runtime.layoutMotion
         layout.places.motion = element.motion
         layout.places.patchArrived()
     }

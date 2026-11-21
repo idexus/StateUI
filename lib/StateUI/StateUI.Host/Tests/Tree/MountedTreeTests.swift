@@ -1252,6 +1252,7 @@ private final class RecordingNative: NativeElement {
         log.presented[name, default: []].formUnion(changed)
     }
     func arrangeChildren() { log.arranged.append(name) }
+    func orderChildren() {}
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
     func directionChanged() { log.turned.append(name) }
@@ -1274,6 +1275,7 @@ private final class ReadingNative: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) { _ = element.resolvedValue(.value) }
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func orderChildren() {}
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
     func directionChanged() {}

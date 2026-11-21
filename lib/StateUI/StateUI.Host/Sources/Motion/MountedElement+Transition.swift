@@ -45,10 +45,11 @@ extension MountedElement {
     /// The element enters from the rectangle `source` onto the place `destination` its layout gave it, both in
     /// one window's coordinates: moved by the difference of their middles and scaled by the ratio of their
     /// sizes, each way apart, then brought onto what it declares under its own motion, else the application's.
-    /// A number a state owns is left to it; with nothing to move by, it stands as declared.
+    /// A number a state owns is left to it; with nothing to move by, it stands as declared. How many numbers set
+    /// out, each telling `entryLanded` as it ends.
     /// Design: docs/design/host/motion.md#a-shared-transition
-    func enter(from source: Rect, to destination: Rect, on view: some FadingView) {
-        guard let tree, let law = tree.layoutMotion.law(of: motion) else { return }
+    func enter(from source: Rect, to destination: Rect, on view: some FadingView) -> Int {
+        guard let tree, let law = tree.layoutMotion.law(of: motion) else { return 0 }
 
         let across = source.x + source.width / 2 - destination.x - destination.width / 2
         let down = source.y + source.height / 2 - destination.y - destination.height / 2
@@ -62,10 +63,12 @@ extension MountedElement {
             let standing = scales ? declared * part : declared + part
             guard standing != declared else { continue }
             if tree.receiveProperty(
-                mount: mount, property: property, standing: .number(standing), target: .number(declared), motion: law
+                mount: mount, property: property, standing: .number(standing), target: .number(declared), motion: law,
+                landed: { [weak self] in self?.entryLanded() }
             ) { started.insert(property) }
         }
         presentsFromItsFirstFrame(started, on: view)
+        return started.count
     }
 
     /// The element comes back as the view of its id was leaving: each number goes on from where that one was

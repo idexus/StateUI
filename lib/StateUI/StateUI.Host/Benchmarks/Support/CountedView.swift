@@ -45,6 +45,8 @@ final class CountedView: NativeElement, FrameReporter {
         if !changed.isDisjoint(with: element.ownPlacementRun) { place() }
     }
 
+    func orderChildren() {}
+
     func arrangeChildren() {
         bench.calls.arranged += 1
         cells?.childrenChanged()
@@ -69,7 +71,7 @@ final class CountedView: NativeElement, FrameReporter {
     /// The run's places, put as a host's layout puts them: in drawing order, each child at its place.
     private func place() {
         guard let run = element.placement else { return }
-        for index in ZStackArithmetic.drawingOrder(of: run.placements.count, placedBy: run.placements) {
+        for index in DrawingOrder.of(run.placements.count, placedBy: run.placements, inFront: { _ in false }) {
             bench.placedAt = run.place(of: index, in: bench.room)
             bench.calls.placed += 1
         }

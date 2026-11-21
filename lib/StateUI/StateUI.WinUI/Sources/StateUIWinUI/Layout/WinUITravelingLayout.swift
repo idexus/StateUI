@@ -21,4 +21,27 @@ class WinUITravelingLayout: WinUILayoutView {
             item.view, mount: item.mount, at: place, values: item.values, natural: { item.size(offered: nil) },
             enter: item.enter)
     }
+
+    @discardableResult
+    override func setItems(_ items: [WinUILayoutItem]) -> Bool {
+        defer { orderChildren() }
+        return super.setItems(items)
+    }
+
+    /// Draws the children again as the layout draws them: in the tree's order, a child a shared entry carries last.
+    func orderChildren() {
+        holdInDrawingOrder(placedBy: [])
+    }
+
+    /// Draws the children back to front as the layout draws them - a run's ranks where `placements` say them, a
+    /// child a shared entry carries last - by each one's z-index: the order a click reaches them in too, with
+    /// nothing moved and nothing laid out again.
+    /// Design: docs/design/host/layout.md#drawing-order
+    func holdInDrawingOrder(placedBy placements: [HostPlacement]) {
+        let ordered = places.drawingOrder(of: items.map(\.mount), placedBy: placements)
+        let inOrder = ordered == Array(items.indices)
+        for (rank, index) in ordered.enumerated() {
+            items[index].view.setZIndex(inOrder ? 0 : Int32(rank))
+        }
+    }
 }

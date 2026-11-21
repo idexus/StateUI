@@ -542,6 +542,14 @@ once; a runtime hands `children` to its toolkit in that order and needs no
 `zIndex` of its own. A stack's children never overlap and keep the order
 written.
 
+A host draws a layout's children in the order `DrawingOrder` gives, back to
+front: a placing run's ranks by their z-index where the layout runs one, the
+tree's order otherwise, and last any child a shared entry carries in front
+([drawn in front](motion.md#drawn-in-front)). Told to draw them again
+(`NativeElement.orderChildren`), it does so at once, by its toolkit's own
+way of ordering what it draws - subviews brought to the front, a drawing
+order, a z-index, the order a panel draws in - with nothing placed again.
+
 ## One child
 
 A page or a pane holds one child in its room, within the child's margin; the

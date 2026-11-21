@@ -197,6 +197,10 @@
     var exitPlace: Rect?
     var returned: Returned?
 
+    /// What its shared entry draws in front until it lands, and how many of the entry's numbers are on their way.
+    var raisedByEntry: [RaisedChild] = []
+    var entryRunsLeft = 0
+
     /// The id a view of the element's authored identity is known by as it comes back: the one its render said it
     /// returns as, else its own - a name is the same in every life.
     let returnID: ElementID
@@ -768,7 +772,7 @@
     private var zIndex: Double { number(.zIndex) ?? 0 }
 
     /// The layouts whose children can overlap, drawn in `zIndex` order.
-    private static let layered: Set<NodeType> = [.grid, .zStack, .motionLayout]
+    static let layered: Set<NodeType> = [.grid, .zStack, .motionLayout]
 
     /// Every one of `previous` that is no longer a child leaves: kept as it goes where it exits by a transition
     /// and this element's view keeps one, else gone at once. `presented` is how the views stood before.
@@ -847,6 +851,7 @@
             tree.deactivated(self, presenting: presentedStates, kept: kept)
             if let program = layoutProgram { tree.layoutLeft(program.slot) }
         }
+        lowerEntry()
         layoutProgram = nil
         interactionProgram = nil
         flight = nil

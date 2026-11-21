@@ -12,6 +12,10 @@ extension GTKElement {
         view?.setDirection(element.layoutDirection == .rightToLeft ? GTK_TEXT_DIR_RTL : GTK_TEXT_DIR_LTR)
     }
 
+    func orderChildren() {
+        (view as? GTKTravelingLayout)?.orderChildren()
+    }
+
     /// Hands a layout its children's items, in order - a page's slots furnish its header bar and stand in none of
     /// its room - and a label the runs of its spans.
     func arrangeChildren() {

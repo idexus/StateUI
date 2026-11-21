@@ -12,7 +12,7 @@ final class AndroidZStackView: AndroidTravelingLayout {
     var placement: HostPlacementRun? {
         didSet {
             guard placement != oldValue else { return }
-            holdInDrawingOrder()
+            orderChildren()
 
             // A run moving on stands its children at once in the room it last stood them in: nothing around is laid out.
             if let run = placement, !run.placements.isEmpty, oldValue?.placements.isEmpty == false,
@@ -43,12 +43,6 @@ final class AndroidZStackView: AndroidTravelingLayout {
     /// Design: docs/design/host/layout.md#a-view-its-toolkit-sized-anew
     var onLaidOut: (@MainActor () -> Void)?
 
-    @discardableResult
-    override func setItems(_ items: [AndroidLayoutItem]) -> Bool {
-        defer { holdInDrawingOrder() }
-        return super.setItems(items)
-    }
-
     override func contentSize(width: Double?) -> LayoutSize {
         ZStackArithmetic.size(of: items, padding: padding, width: width, motionLayout: motionLayout, program: programSize)
     }
@@ -69,13 +63,10 @@ final class AndroidZStackView: AndroidTravelingLayout {
         }
     }
 
-    /// Draws the children back to front as the run ranks them, or in their order without one: the order a touch
-    /// reaches them in too, with nothing moved and nothing laid out again.
-    private func holdInDrawingOrder() {
-        let ordered = ZStackArithmetic.drawingOrder(of: items.count, placedBy: placement?.placements ?? [])
-        // The views kept as they leave stand after the items', and are drawn over them.
-        setDrawingOrder(
-            ordered == Array(items.indices) ? nil : ordered + Array(items.count..<(items.count + leaving.count)))
+    /// A ZStack draws its children as its run ranks them, else in the tree's order, a child a shared entry
+    /// carries last.
+    override func orderChildren() {
+        holdInDrawingOrder(placedBy: placement?.placements ?? [])
     }
 
     /// Stands each child where the run says, drawn as it says.

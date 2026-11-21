@@ -157,8 +157,8 @@ final class SharedTransitionsTests: XCTestCase {
         bench.stands("thumbnail", at: Point(x: 50, y: 60), size: LayoutSize(width: 40, height: 40))
     }
 
-    private func paged(_ bench: Bench, details: [HostPatch] = [Bench.keyed("detail", 5)]) {
-        bench.show([Bench.holder("page", details)])
+    private func paged(_ bench: Bench, details: [HostPatch] = [Bench.keyed("detail", 5)], holder: HostPatch? = nil) {
+        bench.show([holder ?? Bench.holder("page", details)])
         bench.place("page", at: Rect(x: 0, y: 100, width: 300, height: 200))
         bench.place("detail", at: Rect(x: 20, y: 30, width: 200, height: 100))
     }
@@ -201,6 +201,46 @@ final class SharedTransitionsTests: XCTestCase {
         listed(alone)
         paged(alone, details: [Bench.keyed("detail", 6)])
         XCTAssertEqual(alone.drawn(.opacity, of: "page") ?? .nan, 0, accuracy: 0.001, "no partner in it: it fades in")
+    }
+
+    /// A VIEW SETTING OUT FROM ITS PARTNER IS DRAWN IN FRONT OF WHAT IT PASSES OVER UNTIL IT LANDS: in front of its
+    /// siblings in its stack, and its stack in front in each layout up to the scope; landed, each stands back in
+    /// its layout's order - each layout drawing its children again both times.
+    func testAViewSettingOutIsDrawnInFrontUntilItLands() throws {
+        let bench = Bench()
+        listed(bench)
+        paged(bench)
+        let detail = try XCTUnwrap(bench.element("detail"))
+        let page = try XCTUnwrap(bench.element("page"))
+        let inFront = { [bench.runtime.layoutMotion.drawsInFront(detail.mount), bench.runtime.layoutMotion.drawsInFront(page.mount)] }
+        let ordered = { [(page.native as? NoView)?.ordered, (bench.root.native as? NoView)?.ordered] }
+        XCTAssertEqual(inFront(), [true, true], "the detail in its page, the page in the scope")
+        XCTAssertEqual(ordered(), [1, 1])
+
+        bench.frame(at: 250)
+        XCTAssertEqual(inFront(), [false, false], "landed: back in its layouts' order")
+        XCTAssertEqual(ordered(), [2, 2])
+    }
+
+    /// WHAT CAME WITH IT KEEPS THE LAYERS ITS AUTHOR GAVE IT: a view setting out in a ZStack made with it stays
+    /// where it is layered there - its words over it stay over it - while the ZStack is drawn in front in the
+    /// scope; and a view taken away before it lands leaves nothing in front.
+    func testWhatCameWithItKeepsItsLayers() throws {
+        let bench = Bench()
+        listed(bench)
+        var layers = HostPatch(id: .manual("page"), type: .zStack)
+        var words = HostPatch(id: .manual("words"), type: .text)
+        words.properties = [.text: .string("words")]
+        layers.children = .arranged([Bench.keyed("detail", 5), words])
+        paged(bench, holder: layers)
+        let detail = try XCTUnwrap(bench.element("detail"))
+        let page = try XCTUnwrap(bench.element("page"))
+        let motion = bench.runtime.layoutMotion
+        XCTAssertFalse(motion.drawsInFront(detail.mount), "layered with what came with it, as written")
+        XCTAssertTrue(motion.drawsInFront(page.mount), "in front of what stood in the scope")
+
+        bench.show([])
+        XCTAssertFalse(motion.drawsInFront(page.mount), "taken away: nothing stays in front")
     }
 
     /// A KEY THAT MEETS NO SINGLE PARTNER IS EACH VIEW'S OWN: two views dropped under it, or the made one standing

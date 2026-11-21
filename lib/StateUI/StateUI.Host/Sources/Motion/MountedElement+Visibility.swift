@@ -57,7 +57,7 @@ extension MountedElement {
         // One view left wearing the key this one wears: it sets out from where that one was drawn.
         if !isRemade, let tree, let shared = tree.shared.source(for: self, in: tree) {
             shared.leaving?.endExit(.interrupted, arranging: true)
-            return enter(from: shared.from, to: shared.to, on: view)
+            return drawInFront(under: shared.scope, runs: enter(from: shared.from, to: shared.to, on: view))
         }
         guard let transition = transition?.host else {
             if case .joining(let law) = entry, law.animates, tree?.shared.holdsAPartner(self) != true {

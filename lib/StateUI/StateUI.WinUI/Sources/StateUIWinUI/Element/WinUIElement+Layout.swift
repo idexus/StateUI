@@ -11,6 +11,10 @@ extension WinUIElement {
         view?.setDirection(element.layoutDirection)
     }
 
+    func orderChildren() {
+        (view as? WinUITravelingLayout)?.orderChildren()
+    }
+
     /// Hands a layout its children's items, in order - a page's slots furnish it and stand in none of its room - and
     /// a label the runs of its spans.
     func arrangeChildren() {

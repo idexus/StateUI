@@ -429,6 +429,7 @@ private final class HeldNative: NativeElement {
     }
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func orderChildren() {}
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
     func deactivate() {}

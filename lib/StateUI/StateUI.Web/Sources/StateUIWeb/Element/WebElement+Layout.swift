@@ -17,6 +17,10 @@ extension WebElement {
         view.style("contain-intrinsic-size", said.map { "\(WebCSS.signedPixels($0.width)) \(WebCSS.signedPixels($0.height))" })
     }
 
+    func orderChildren() {
+        (view as? WebLayoutView)?.orderChildren()
+    }
+
     /// Hands a text its runs, a collection its changed entries and a page structure its pages; else a layout its
     /// children's views in order, each with what its place reads.
     func arrangeChildren() {

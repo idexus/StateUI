@@ -436,7 +436,11 @@ scope is tied to nothing. Both take any `Hashable`.
 The two views stay two views - the picture's state is its own, and nothing
 of the thumbnail's is carried over. The entry moves under the entering
 view's own `.motion(_:)`, else the application's. Going back during the
-movement sets out from where the picture is drawn at that moment.
+movement sets out from where the picture is drawn at that moment. On its
+way the entering view is drawn in front of what it passes over - every
+sibling in a stack, and what stood before it in a layout that layers its
+children - until it lands; what came in with it keeps its layers, so a
+picture's own caption stays over it.
 
 One view leaving and one entering under a key, in one window and on one
 page, are tied. Anything else - two views of one key, a partner in another

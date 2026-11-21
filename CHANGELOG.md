@@ -231,7 +231,13 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   The two stay two views. Where no single partner is found - none, two of one key, another window or page, a
   view entering with the `MotionLayout` that places it before its arithmetic said where - each goes by its own
   `.transition(_:)`; a view swapped inside an item that stands is tied. Both take any `Hashable`, and a host compares no value: the core
-  hands it numbers. For a host: nothing to write - the entry is drawn by the move and the scales it presents.
+  hands it numbers. On its way the entering view is drawn in front of what it passes over - every sibling in a
+  stack, what stood before it in a layout that layers its children - until it lands.
+- **For a host: a layout draws its children in one order.** `DrawingOrder.of(_:placedBy:inFront:)`, and
+  `TravelingPlaces.drawingOrder(of:placedBy:)` over the children's mounts, replace
+  `ZStackArithmetic.drawingOrder(of:placedBy:)`: a run's ranks, else the tree's order, and last a child a shared
+  entry carries in front (`LayoutMotion.drawsInFront`). `NativeElement` gains `orderChildren()` - draw the
+  children again in that order, at once, with nothing placed again.
 
 - **A change says how what it started ended.** `Aim.presentationChange { ... }`, on the aim of any view, runs
   the writes at once and answers a `PresentationChange`: `applied()` waits until the host took them, and

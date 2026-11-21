@@ -322,6 +322,7 @@ private final class WordsView: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {}
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func orderChildren() {}
     func invalidateMeasurements() { measuredAgain += 1 }
     func configureLayoutMotion() {}
     func deactivate() {}

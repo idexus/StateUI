@@ -15,6 +15,10 @@ extension UIKitElement {
         (view as? any UIKitLabel)?.directionTurned()
     }
 
+    func orderChildren() {
+        (view as? UIKitLayoutView)?.standChildren()
+    }
+
     func arrangeChildren() {
         if let items = view as? UIKitItemsView { return items.childrenChanged() }
         if let label = view as? any UIKitLabel { return label.setRuns(element.textRuns) }

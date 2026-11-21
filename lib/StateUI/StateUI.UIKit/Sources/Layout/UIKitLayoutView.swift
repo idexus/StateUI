@@ -88,7 +88,7 @@ class UIKitLayoutView: UIView, UIKitSteppable {
 
     /// Stands each child in the children's host in the tree's order - the backdrop beneath them in the layout - then
     /// in the order the layout draws them (`orderChildren`).
-    private func standChildren() {
+    func standChildren() {
         let host = childrenHost
         let first = host === self && box.backdropView != nil ? 1 : 0
         for (index, item) in items.enumerated()
@@ -106,8 +106,13 @@ class UIKitLayoutView: UIView, UIKitSteppable {
         standChildren()
     }
 
-    /// Orders the children back to front as the layout draws them; most draw them in the tree's order.
-    func orderChildren() {}
+    /// Orders the children back to front as the layout draws them: most in the tree's order, a child a shared entry
+    /// carries last. Design: docs/design/host/layout.md#drawing-order
+    func orderChildren() {
+        let ordered = places.drawingOrder(of: items.map(\.mount), placedBy: [])
+        guard ordered != Array(items.indices) else { return }
+        for index in ordered where index < items.count { childrenHost.bringSubviewToFront(items[index].view) }
+    }
 
     func forgetMeasurements() {
         measurements.invalidate()

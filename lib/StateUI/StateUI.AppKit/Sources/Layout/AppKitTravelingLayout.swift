@@ -22,6 +22,23 @@ class AppKitTravelingLayout: AppKitHitTestView, AppKitDirectedLayout {
     /// How the children travel to their places, by the host layer's rule.
     let places = TravelingPlaces()
 
+    /// The views it presents, in the tree's order - its items' and those kept as they leave - as they last came.
+    var presented: [NSView] = []
+
+    /// Draws the children again as the layout draws them; a layout of no order of its own keeps the tree's.
+    func orderChildren() {}
+
+    /// Stands the subviews as the layout draws them: the tree's order, a run's ranks where `placements` say them, a
+    /// child a shared entry carries last - a view kept as it leaves over them all where they move.
+    /// Design: docs/design/host/layout.md#drawing-order
+    func standInDrawingOrder(of items: [AppKitLayoutItem], placedBy placements: [HostPlacement]) {
+        let ordered = places.drawingOrder(of: items.map(\.mount), placedBy: placements)
+        guard !placements.isEmpty || ordered != Array(items.indices) else { return replaceSubviews(with: presented) }
+
+        let leaving = presented.filter { view in !items.contains { $0.view === view } }
+        replaceSubviews(with: ordered.map { items[$0].view } + leaving)
+    }
+
     override func layout() {
         super.layout()
         decoration.clip(self)

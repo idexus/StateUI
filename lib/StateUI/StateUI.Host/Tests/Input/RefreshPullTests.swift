@@ -139,6 +139,7 @@ private final class ChangedView: NativeElement {
     func presentFrame(_ changed: Set<Prop>) {}
     func deactivate() {}
     func arrangeChildren() {}
+    func orderChildren() {}
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
 }

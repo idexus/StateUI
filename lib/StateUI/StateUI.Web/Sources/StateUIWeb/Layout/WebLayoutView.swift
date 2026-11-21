@@ -204,23 +204,28 @@ class WebLayoutView: WebDOMView {
     private func placeAll() {
         if travels { placing?.arrange(self) }
         let run = arrangement == .layers ? placement?.placements ?? [] : []
-        // Children sharing room draw back to front - a grid's in their order, a ZStack's in its run's, the placed
-        // and the unplaced alike - each child's place in that order worked out once; else a child standing out of
-        // the page's flow, a shape, rises over the later ones.
-        var drawnAt = Array(children.indices)
-        if arrangement == .layers {
-            for (place, index) in ZStackArithmetic.drawingOrder(of: children.count, placedBy: run).enumerated() {
-                drawnAt[index] = place
-            }
-        }
         for (index, view) in children.enumerated() {
             if index < run.count, let placement {
                 placeByRun(view, placement, at: index)
             } else {
                 place(view, values(at: index))
             }
-            if arrangement == .layers || arrangement == .grid { view.style("z-index", String(drawnAt[index])) }
         }
+        orderChildren()
+    }
+
+    /// Writes each child's place back to front as the layout draws them, as its z-index: children sharing room - a
+    /// grid's in their order, a ZStack's in its run's - always, else a child standing out of the page's flow, a
+    /// shape, rises over the later ones; a stack's while a shared entry carries one of them in front.
+    /// Design: docs/design/host/layout.md#drawing-order
+    func orderChildren() {
+        let run = arrangement == .layers ? placement?.placements ?? [] : []
+        let mounts = children.indices.map { $0 < travelers.count ? travelers[$0].mount : 0 }
+        let ordered = places.drawingOrder(of: mounts, placedBy: run)
+        let writes = arrangement == .layers || arrangement == .grid || ordered != Array(children.indices)
+        var drawnAt = Array(children.indices)
+        for (place, index) in ordered.enumerated() { drawnAt[index] = place }
+        for (index, view) in children.enumerated() { view.style("z-index", writes ? String(drawnAt[index]) : nil) }
     }
 
     /// What the child at `index` states of its own place, read once since the children were set.

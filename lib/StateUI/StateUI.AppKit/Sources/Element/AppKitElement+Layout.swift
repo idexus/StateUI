@@ -22,6 +22,10 @@ extension AppKitElement {
         view?.invalidateMeasurements()
     }
 
+    func orderChildren() {
+        (view as? AppKitTravelingLayout)?.orderChildren()
+    }
+
     func arrangeChildren() {
         guard let view else { return }
         if let items = view as? AppKitItemsView { return items.childrenChanged() }

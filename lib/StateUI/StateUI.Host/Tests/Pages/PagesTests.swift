@@ -1317,6 +1317,7 @@ private final class TabsReading: NativeElement {
     func animates(_ property: Prop) -> Bool { false }
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func orderChildren() {}
     func invalidateMeasurements() {}
     func configureLayoutMotion() {}
     func deactivate() {}

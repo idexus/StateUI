@@ -21,4 +21,19 @@ class GTKTravelingLayout: GTKLayoutView {
             item.view, mount: item.mount, at: place, values: item.values, natural: { item.size(offered: nil) },
             enter: item.enter)
     }
+
+    /// The placements a run ranks the children by; none where the layout runs none.
+    var rankedBy: [HostPlacement] { [] }
+
+    /// The children back to front as the layout draws them - in the tree's order, a run's ranks where `rankedBy`
+    /// says them, a child a shared entry carries last: GTK draws a panel's children in that order and a click reaches
+    /// the last first. Design: docs/design/host/layout.md#drawing-order
+    override func heldViews() -> [GTKView] {
+        places.drawingOrder(of: items.map(\.mount), placedBy: rankedBy).map { items[$0].view }
+    }
+
+    /// Draws the children again as the layout draws them.
+    func orderChildren() {
+        holdChildren()
+    }
 }
