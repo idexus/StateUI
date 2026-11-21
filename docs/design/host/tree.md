@@ -207,6 +207,14 @@ them with it. Kept itself, they are its own exit's part: each stands as it
 is drawn, ends no exit of its own - its motion's end releases nothing - and
 is released with it.
 
+The trap is a layout a program places. Its program is let go with the
+rest of what ties it to the runtime, yet a host stands its children by the
+layout's run (`MountedElement.placement`) each time it presents the layout,
+the frames of the exit's own numbers included: with no run it would stand
+them as a stack does, every child across the whole room. So a kept layout
+keeps the places its program last showed, and its children stand and are
+drawn there until it is released.
+
 The budget is a window's (`KeptExits`): thirty-two views leaving at once,
 two thousand and forty-eight mounted elements under them, two seconds a
 view. Past it the oldest end as limited until it holds, a view past its

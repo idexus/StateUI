@@ -57,6 +57,30 @@ private struct SwappingDeckApplication: Application {
     var body: some Scene { WindowGroup { SwappingDeck() } }
 }
 
+/// Whether the deck below stands.
+@MainActor private let fadingDeckShown = State(wrappedValue: true)
+
+/// A deck of two cards a motion layout places, the second drawn at half its size, fading as it leaves.
+private struct FadingDeck: View {
+    var body: some View {
+        VStack {
+            if fadingDeckShown.wrappedValue {
+                MotionLayout([1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { card in
+                    Text("card \(card)")
+                } placements: { _, _ in
+                    [Placement(Rect(x: 40, y: 40, width: 40, height: 40)),
+                     Placement(Rect(x: 90, y: 40, width: 40, height: 40), transform: .scale(0.5))]
+                }
+                .transition(.symmetric(.opacity))
+            }
+        }
+    }
+}
+
+private struct FadingDeckApplication: Application {
+    var body: some Scene { WindowGroup { FadingDeck() } }
+}
+
 /// A shared transition on the host's side: one view dropped and one made in a patch under one key of one scope are
 /// one - the made one enters from where the dropped one was drawn - and anything else is each view's own.
 /// Design: docs/design/host/motion.md#a-shared-transition
@@ -509,10 +533,14 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(drawn(.translationX) ?? .nan, -60, accuracy: 0.001, "the card's middle, 70, against 130")
     }
 
-    /// A runtime with nothing native behind it, the application motion 200 ms, showing what is registered, and a
-    /// finder of its elements by their words or type.
-    private func joint() throws -> (runtime: HostRuntime, find: (String) -> MountedElement?) {
-        let runtime = HostRuntime(clock: WoundClock(), reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
+    /// A runtime with nothing native behind it, every view keeping one that leaves where `keeps`, the application
+    /// motion 200 ms, showing what is registered, and a finder of its elements by their words or type.
+    private func joint(keeps: Bool = false) throws -> (runtime: HostRuntime, find: (String) -> MountedElement?) {
+        let runtime = HostRuntime(clock: WoundClock(), reducesMotion: { false }, makeNative: { _ in
+            let view = NoView()
+            view.keepsExits = keeps
+            return view
+        }, log: { _ in })
         runtime.layoutMotion.applicationMotion = .eased(.milliseconds(200), curve: .linear)
         runtime.connectWindow()
         runtime.pump.turn()
@@ -536,6 +564,45 @@ final class SharedTransitionsTests: XCTestCase {
             runtime.displayCycle.frame(now: time)
             runtime.pump.turn()
         }
+    }
+
+    /// A LAYOUT KEPT AS IT LEAVES KEEPS ITS CHILDREN WHERE ITS PROGRAM LAST SHOWED THEM - fading by its own exit, or
+    /// kept for the partner of a card in it: its run stands, each child drawn as the program drew it, never laid
+    /// over the layout's room as a stack would stand it.
+    func testALayoutKeptAsItLeavesKeepsItsProgramsPlaces() throws {
+        fadingDeckShown.wrappedValue = true
+        FadingDeckApplication.register()
+        let (runtime, find) = try joint(keeps: true)
+        let second = try XCTUnwrap(find("card 2"))
+        let holder = try XCTUnwrap(second.parent)
+        let deck = try XCTUnwrap(holder.parent)
+        XCTAssertEqual(deck.type, .motionLayout)
+        deck.reportFrame([0, 0, 300, 200, 10, 20, 10, 20], in: runtime)
+        frames(runtime, from: 16, to: 64)
+        let shown = try XCTUnwrap(deck.placement)
+        XCTAssertEqual(shown.placements.count, 2)
+        XCTAssertEqual(holder.drawnTransform.scaleX, 0.5, accuracy: 0.001)
+
+        fadingDeckShown.wrappedValue = false
+        runtime.pump.turn()
+        XCTAssertEqual(deck.lifecycle, .exiting, "kept as it fades")
+        XCTAssertEqual(deck.placement, shown, "its run stands")
+        XCTAssertEqual(holder.drawnTransform.scaleX, 0.5, accuracy: 0.001, "the second card drawn at half its size still")
+
+        detailShown.wrappedValue = false
+        CardBoardApplication.register()
+        let board = try joint(keeps: true)
+        let card = try XCTUnwrap(board.find("card 5"))
+        let cards = try XCTUnwrap(card.parent?.parent)
+        cards.reportFrame([0, 0, 300, 200, 10, 20, 10, 20], in: board.runtime)
+        frames(board.runtime, from: 16, to: 64)
+        let stood = try XCTUnwrap(cards.placement)
+        (card.native as? NoView)?.frame = [0, 0, 40, 40, 50, 60, 50, 60]
+
+        detailShown.wrappedValue = true
+        board.runtime.pump.turn()
+        XCTAssertEqual(cards.lifecycle, .exiting, "kept for the detail")
+        XCTAssertEqual(cards.placement, stood, "its run stands")
     }
 
     /// A VIEW MADE WITH A LAYOUT ITS PROGRAM PLACES SETS OUT TOWARD NO PLACE THE TREE DOES NOT KNOW: as the layout's

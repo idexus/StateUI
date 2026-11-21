@@ -353,6 +353,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### Fixed
 
+- **A motion layout that leaves stands its views where its program put them.** As it faded out, or went along
+  with a card opening into its detail, every view in it was drawn across the layout's whole room, the last one
+  over the rest, until it was gone.
+
 - **A view that joins says where its layout puts it, and nothing before.** A handler of a view's frame heard one
   frame too many on two hosts as the view joined a layout already standing. On UIKit a stepper, a spinner, a date
   picker and a time picker said the size they are made with, at their parent's corner, before the layout placed

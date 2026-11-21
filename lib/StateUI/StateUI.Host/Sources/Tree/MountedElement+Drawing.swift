@@ -56,10 +56,11 @@ extension MountedElement {
         layoutProgram != nil ? [.area] : []
     }
 
-    /// The places the layout program gives the element's children, one each, standing in the run's direction; nil
-    /// where the element runs none.
+    /// The places the layout program gives the element's children, one each, standing in the run's direction - kept
+    /// as it leaves, the places it last showed; nil where the element runs none.
+    /// Design: docs/design/host/tree.md#a-view-kept-as-it-leaves
     public var placement: HostPlacementRun? {
-        guard layoutProgram != nil else { return nil }
+        guard layoutProgram != nil || (staysDrawn && !programPlaces.isEmpty) else { return nil }
         return HostPlacementRun(placements: programPlaces, direction: runDirection)
     }
 
