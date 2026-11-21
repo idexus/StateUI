@@ -160,6 +160,40 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertNil(another.drawn(.translationX, of: "detail"), "another key")
     }
 
+    /// A VIEW MADE ON ANOTHER PAGE THAN THE ONE DROPPED IS ITS OWN: a page that comes over a page is the
+    /// navigation's to bring, so the made view enters as any view does, by its own transition, and a change
+    /// waiting for the patch hears `.unsupported` - while the same two under one page are one.
+    func testAViewMadeOnAnotherPageIsItsOwn() {
+        func page(_ id: String, _ children: [HostPatch]) -> HostPatch {
+            var patch = HostPatch(id: .manual(id), type: .page)
+            patch.children = .arranged(children)
+            return patch
+        }
+
+        let across = Bench()
+        across.show([page("list", [Bench.keyed("thumbnail", 5)])], complete: true)
+        across.stands("thumbnail", at: Point(x: 50, y: 60), size: LayoutSize(width: 40, height: 40))
+        let change = Renderer.shared.change(aimedAt: [.manual("root")])
+        across.tree.changes.begin(Renderer.shared.takeChanges(), in: across.tree)
+        across.show([page("shown", [Bench.keyed("detail", 5)])])
+        across.stands("shown", at: Point(x: 10, y: 120), size: LayoutSize(width: 300, height: 200))
+        across.place("detail", at: Rect(x: 20, y: 30, width: 200, height: 100))
+        across.tree.changes.close()
+        XCTAssertNil(across.drawn(.translationX, of: "detail"), "another page: the rectangle is not its own")
+        XCTAssertNil(across.drawn(.scaleX, of: "detail"))
+        across.frame(at: 250)
+        across.frame(at: 500)
+        XCTAssertEqual(change.answered.settled, .interrupted([.unsupported]))
+
+        let within = Bench()
+        within.show([page("one", [Bench.holder("list", [Bench.keyed("thumbnail", 5)])])], complete: true)
+        within.stands("thumbnail", at: Point(x: 50, y: 60), size: LayoutSize(width: 40, height: 40))
+        within.show([page("one", [Bench.holder("shown", [Bench.keyed("detail", 5)])])])
+        within.stands("shown", at: Point(x: 10, y: 120), size: LayoutSize(width: 300, height: 200))
+        within.place("detail", at: Rect(x: 20, y: 30, width: 200, height: 100))
+        XCTAssertNotNil(within.drawn(.scaleX, of: "detail"), "one page: the two are one")
+    }
+
     /// A RETURN DURING THE MOVEMENT SETS OUT FROM WHERE THE VIEW NOW LEAVING IS DRAWN, and a view still leaving by
     /// its own exit as its partner is placed is over at once.
     func testAReturnSetsOutFromWhereTheLeavingViewIsDrawn() {
