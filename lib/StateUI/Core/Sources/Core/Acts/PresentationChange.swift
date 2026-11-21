@@ -99,7 +99,13 @@ extension Aim where Target: ViewProperties {
     /// - Throws: where the aim reached no view, or two; `update` is not run then.
     public func presentationChange(_ update: () -> Void) throws -> PresentationChange {
         _ = try target
+        // A change made inside another's writes is that one's too.
+        let board = Renderer.shared.board
+        let outer = board.recording
+        board.recording = []
         update()
-        return Renderer.shared.change(aimedAt: place ?? [])
+        let written = board.recording ?? []
+        board.recording = outer?.union(written)
+        return Renderer.shared.change(aimedAt: place ?? [], writing: written)
     }
 }

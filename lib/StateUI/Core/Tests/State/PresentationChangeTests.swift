@@ -46,6 +46,38 @@ final class PresentationChangeTests: XCTestCase {
         XCTAssertTrue(Renderer.shared.takeChanges().isEmpty, "a render later carries it no more")
     }
 
+    /// THE CHANGE NAMES THE STATES A HOST CARRIES THAT ITS WRITES SENT SOMEWHERE - by the numbers the host knows
+    /// them by, in ascending order - and none it did not write, nor one no host carries; a change made inside
+    /// another's writes is the outer one's too.
+    func testTheChangeNamesTheCarriedStatesItsWritesSent() throws {
+        let fade = State(wrappedValue: 1.0)
+        let shift = State(wrappedValue: 0.0)
+        let untouched = State(wrappedValue: 0.0)
+        let plain = State(wrappedValue: false)
+        let renders = Renders()
+        renders.render(Rectangle().opacity(fade.projectedValue).translationX(shift.projectedValue)
+            .translationY(untouched.projectedValue).node)
+        let numbers = [fade, shift, untouched].map(\.number)
+        _ = Renderer.shared.takeChanges()
+
+        let panel = named("panel", VStack.self)
+        _ = try panel.presentationChange {
+            shift.wrappedValue = 40
+            fade.wrappedValue = 0
+            plain.wrappedValue = true
+        }
+        XCTAssertEqual(Renderer.shared.takeChanges().first?.states, [numbers[0], numbers[1]].sorted())
+
+        _ = try panel.presentationChange {
+            fade.wrappedValue = 0.5
+            _ = try? panel.presentationChange { shift.wrappedValue = 10 }
+        }
+        let nested = Renderer.shared.takeChanges()
+        XCTAssertEqual(nested.map(\.states), [[numbers[1]], [numbers[0], numbers[1]].sorted()], "the inner one first")
+        XCTAssertNil(Renderer.shared.board.recording, "no change being made, nothing is noted")
+        _ = renders
+    }
+
     /// THE HOST'S TWO ANSWERS REACH THEIR OWN WAITERS, each once: the application first, the end apart from it -
     /// its reasons each once, in the order they are declared.
     func testTheHostsTwoAnswersReachTheirWaiters() async throws {
@@ -76,7 +108,7 @@ final class PresentationChangeTests: XCTestCase {
         let results: [PresentationResult] = [
             .settled, .notPresented, .interrupted([.superseded]), .interrupted([.detached]),
             .interrupted([.unsupported]), .interrupted([.limited]),
-            .interrupted([.superseded, .detached, .unsupported, .limited]),
+            .interrupted([.stopped]), .interrupted([.superseded, .stopped, .detached, .unsupported, .limited]),
         ]
         for result in results {
             let (change, record) = try made()

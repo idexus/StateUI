@@ -40,16 +40,21 @@ final class StateChannel {
     /// Whether any run of this channel is under way.
     var isActive: Bool { !runs.isEmpty }
 
+    /// Told a run's number as it is born, and with how it ended as its waiter would be answered.
+    private let watch: (Int, HostMotionOutcome?) -> Void
+
     init(
         binding: HostStateBinding,
         journey: HostJourney,
         animator: Animator,
         now: Double,
         reducesMotion: Bool,
+        watch: @escaping (Int, HostMotionOutcome?) -> Void,
         emit: StateChannelEmit
     ) {
         self.binding = binding
         self.animator = animator
+        self.watch = watch
         value = journey.value
         destination = journey.destination
         velocity = journey.velocity
@@ -161,7 +166,10 @@ final class StateChannel {
 
     /// Ends the channel as its last consumer leaves: every run stops, unanswered.
     func end() {
-        for number in runs.keys.sorted() { animator.halt(.state(binding.state, run: number)) }
+        for number in runs.keys.sorted() {
+            animator.halt(.state(binding.state, run: number))
+            watch(number, .detached)
+        }
         runs.removeAll()
     }
 
@@ -185,6 +193,7 @@ final class StateChannel {
                 }
                 landed = true
                 if let completion = run.completion { answered.append(JourneyCompletion(id: completion, outcome: landing)) }
+                watch(number, landing)
                 continue
             }
 
@@ -277,6 +286,7 @@ final class StateChannel {
         numbered += 1
         runs[numbered] = Run(lanes: lanes, completion: completion)
         animator.start(animation, for: .state(binding.state, run: numbered))
+        watch(numbered, nil)
         emit(self, .position, [], origin)
     }
 
@@ -292,6 +302,7 @@ final class StateChannel {
             if let completion = run.completion {
                 emit(self, nil, [JourneyCompletion(id: completion, outcome: outcome)], .animation)
             }
+            watch(number, outcome)
 
             let target = AnimationTarget.state(binding.state, run: number)
             guard !kept.isEmpty, let animation = animator.animation(for: target) else {

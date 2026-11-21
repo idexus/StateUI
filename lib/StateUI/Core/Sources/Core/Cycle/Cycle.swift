@@ -121,6 +121,10 @@ final class CycleBoard {
         (storage.stamp, storage.targetRevision) = (held.stamp, held.targetRevision)
     }
 
+    /// The numbers of the host-carried states written while a presentation change runs its writes; nil while
+    /// none does. Design: docs/design/core/journeys.md#a-change-and-what-it-started
+    var recording: Set<Int32>?
+
     /// Takes a storage into this board's keeping.
     func hold(_ storage: HostStorage) {
         storages.removeAll { $0.storage == nil }
@@ -142,6 +146,8 @@ final class CycleBoard {
     /// Design: docs/design/core/cycle.md#where-a-write-lands
     func write(_ bytes: [UInt8], to storage: HostStorage, forcing forced: UInt64 = 0, stamping: Bool = true) {
         if stamping { storage.stamp &+= 1 }
+        // A presentation change being made notes the states a host carries that its writes send somewhere.
+        if recording != nil, stamping, let number = storage.number { recording?.insert(number) }
 
         if cycling {
             let moved = HostStorage.lay(bytes, into: &storage.image)

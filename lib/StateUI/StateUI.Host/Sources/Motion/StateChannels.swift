@@ -61,6 +61,9 @@
     /// How many states have a channel.
     public var count: Int { channels.count }
 
+    /// Told a state's run as it is born - no outcome - and as it ends: what watches the movements a change started.
+    var watching: ((Int32, Int, HostMotionOutcome?) -> Void)?
+
     /// The value a bound property draws, opening the state's channel for its first consumer.
     public func presentedValue(
         for binding: HostStateBinding,
@@ -81,12 +84,14 @@
             // No consumer, no channel: a value read for an element that wears nothing is the state's own.
             return carried
         } else {
+            let state = binding.state
             channel = StateChannel(
                 binding: binding,
                 journey: incoming,
                 animator: animator,
                 now: now,
                 reducesMotion: reducesMotion,
+                watch: { [weak self] run, ended in self?.watching?(state, run, ended) },
                 emit: emit)
             channels[binding.state] = channel
         }

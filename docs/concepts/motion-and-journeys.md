@@ -432,6 +432,7 @@ until every movement they started has ended and answers a
 | `applied()` is `.applied` | the host took the writes |
 | `settled()` is `.settled` | every movement came to rest where the change sent it, or it started none |
 | `settled()` is `.interrupted([.superseded])` | a later write sent a view elsewhere first, or brought back a view that was leaving |
+| `settled()` is `.interrupted([.stopped])` | a state it sent somewhere was stopped where it stood |
 | `settled()` is `.interrupted([.detached])` | a view it moved left first |
 | `settled()` is `.interrupted([.unsupported])` | a view the writes dropped declares an exit that is not drawn where it stood: it went at once |
 | `settled()` is `.interrupted([.limited])` | a view's exit was cut short: too many leaving at once, or one leaving for longer than two seconds |
@@ -440,7 +441,8 @@ until every movement they started has ended and answers a
 A change watches the properties its writes move under a view's own
 `.motion(_:)`, the places a layout carries its views to, the entry of a
 view the writes bring and the exit of one they drop - on the aimed view and
-every view in it. It stops
+every view in it - and the states its writes send somewhere, where the
+aimed view or a view in it shows them. It stops
 nothing and owns nothing: a movement started later is no part of it, so a
 new animation never prolongs an old wait, and a task cancelled while it
 waits stops waiting while the movements go on. An aim that reached no view

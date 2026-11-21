@@ -108,6 +108,8 @@ host layer keeps one group for each (`PresentationChanges`, the tree's
   before the patch    each change finds its view by its place, as it stands now
                       none, or one that left: both waiters answered `.notPresented`
                       else a group opens on that view's mount
+                      and takes the runs born since the render before, of the states its writes
+                      sent that are shown under the view
   the patch applied   a property set moving on that mount or under it joins every open group
                       each element under it the patch says something of is remembered
   after the patch     `applied` is answered; a group whose patch reached nothing settles at once
@@ -116,7 +118,8 @@ host layer keeps one group for each (`PresentationChanges`, the tree's
   a frame ends        what arranged since the last is remembered no more
                       the second frame after the patch, nothing is
   a member ends       at rest: nothing said of it
-                      another destination for the same property or place: `.superseded`
+                      another destination for the same property, place or state: `.superseded`
+                      a state stopped where it stood: `.stopped`
                       its element released: `.detached` - or, released as its exit ended, as that
                       exit did: the same view come back `.superseded`, the budget `.limited`
   a view is dropped   declaring an exit nothing draws there: `.unsupported`, or `.limited` where the
@@ -126,8 +129,8 @@ host layer keeps one group for each (`PresentationChanges`, the tree's
 
 A member is a described motion - a property the patch moved under the
 view's motion, an entry's numbers and a kept exit's among them - or a place
-on its way (`LayoutMotion`). Each tells its birth and its end (`born`,
-`ended`), which is all a group hears. A kept exit's numbers are born as the
+on its way (`LayoutMotion`), or a run of a state's channel. Each tells its
+birth and its end (`born`, `ended`), which is all a group hears. A kept exit's numbers are born as the
 patch drops the view, so the view that left is waited for until its exit
 lands ([a view kept as it leaves](tree.md#a-view-kept-as-it-leaves)); how
 the exit ended is said before the element is released (`exitEnds`), so its
@@ -144,6 +147,14 @@ arrange, or with the second display frame after the patch: a toolkit that
 lays out after its frame's callback has done so by then
 (`PresentationChanges.layoutWindow`). A group settles only once its window
 is over, and holds the frame clock until then.
+
+A state's write reaches its channel in the core's cycle, and a turn runs
+the cycle before it renders: the run is born before the render that carries
+the change. So the channels tell every run's birth and end
+(`StateChannels.watching`), a group opening takes the runs of its states
+born since the render before, and one born later - a channel the render
+itself attached - is taken within the group's window. A state shown by no
+view under the aimed one is no part of the change, whoever wrote it.
 
 What is born as a later patch is applied joins that patch's groups alone:
 the movement a later write starts in place of a member is that write's own,

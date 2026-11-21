@@ -145,6 +145,9 @@ struct ChangeAwaited: ExampleContent {
     @State private var far = false
     @State private var said = "-"
 
+    /// A state the host carries, under a motion of its own.
+    @State(motion: .eased(.milliseconds(900))) private var shift = 0.0
+
     // THE VIEW A CHANGE WATCHES: everything its writes move in here.
     @Aim(VStack.self) private var panel
 
@@ -153,6 +156,9 @@ struct ChangeAwaited: ExampleContent {
             VStack {
                 Text("Saved to the drafts")
                     .fontSize(15)
+                    // DRIVEN: the host carries `shift` there, and the change
+                    // that wrote it waits for the state to arrive.
+                    .translationX($shift)
 
                 Text("A moment ago")
                     .fontSize(12)
@@ -185,6 +191,11 @@ struct ChangeAwaited: ExampleContent {
                     try await watch(try panel.presentationChange { far.toggle() })
                 }
                 .accessibilityIdentifier("change.move")
+
+                Button("Slide").onClicked(policy: .runConcurrently) {
+                    try await watch(try panel.presentationChange { shift = shift == 0 ? 60 : 0 })
+                }
+                .accessibilityIdentifier("change.slide")
             }
             .spacing(8)
 
@@ -211,7 +222,7 @@ struct ChangeAwaited: ExampleContent {
         Text("Press Hide: the line reads `under way` until the slower of the two fades has ended, then "
             + "`settled`. Press again before that: the first change says `interrupted`, and the second "
             + "goes on to `settled`. Move sends the small line across the panel, and the change waits "
-            + "for it to arrive.")
+            + "for it to arrive. Slide writes a state the host carries the first line by.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

@@ -14,16 +14,19 @@
         case rested
         /// Sent elsewhere by a later write.
         case superseded
+        /// Stopped where it stood.
+        case stopped
         /// Its view left.
         case detached
         /// Its view's exit was cut short by the budget of views kept as they leave.
         case limited
     }
 
-    /// A movement a change watches: a property on its way, or an element's place.
+    /// A movement a change watches: a property on its way, an element's place, or a run of a state's channel.
     enum Member: Hashable {
         case described(DescribedKey)
         case placed(UInt64)
+        case run(state: Int32, number: Int)
     }
 
     private final class Group {
@@ -36,6 +39,13 @@
         /// frames its layout window still lasts.
         var touched: Set<UInt64> = []
         var framesLeft = 0
+
+        /// The states the change's writes sent somewhere that are shown under the view, until a run of each is
+        /// taken.
+        var states: Set<Int32> = []
+
+        /// Whether nothing is left for the group's window to wait for.
+        var awaitsNothing: Bool { touched.isEmpty && states.isEmpty }
 
         init(_ change: HostPresentationChange, root: UInt64) {
             self.change = change
@@ -61,6 +71,10 @@
     /// How the exit of an element being released ended, by its mount: what its movements end as.
     private var exits: [UInt64: End] = [:]
 
+    /// The runs born since the render before and still under way, by state: a write's run is born in the core's
+    /// cycle, before the render that carries its change.
+    private var recent: [Int32: Set<Int>] = [:]
+
     /// Changes answered through `core`.
     public init(core: CoreLink) {
         self.core = core
@@ -81,8 +95,35 @@
                 core.answer(change.settled, settled: .notPresented)
                 continue
             }
-            opened.append(Group(change, root: element.mount))
+            let group = Group(change, root: element.mount)
+            for state in change.states where tree.shows(state, under: element.mount) {
+                let runs = recent[state] ?? []
+                if runs.isEmpty { group.states.insert(state) }
+                for number in runs { group.members.insert(.run(state: state, number: number)) }
+            }
+            opened.append(group)
         }
+    }
+
+    /// A run of `state` was born: a change that waits for one takes it.
+    func runBorn(_ state: Int32, _ number: Int) {
+        recent[state, default: []].insert(number)
+        for group in opened + waiting where group.states.remove(state) != nil {
+            group.members.insert(.run(state: state, number: number))
+        }
+    }
+
+    /// The run `number` of `state` ended as `outcome`.
+    func runEnded(_ state: Int32, _ number: Int, as outcome: HostMotionOutcome) {
+        recent[state]?.remove(number)
+        if recent[state]?.isEmpty == true { recent[state] = nil }
+        let end: End = switch outcome {
+        case .animated, .immediate: .rested
+        case .superseded: .superseded
+        case .stopped: .stopped
+        case .detached: .detached
+        }
+        ended(.run(state: state, number: number), as: end)
     }
 
     /// The patch being applied says something of `element`: every open change it stands under remembers it, for
@@ -128,6 +169,7 @@
             switch end {
             case .rested: break
             case .superseded: group.reasons.append(.superseded)
+            case .stopped: group.reasons.append(.stopped)
             case .detached: group.reasons.append(.detached)
             case .limited: group.reasons.append(.limited)
             }
@@ -164,10 +206,11 @@
     public func close() {
         for group in opened {
             core.answer(group.change.applied, applied: .applied)
-            group.framesLeft = group.touched.isEmpty ? 0 : Self.layoutWindow
+            group.framesLeft = group.awaitsNothing ? 0 : Self.layoutWindow
         }
         waiting.append(contentsOf: opened)
         opened.removeAll()
+        recent.removeAll(keepingCapacity: true)
         settle()
     }
 
@@ -176,8 +219,11 @@
     public func frameEnded() {
         for group in waiting where group.framesLeft > 0 {
             group.touched.subtract(arranged)
-            group.framesLeft = group.touched.isEmpty ? 0 : group.framesLeft - 1
-            if group.framesLeft == 0 { group.touched.removeAll() }
+            group.framesLeft = group.awaitsNothing ? 0 : group.framesLeft - 1
+            if group.framesLeft == 0 {
+                group.touched.removeAll()
+                group.states.removeAll()
+            }
         }
         arranged.removeAll(keepingCapacity: true)
         settle()

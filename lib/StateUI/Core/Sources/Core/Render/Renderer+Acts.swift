@@ -23,11 +23,11 @@ extension Renderer {
     /// Books a presentation change aimed at the view standing at `place`: its two waiters, and the record the
     /// next render carries. It asks for that render - a write no view reads, or one a host carries, asks for none.
     /// Design: docs/design/core/journeys.md#a-change-and-what-it-started
-    func change(aimedAt place: [ElementID]) -> PresentationChange {
+    func change(aimedAt place: [ElementID], writing states: Set<Int32> = []) -> PresentationChange {
         let change = PresentationChange()
         let applied = book { change.land(applied: $0) }
         let settled = book { change.land(settled: $0) }
-        changes.append(HostPresentationChange(place: place, applied: applied, settled: settled))
+        changes.append(HostPresentationChange(place: place, states: states.sorted(), applied: applied, settled: settled))
         setNeedsTurn()
         return change
     }

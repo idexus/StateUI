@@ -28,6 +28,9 @@ public enum PresentationInterruption: Equatable, Sendable {
     /// A later write sent what it moved elsewhere.
     case superseded
 
+    /// A state it moved was stopped where it stood.
+    case stopped
+
     /// The view it moved left, or the window showing it did.
     case detached
 
@@ -38,5 +41,5 @@ public enum PresentationInterruption: Equatable, Sendable {
     case limited
 
     /// The reasons in the order a result names them.
-    static let declared: [PresentationInterruption] = [.superseded, .detached, .unsupported, .limited]
+    static let declared: [PresentationInterruption] = [.superseded, .stopped, .detached, .unsupported, .limited]
 }

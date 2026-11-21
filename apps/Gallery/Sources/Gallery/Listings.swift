@@ -1960,6 +1960,9 @@ enum Listings {
         @State private var far = false
         @State private var said = "-"
 
+        /// A state the host carries, under a motion of its own.
+        @State(motion: .eased(.milliseconds(900))) private var shift = 0.0
+
         // THE VIEW A CHANGE WATCHES: everything its writes move in here.
         @Aim(VStack.self) private var panel
 
@@ -1967,6 +1970,9 @@ enum Listings {
             VStack {
                 VStack {
                     Text("Saved to the drafts")
+                        // DRIVEN: the host carries `shift` there, and the change
+                        // that wrote it waits for the state to arrive.
+                        .translationX($shift)
 
                     Text("A moment ago")
                         // A LINE OF ITS OWN PACE, inside the panel: the change
@@ -1991,6 +1997,10 @@ enum Listings {
 
                     Button("Move").onClicked(policy: .runConcurrently) {
                         try await watch(try panel.presentationChange { far.toggle() })
+                    }
+
+                    Button("Slide").onClicked(policy: .runConcurrently) {
+                        try await watch(try panel.presentationChange { shift = shift == 0 ? 60 : 0 })
                     }
                 }
 

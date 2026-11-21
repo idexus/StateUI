@@ -225,6 +225,13 @@ The change asks for its render itself (`Renderer.setNeedsTurn`): a write no
 view reads asks for none, and one a host carries crosses as lanes and not
 as a patch, so the writes alone would leave the record waiting.
 
+A state a host carries moves by its channel, which belongs to no one view.
+So the change notes which such states its writes sent somewhere - the board
+records each as the write lands (`CycleBoard.recording`), a change made
+inside another's writes noting for both - and the record names them
+(`HostPresentationChange.states`); the host knows which of them the aimed
+view shows.
+
 ```text
   applied()   .applied            a host took the writes
               .notPresented       nothing shows the aimed view; the writes stand

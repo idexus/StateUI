@@ -1542,6 +1542,7 @@ swift.enum.case PresentationApplication.applied: case applied
 swift.enum.case PresentationApplication.notPresented: case notPresented
 swift.enum.case PresentationInterruption.detached: case detached
 swift.enum.case PresentationInterruption.limited: case limited
+swift.enum.case PresentationInterruption.stopped: case stopped
 swift.enum.case PresentationInterruption.superseded: case superseded
 swift.enum.case PresentationInterruption.unsupported: case unsupported
 swift.enum.case PresentationResult.interrupted(_:): case interrupted([PresentationInterruption])

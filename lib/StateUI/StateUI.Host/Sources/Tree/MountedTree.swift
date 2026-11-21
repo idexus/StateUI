@@ -340,6 +340,9 @@
             changes.born(.placed(mount), on: element, inLayoutPass: patchTime == nil)
         }
         layoutMotion.ended = { [weak self] mount, end in self?.changes.ended(.placed(mount), as: end) }
+        stateChannels.watching = { [weak self] state, run, ended in
+            if let ended { self?.changes.runEnded(state, run, as: ended) } else { self?.changes.runBorn(state, run) }
+        }
         // The first take starts the recording, so the log holds every pass from here on.
         if diagnostics.inspects { _ = core.takeInspectionLog() }
     }
@@ -455,6 +458,18 @@
 
     /// `element` presents `states` now rather than `before`, the states its bound properties take a frame's values
     /// from.
+    /// Whether an element standing at `mount` or under it shows `state`.
+    func shows(_ state: Int32, under mount: UInt64) -> Bool {
+        for presenter in (presenters[state] ?? []).sorted() {
+            var each = byMount[presenter]?.element
+            while let element = each {
+                if element.mount == mount { return true }
+                each = element.parent
+            }
+        }
+        return false
+    }
+
     func presents(_ element: MountedElement, _ states: [Int32], before: [Int32]) {
         for state in before {
             presenters[state]?.remove(element.mount)

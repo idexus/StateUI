@@ -26,6 +26,26 @@ private struct FadingApplication: Application {
     var body: some Scene { WindowGroup { Fading() } }
 }
 
+/// Two states a host carries - one moving a line in the panel, one a line beside it - and the aim on the panel.
+@MainActor private let panelShift = State(wrappedValue: 0.0, motion: .eased(.milliseconds(200), curve: .linear))
+@MainActor private let besideShift = State(wrappedValue: 0.0, motion: .eased(.milliseconds(600), curve: .linear))
+@MainActor private let slidingPanel = Aim(VStack.self)
+
+/// A panel whose line a state moves, beside a line another state moves.
+private struct Sliding: View {
+    var body: some View {
+        VStack {
+            VStack { Text("panel").translationX(panelShift.projectedValue) }
+                .aim(slidingPanel)
+            Text("beside").translationX(besideShift.projectedValue)
+        }
+    }
+}
+
+private struct SlidingApplication: Application {
+    var body: some Scene { WindowGroup { Sliding() } }
+}
+
 /// A presentation change on the host's side: what its render starts under the view it aims at is what it waits
 /// for, and each of its two answers is said once.
 @MainActor
@@ -315,6 +335,69 @@ final class PresentationChangesTests: XCTestCase {
         let idle = try aimedPanel.presentationChange {}
         runtime.pump.turn()
         XCTAssertEqual(idle.answered.settled, .settled, "a change that wrote nothing is carried all the same")
+    }
+
+    /// A runtime showing the sliding application, both its states at rest at nought, on a clock wound by hand.
+    private func sliding() -> (runtime: HostRuntime, frame: (Double) -> Void) {
+        panelShift.projectedValue.journey.snap(to: 0)
+        besideShift.projectedValue.journey.snap(to: 0)
+        SlidingApplication.register()
+        let clock = WoundClock()
+        let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
+        runtime.connectWindow()
+        runtime.pump.turn()
+        return (runtime, { time in
+            clock.time = time
+            runtime.pump.turn()
+            runtime.displayCycle.frame(now: time)
+        })
+    }
+
+    /// A CHANGE WAITS FOR THE RUN OF A STATE ITS WRITES SENT, where that state is shown under its view - the run is
+    /// born in the core's cycle, before the render that carries the change - and for no run of a state shown
+    /// only beside it.
+    func testAChangeWaitsForTheRunOfAStateItSent() throws {
+        let (runtime, frame) = sliding()
+
+        let change = try slidingPanel.presentationChange {
+            panelShift.wrappedValue = 100
+            besideShift.wrappedValue = 100
+        }
+        frame(0)
+        XCTAssertEqual(change.answered.applied, .applied)
+        frame(100)
+        XCTAssertNil(change.answered.settled, "its state is on its way")
+
+        frame(250)
+        XCTAssertEqual(change.answered.settled, .settled)
+        XCTAssertTrue(runtime.animator.isMoving, "the state beside the view travels on, and was never waited for")
+    }
+
+    /// A RUN STOPPED, OR SENT ELSEWHERE BY A LATER WRITE, ENDS THE CHANGE SAYING SO; and a write that sends a state
+    /// where it stands starts nothing, and is settled once the change's window is over.
+    func testARunStoppedOrSentElsewhereEndsTheChangeSayingSo() throws {
+        let (_, frame) = sliding()
+
+        let stopped = try slidingPanel.presentationChange { panelShift.wrappedValue = 100 }
+        frame(0)
+        frame(100)
+        panelShift.projectedValue.journey.stop()
+        frame(116)
+        XCTAssertEqual(stopped.answered.settled, .interrupted([.stopped]))
+
+        let superseded = try slidingPanel.presentationChange { panelShift.wrappedValue = 200 }
+        frame(200)
+        frame(216)
+        panelShift.wrappedValue = 0
+        frame(232)
+        XCTAssertEqual(superseded.answered.settled, .interrupted([.superseded]))
+
+        frame(600)
+        let still = try slidingPanel.presentationChange { panelShift.wrappedValue = 0 }
+        frame(616)
+        frame(632)
+        frame(648)
+        XCTAssertEqual(still.answered.settled, .settled, "there already: nothing set out")
     }
 
     /// A CHANGE THAT STARTED NOTHING IS SETTLED AT ONCE, AND ONE AIMED AT NOTHING SHOWN IS NOT PRESENTED.

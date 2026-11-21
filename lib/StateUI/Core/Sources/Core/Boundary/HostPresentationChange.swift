@@ -8,6 +8,10 @@
     /// Where the aimed view stands: the keys from the root down.
     public let place: [ElementID]
 
+    /// The states a host carries that the change's writes sent somewhere, by their numbers, in ascending order:
+    /// a movement of one shown under the aimed view is the change's to wait for.
+    public let states: [Int32]
+
     /// The waiter of `PresentationChange.applied()`.
     public let applied: Int
 
