@@ -375,6 +375,14 @@ motion of its own, in an application that says none, would then never
 enter; so the layout says only that the child joined, and under what law
 its own children move, and the element reads its transition.
 
+An entry is drawn where it sets out from the frame that gives the view its
+first place. Each number it starts is presented at once - the opacity on the
+view it enters on, the move and the scales by the element's own
+`presentFrame` - in the toolkit's layout pass, not at the display's next
+frame: that one comes after the toolkit has drawn this one, and the view
+would stand a frame whole at its place first. A fade hid it; a move, a
+scale or a shared transition, which fades nothing, did not.
+
 ## A shared transition
 
 A view made wearing a key enters from where the one view its patch dropped

@@ -367,6 +367,42 @@ final class AppKitLayoutMotionTests: XCTestCase {
         XCTAssertFalse(renderer.animatingForTesting)
     }
 
+    /// A view entering by a move is drawn where it sets out in the very layout pass that gives it its first
+    /// place - before any display frame - never one frame whole at its place first.
+    @MainActor
+    func testAViewEnteringByAMoveIsDrawnWhereItSetsOutFromItsFirstPass() throws {
+        let renderer = testRenderer(
+            resourceDirectory: nil, presentsWindows: false, clock: { 0 }, reducesMotion: { false })
+        defer { renderer.finish() }
+        let law = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
+        let entering = Transition(enter: .translation(y: 40), exit: .identity)
+        func rows(_ order: [String]) -> HostPatch {
+            var stack = HostPatch(id: .manual("stack"), type: .vStack)
+            stack.motion = law
+            stack.children = .arranged(order.map { name in
+                var box = HostPatch(id: .manual(name), type: .rectangle)
+                box.properties[VisualElementContract.width.token] = .number(100)
+                box.properties[VisualElementContract.height.token] = .number(40)
+                if name == "b" {
+                    box.properties[.transition] = entering.propValue
+                    box.motion = law
+                }
+                return box
+            })
+            return stack
+        }
+
+        renderer.applyForTesting(rows(["a"]))
+        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")))
+        native.frame = NSRect(x: 0, y: 0, width: 300, height: 200)
+        native.layoutSubtreeIfNeeded()
+
+        renderer.applyForTesting(rows(["a", "b"]))
+        native.layoutSubtreeIfNeeded()
+        let b = try XCTUnwrap(renderer.viewForTesting(id: .manual("b")))
+        XCTAssertEqual(try XCTUnwrap(b.layer).transform.m42, 40, accuracy: 0.001, "where it sets out, at once")
+    }
+
     /// Where the user asks for less movement, every child arrives and none
     /// fades in.
     @MainActor

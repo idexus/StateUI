@@ -27,6 +27,7 @@ extension MountedElement {
             (.opacity, 1, effect.opacity), (.translationX, 0, moved.x), (.translationY, 0, moved.y),
             (.scale, 1, effect.scale),
         ]
+        var started: Set<Prop> = []
         for (property, unsaid, part) in starts {
             let declared = resolvedValue(property)?.number ?? unsaid
             let standing = property == .opacity || property == .scale ? declared * part : declared + part
@@ -34,10 +35,11 @@ extension MountedElement {
                   tree.presentedPropertyValue(mount: mount, property: property) == nil
             else { continue }
 
-            tree.receiveProperty(
-                mount: mount, property: property, standing: .number(standing), target: .number(declared), motion: law)
+            if tree.receiveProperty(
+                mount: mount, property: property, standing: .number(standing), target: .number(declared), motion: law
+            ) { started.insert(property) }
         }
-        view.setOpacity(value(.opacity)?.number ?? 1)
+        presentsFromItsFirstFrame(started, on: view)
     }
 
     /// The element enters from the rectangle `source` onto the place `destination` its layout gave it, both in
@@ -54,14 +56,16 @@ extension MountedElement {
             (.translationX, 0, across, false), (.translationY, 0, down, false),
             (.scaleX, 1, source.width / destination.width, true), (.scaleY, 1, source.height / destination.height, true),
         ]
+        var started: Set<Prop> = []
         for (property, unsaid, part, scales) in starts where driven[property] == nil {
             let declared = resolvedValue(property)?.number ?? unsaid
             let standing = scales ? declared * part : declared + part
             guard standing != declared else { continue }
-            tree.receiveProperty(
-                mount: mount, property: property, standing: .number(standing), target: .number(declared), motion: law)
+            if tree.receiveProperty(
+                mount: mount, property: property, standing: .number(standing), target: .number(declared), motion: law
+            ) { started.insert(property) }
         }
-        view.setOpacity(value(.opacity)?.number ?? 1)
+        presentsFromItsFirstFrame(started, on: view)
     }
 
     /// The element comes back as the view of its id was leaving: each number goes on from where that one was
@@ -76,15 +80,27 @@ extension MountedElement {
         let place = tree.layoutMotion.placed(mount)?.place
         let across = returned.place.flatMap { old in place.map { old.x - $0.x } } ?? 0
         let down = returned.place.flatMap { old in place.map { old.y - $0.y } } ?? 0
+        var started: Set<Prop> = []
         for (property, unsaid) in Self.presenceProperties where driven[property] == nil {
             guard let drawn = returned.numbers[property] else { continue }
             let declared = resolvedValue(property)?.number ?? unsaid
             let standing = drawn.value + (property == .translationX ? across : property == .translationY ? down : 0)
             guard standing != declared || !drawn.velocity.isEmpty else { continue }
-            tree.receiveProperty(
+            if tree.receiveProperty(
                 mount: mount, property: property, standing: .number(standing), target: .number(declared), motion: law,
-                velocity: drawn.velocity)
+                velocity: drawn.velocity
+            ) { started.insert(property) }
         }
+        presentsFromItsFirstFrame(started, on: view)
+    }
+
+    /// An entry is drawn where it sets out from the frame its first place is given in, never at that place
+    /// first: its opacity on `view`, and every other number it `started` on the element's view, at once - not at
+    /// the display's next frame, which comes after the toolkit has drawn this one.
+    /// Design: docs/design/host/motion.md#a-view-that-enters
+    private func presentsFromItsFirstFrame(_ started: Set<Prop>, on view: some FadingView) {
         view.setOpacity(value(.opacity)?.number ?? 1)
+        let drawn = started.subtracting([.opacity])
+        if !drawn.isEmpty { native.presentFrame(drawn) }
     }
 }

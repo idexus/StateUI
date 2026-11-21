@@ -60,6 +60,9 @@ final class StructuralEntryTests: XCTestCase {
         XCTAssertEqual(shown(.scale, of: element, in: runtime), 0.5)
         XCTAssertNil(shown(.translationX, of: element, in: runtime), "a number the effect leaves alone moves none")
         XCTAssertEqual(view.opacity, 0, "drawn there at once")
+        XCTAssertEqual(
+            (element.native as? NoView)?.presented.last, [.translationY, .scale],
+            "and its move and its scale too, before any frame: never drawn at its place first")
 
         clock.time = 100
         runtime.displayCycle.frame(now: 100)

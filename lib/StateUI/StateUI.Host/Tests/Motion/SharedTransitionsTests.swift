@@ -171,6 +171,10 @@ final class SharedTransitionsTests: XCTestCase {
         listed(bench)
 
         paged(bench)
+        XCTAssertEqual(
+            (bench.element("detail")?.native as? NoView)?.presented.last,
+            [.translationX, .translationY, .scaleX, .scaleY],
+            "drawn where it sets out before any frame: never at its own place first")
 
         XCTAssertEqual(bench.drawn(.translationX, of: "detail") ?? .nan, -60, accuracy: 0.001, "70 against 130 across")
         XCTAssertEqual(bench.drawn(.translationY, of: "detail") ?? .nan, -120, accuracy: 0.001, "80 against 200 down")

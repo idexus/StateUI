@@ -37,7 +37,10 @@ final class NoView: NativeElement {
     var animatesProperties = false
     func animates(_ property: Prop) -> Bool { animatesProperties }
     func applied(changed: Set<Prop>, wasDescribed: Bool) {}
-    func presentFrame(_ changed: Set<Prop>) {}
+
+    /// The properties the element was asked to present, a frame's or an entry's at a time.
+    var presented: [Set<Prop>] = []
+    func presentFrame(_ changed: Set<Prop>) { presented.append(changed) }
 
     /// How many times the element was told it is the application's no more.
     var deactivated = 0
