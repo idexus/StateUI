@@ -297,7 +297,9 @@ is none. `begins:` is a `DragStart`:
 `.immediately` as soon as the press moves; `.longPress` once it has stood
 still a long press's time; `.directional` once its first move goes the
 drag's one axis - a first move across is left to whatever stands behind the
-view, a scroller or a layout the hand moves.
+view, a scroller or a layout the hand moves. Once the drag has begun, the
+press is the drag's: let go - moved or not - the view taps nothing, so a card
+lifted by a long press and put down where it stood is not opened.
 
 ```swift
 struct Shelf: View {

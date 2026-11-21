@@ -96,6 +96,7 @@ extension MountedElement {
     private func take(_ input: HeardInput, in runtime: HostRuntime) -> Bool {
         switch input {
         case .press(let phase, let point, let size, let byFinger):
+            if phase == .began { tapTaken = false }
             // A press is a button's where the view hears taps, and the view's own where it answers one.
             if hearing.contains(.taps) {
                 let over = ButtonPress.isOver(point, in: size, byFinger: byFinger)
@@ -103,6 +104,11 @@ extension MountedElement {
             }
             pressedLocally(phase, at: point, size: size, in: runtime)
         case .tap(let run):
+            // The press its own drag took makes no tap, however its toolkit tells it.
+            guard !tapTaken else {
+                tapTaken = false
+                return true
+            }
             let count = max(1, whole(.tapCount) ?? 1)
             if run == 0 || run % count == 0 { send(.tapped, [], in: runtime) }
         case .longPress:
@@ -388,6 +394,15 @@ extension MountedElement {
     private func pressed(_ phase: GesturePhase, over: Bool, waits: Bool = false, in runtime: HostRuntime) {
         tell(buttonPress.step(phase, over: over, waits: waits, at: runtime.clock.now()), in: runtime)
         if buttonPress.isWaiting { runtime.handPace.opened(self) }
+    }
+
+    /// The view's own drag began: it takes the press under way, whose release is no tap - neither the press's nor
+    /// one the view's toolkit tells after it. The press's own effect on the view goes on with the drag.
+    /// Design: docs/design/host/interaction.md#a-views-own-press-and-drag
+    func dragTakesThePress(in runtime: HostRuntime) {
+        guard hearing.contains(.taps) else { return }
+        if buttonPress.isPressed { pressed(.cancelled, over: false, in: runtime) }
+        tapTaken = true
     }
 
     /// What a press said of the view, as its events.

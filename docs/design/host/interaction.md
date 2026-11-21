@@ -330,6 +330,13 @@ drag by how it begins - at once any move, directional one its axis leads, a
 long press by the frames once the press stood its time. What it does not
 take is left to whatever stands behind the view.
 
+A drag that begins takes the press it began from, as a pan does
+(`dragTakesThePress`): the view held under the hand is let go with no tap -
+neither the tap its press would make nor one its toolkit tells after it -
+whether it moved or not. A view lifted by a long press and let go where it
+stood is put down, not opened. The press's own effect goes on with the drag;
+only its tap is taken, until the next press begins.
+
 ## A press with a spring of its own
 
 A press that says a spring (`HostPress.spring` - the elastic press's) is not

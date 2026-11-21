@@ -97,6 +97,7 @@ extension MountedElement {
         var moved = local
         switch report.phase {
         case .began:
+            dragTakesThePress(in: runtime)
             // A hand taking a view on its way out takes it where it stands: its flight ends, and nothing is told.
             let flown = interruptFlight() ?? caught
             caught = nil

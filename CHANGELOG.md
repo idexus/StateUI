@@ -219,6 +219,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### New
 
+- **A view the hand has taken taps nothing as it is let go.** A drag of the view's own - `.interaction(.drag(_:begins:))`
+  - takes the press it began from, as a pan does: a view lifted by a long press and put down where it stood is no
+  longer tapped open by its release, whatever its platform tells.
+
 - **Two views tied by a key are one to the eye.** `.sharedTransition(_:)`, on any view, ties it to the view of
   the same key in its scope - a layout that says `.transitionScope(_:)`: as one of them leaves and the other
   enters in the same change, the entering one sets out from where the leaving one is drawn and grows onto its

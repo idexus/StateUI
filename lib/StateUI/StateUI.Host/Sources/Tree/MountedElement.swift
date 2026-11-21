@@ -308,6 +308,9 @@
     /// A press on the view as a button takes it, while the view hears taps.
     var buttonPress = ButtonPress()
 
+    /// Whether the view's own drag took the press under way: a tap its toolkit tells after it is none.
+    var tapTaken = false
+
     /// Whether the hand over the layout took the presses in it, in the touch under way.
     var handTookPresses = false
 

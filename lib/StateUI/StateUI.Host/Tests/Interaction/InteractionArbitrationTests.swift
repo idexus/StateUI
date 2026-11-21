@@ -31,6 +31,39 @@ final class InteractionArbitrationTests: XCTestCase {
     /// A press shrinking its view to nine tenths, at once.
     private static let shrinking = Interaction.press(values: .scale) { _ in PresentationOffset(scaleX: 0.9, scaleY: 0.9) }
 
+    /// A VIEW'S OWN DRAG TAKES ITS PRESS AS IT BEGINS: held still its long press, the view is the hand's, and let go
+    /// unmoved it taps nothing - neither by its press nor by a tap its toolkit tells; the next press taps again.
+    func testAViewsOwnDragTakesItsPressAsItBegins() throws {
+        let told = Told()
+        bench.mounted {
+            VStack {
+                Rectangle()
+                    .width(100).height(40)
+                    .interaction(.drag(.both, begins: .longPress))
+                    .onTapped { told.said.append("tapped") }
+            }
+            .node
+        }
+        let view = try XCTUnwrap(bench.element(.rectangle))
+        let at = Point(x: 10, y: 10)
+
+        hear(.press(.began, at: at, size: size, byFinger: false), on: view)
+        hear(.hand(.began, moved: .zero, speed: nil, point: at), on: view)
+        bench.frames(Int(HandReading.longPress / 16) + 4)
+        XCTAssertNotNil(view.local.held, "held still its time: the hand's")
+        XCTAssertFalse(view.buttonPress.isPressed, "the drag took the press")
+        hear(.hand(.ended, moved: .zero, speed: .zero, point: at), on: view)
+        hear(.press(.ended, at: at, size: size, byFinger: false), on: view)
+        hear(.tap(run: 1), on: view)
+        XCTAssertEqual(told.said, [], "let go unmoved, it taps nothing")
+
+        hear(.press(.began, at: at, size: size, byFinger: false), on: view)
+        hear(.press(.ended, at: at, size: size, byFinger: false), on: view)
+        XCTAssertEqual(told.said, ["tapped"], "a press of its own taps again")
+        hear(.tap(run: 0), on: view)
+        XCTAssertEqual(told.said, ["tapped", "tapped"], "and so does its toolkit's tap")
+    }
+
     /// A PAN TAKING A VIEW'S PRESS TAPS NOTHING: the press goes out as the pan begins, and its lift over the view
     /// is no tap.
     func testAPanTakingAViewsPressTapsNothing() throws {
