@@ -5,6 +5,31 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
+/// Whether the board below shows its detail, else its deck.
+@MainActor private let detailShown = State(wrappedValue: false)
+
+/// A deck of two cards a motion layout places, and the detail of the first outside it: under one scope, tied by a key.
+private struct CardBoard: View {
+    var body: some View {
+        VStack {
+            if detailShown.wrappedValue {
+                Text("detail").sharedTransition(5)
+            } else {
+                MotionLayout([5, 6], parameters: State(wrappedValue: 0.0).projectedValue) { card in
+                    Text("card \(card)").sharedTransition(card)
+                } placements: { _, _ in
+                    [Placement(Rect(x: 40, y: 40, width: 40, height: 40)), Placement(Rect(x: 90, y: 40, width: 40, height: 40))]
+                }
+            }
+        }
+        .transitionScope("board")
+    }
+}
+
+private struct CardBoardApplication: Application {
+    var body: some Scene { WindowGroup { CardBoard() } }
+}
+
 /// A shared transition on the host's side: one view dropped and one made in a patch under one key of one scope are
 /// one - the made one enters from where the dropped one was drawn - and anything else is each view's own.
 /// Design: docs/design/host/motion.md#a-shared-transition
@@ -192,6 +217,46 @@ final class SharedTransitionsTests: XCTestCase {
         within.stands("shown", at: Point(x: 10, y: 120), size: LayoutSize(width: 300, height: 200))
         within.place("detail", at: Rect(x: 20, y: 30, width: 200, height: 100))
         XCTAssertNotNil(within.drawn(.scaleX, of: "detail"), "one page: the two are one")
+    }
+
+    /// A CARD A MOTION LAYOUT PLACES OPENS INTO A DETAIL OUTSIDE THE LAYOUT, under a scope around both - the core
+    /// and the host layer together: the layout dropped with its cards in their holders, the detail made, in one
+    /// patch, and the detail enters from where the card was drawn.
+    func testACardOfAMotionLayoutOpensIntoADetailOutsideIt() throws {
+        detailShown.wrappedValue = false
+        CardBoardApplication.register()
+        let runtime = HostRuntime(clock: WoundClock(), reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
+        runtime.layoutMotion.applicationMotion = .eased(.milliseconds(200), curve: .linear)
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let root = try XCTUnwrap(runtime.tree.root)
+        func element(_ words: String) -> MountedElement? {
+            func find(_ element: MountedElement) -> MountedElement? {
+                if element.value(.text)?.string == words { return element }
+                return element.children.lazy.compactMap(find).first
+            }
+            return find(root)
+        }
+        let card = try XCTUnwrap(element("card 5"))
+        XCTAssertEqual(card.parent?.parent?.type, .motionLayout, "the card stands in its holder in the layout")
+        var above = card.parent
+        while let each = above, each.value(LayoutContract.transitionScope.token) == nil { above = each.parent }
+        let scope = try XCTUnwrap(above)
+        (scope.native as? NoView)?.frame = [0, 0, 300, 400, 10, 20, 10, 20]
+        (card.native as? NoView)?.frame = [40, 40, 40, 40, 50, 60, 50, 60]
+
+        detailShown.wrappedValue = true
+        runtime.pump.turn()
+        let detail = try XCTUnwrap(element("detail"))
+        runtime.layoutMotion.place(
+            Placed(), mount: detail.mount, at: Rect(x: 20, y: 30, width: 200, height: 100), stated: [], words: .none,
+            natural: { LayoutSize(width: 200, height: 100) },
+            enter: { entry in detail.enter(Shown(), as: entry) },
+            in: Arrangement(law: .eased(.milliseconds(200), curve: .linear), lanes: .all, joins: true), room: nil)
+
+        let drawn = { (property: Prop) in runtime.tree.presentedPropertyValue(mount: detail.mount, property: property)?.number }
+        XCTAssertEqual(drawn(.scaleX) ?? .nan, 0.2, accuracy: 0.001, "40 of 200: it sets out as large as the card")
+        XCTAssertEqual(drawn(.translationX) ?? .nan, -60, accuracy: 0.001, "the card's middle, 70, against 130")
     }
 
     /// A RETURN DURING THE MOVEMENT SETS OUT FROM WHERE THE VIEW NOW LEAVING IS DRAWN, and a view still leaving by
