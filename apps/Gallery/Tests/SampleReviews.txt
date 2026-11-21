@@ -55,7 +55,7 @@ GeometryReaderSample.swift f6efc1bf3588d8cc
 GridSample.swift 9c95bd0181e0d392
 HTTPRequestSample.swift bf26141a6d52f7d9
 HandMovesStateSample.swift 7b5ef0a4304c1b44
-HandOnViewSample.swift 7057a333b8f90668
+HandOnViewSample.swift b267b589aefde162
 HomeScreenSample.swift 7bf2792b8c26b4ca
 HostTimeSample.swift 45f0551e77c396a8
 IconButtonSample.swift a4ebe7201bac278c
@@ -150,7 +150,7 @@ ToolbarSample.swift 12e1a056530504fe
 TooltipSample.swift 75b87b84ff2d3bb2
 TouchThroughSample.swift 2f49a42898ac5f63
 TransformSample.swift 42f89ce8b8c4c513
-TransitionSample.swift 473f528fa5b9bbde
+TransitionSample.swift 929dd3b1eae5ac40
 TwoFingersSample.swift 44f9905a1657acf0
 TwoLayersSample.swift 5717dd57069aa0b6
 VisualStateSample.swift de176ef7da4dcd00

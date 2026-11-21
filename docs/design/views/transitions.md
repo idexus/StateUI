@@ -26,7 +26,7 @@ combined in the order written:
   .opacity               faded out wholly
   .translation(x:y:)     moved from its place, in points
   .scale(_:)             drawn so many times as large about its middle
-  .outside(_:)           wholly out of the room that holds it, one way
+  .outside(_:)           wholly out of sight, one way
 ```
 
 The order matters between a move and a scale, as it does in any drawing: a

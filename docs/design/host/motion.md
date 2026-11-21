@@ -357,10 +357,8 @@ Each goes by the road a property's own animation takes
 by already. The law is the element's own motion, else the application's
 (`LayoutMotion.law(of:)`) - never the layout's, which says how its children
 change places. An effect out of its room moves the element as far as takes
-it wholly out of the room its layout placed it in: a layout says its room as
-it begins an arrangement (`TravelingPlaces.begin(width:height:)`), and layout
-motion keeps it with the child's place (`LayoutMotion.placed`); a view no
-layout placed has no room to stand out of, and moves by nothing that way. A
+it wholly out of sight ([out of sight](#out-of-sight)); a view no layout
+placed has no room to stand out of, and moves by nothing that way. A
 number a state drives is the state's, and one already on its way keeps its
 way. Where nothing moves - no motion, or the user asked for
 less - the element stands as declared.
@@ -384,6 +382,24 @@ view it enters on, the move and the scales by the element's own
 frame: that one comes after the toolkit has drawn this one, and the view
 would stand a frame whole at its place first. A fade hid it; a move, a
 scale or a shared transition, which fades nothing, did not.
+
+## Out of sight
+
+A view going out of its room - by `.outside(_:)` as it comes or goes, or
+thrown away - goes wholly out of what shows it: the nearest view at or above
+the layout that placed it that draws nothing beyond its own rectangle - that
+layout where it clips its content, else a scroller or a page above
+(`MountedElement.placeInWhatShowsIt`, `standingInWhatShowsIt`). A layout says
+its room as it begins an arrangement (`TravelingPlaces.begin(width:height:)`),
+and layout motion keeps it with the child's place (`LayoutMotion.placed`);
+the layout's corner in what shows it, and that view's size, are read off the
+frames the toolkit reports. Where the toolkit says no rectangle, the room is
+the layout's.
+
+The trap is a layout that draws beyond its room. A stack does not clip: a
+view taken just past its edge stands in the margin around it, still seen,
+and vanishes as its exit ends. So the room is the view that cuts what it
+shows, and the move takes the view past that.
 
 ## A shared transition
 

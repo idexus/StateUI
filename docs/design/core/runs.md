@@ -242,7 +242,7 @@ then; one that awaits ends when it does, however long; one its gate let go -
 `ignoreWhileRunning` with a run under way - never started and is waited for
 no time. An event with no handler is an unknown id, and says nothing.
 
-It is what a dismissed view waits on: its host shows it out of the room until
+It is what a dismissed view waits on: its host shows it out of sight until
 the application's handlers have had their say, and puts it back where they
 left it standing ([a view thrown away](../views/interaction.md#a-view-thrown-away)).
 

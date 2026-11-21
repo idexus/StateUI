@@ -44,9 +44,9 @@ extension MountedElement {
 
         // Where each number is drawn now is where it sets out: a motion on its way goes on from there. The place
         // its layout gave it is read here, before it is that layout's no more.
-        let placed = tree.layoutMotion.placed(mount)
-        exitPlace = placed?.place
-        let moved = effect.move(of: placed?.place, in: placed?.room)
+        exitPlace = tree.layoutMotion.placed(mount)?.place
+        let sight = placeInWhatShowsIt()
+        let moved = effect.move(of: sight?.place, in: sight?.room)
         let ends: [(Prop, Double, Double)] = [
             (.opacity, 1, effect.opacity), (.translationX, 0, moved.x), (.translationY, 0, moved.y),
             (.scale, 1, effect.scale),

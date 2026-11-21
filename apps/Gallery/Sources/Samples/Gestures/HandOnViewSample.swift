@@ -55,7 +55,7 @@ struct HandOnViewSample: SampleContent, ExampleContent {
             .layoutBody(.onChange(response: .milliseconds(320), damping: 0.7))
             .accessibilityIdentifier("dragged")
 
-            // THROWN UP FAR ENOUGH, THE TICKET FLIES ON OUT OF THE STACK, AND `onDismissed` IS TOLD ONCE IT IS OUT.
+            // THROWN UP FAR ENOUGH, THE TICKET FLIES ON OUT OF SIGHT, AND `onDismissed` IS TOLD ONCE IT IS OUT.
             // Nothing removes it here, so it comes back where the stack puts it.
             ZStack {
                 Rectangle()

@@ -1195,7 +1195,7 @@ application removes the item, and the others close the gap. A view whose
 item no handler removed comes back to its place. A handler that awaits takes
 a policy, as an event's does -
 `.onItemDismissed(policy: .ignoreWhileRunning) { id in try await archive(id) }` -
-the view staying out of the room until it has ended; what it runs ends with
+the view staying out of sight until it has ended; what it runs ends with
 the layout. Written more than once, each runs, in the order written.
 
 A run with no ends comes round: `periodic: true` makes one turn of the range

@@ -170,6 +170,60 @@ final class StructuralEntryTests: XCTestCase {
         XCTAssertNil(shown(.translationY, of: placed, in: placing))
     }
 
+    /// A stack in a scroller, at (20, 100) in it, 300 by 200 - clipping its content where `clips` says - with a
+    /// label wearing `transition` placed at (20, 30) in it, 100 by 40; the scroller 400 by 800.
+    private func scrolled(
+        _ transition: Transition, clips: Bool
+    ) throws -> (runtime: HostRuntime, label: MountedElement, stack: MountedElement, tree: HostPatch) {
+        let runtime = HostRuntime(clock: WoundClock(), reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
+        runtime.layoutMotion.applicationMotion = .eased(.milliseconds(200), curve: .linear)
+        var label = HostPatch(id: .manual("label"), type: .text)
+        label.properties = [.transition: transition.propValue]
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        if clips { stack.properties = [.clipsContent: .bool(true)] }
+        stack.children = .arranged([label])
+        var scroller = HostPatch(id: .manual("scroller"), type: .scrollView)
+        scroller.children = .arranged([stack])
+        runtime.tree.apply(scroller, complete: true)
+        let root = try XCTUnwrap(runtime.tree.root)
+        let placed = try XCTUnwrap(root.first(id: .manual("label")))
+        let holder = try XCTUnwrap(root.first(id: .manual("stack")))
+        (root.native as? NoView)?.frame = [0, 0, 400, 800, 0, 0, 0, 0]
+        (holder.native as? NoView)?.frame = [20, 100, 300, 200, 20, 100, 20, 100]
+        let places = TravelingPlaces()
+        places.layoutMotion = runtime.layoutMotion
+        places.begin(width: 300, height: 200)
+        places.place(
+            Seated(), mount: placed.mount, at: Rect(x: 20, y: 30, width: 100, height: 40), values: LayoutValues(),
+            natural: { .zero }, enter: nil)
+        return (runtime, placed, holder, scroller)
+    }
+
+    /// AN EFFECT OUT OF ITS ROOM ENTERS FROM WHOLLY OUT OF SIGHT: past the edge of the nearest view that cuts what
+    /// it holds - the scroller - where its layout draws beyond its own room; past its layout's where that clips.
+    func testAnEffectOutOfItsRoomEntersFromOutOfSight() throws {
+        let open = try scrolled(.symmetric(.outside(.right)), clips: false)
+        open.label.enter(Joining(), as: .joining(under: .none))
+        XCTAssertEqual(shown(.translationX, of: open.label, in: open.runtime), 360, "past the scroller's edge: 400 - 40")
+
+        let clipped = try scrolled(.symmetric(.outside(.right)), clips: true)
+        clipped.label.enter(Joining(), as: .joining(under: .none))
+        XCTAssertEqual(shown(.translationX, of: clipped.label, in: clipped.runtime), 280, "past its stack's: 300 - 20")
+    }
+
+    /// AN EXIT OUT OF ITS ROOM GOES WHOLLY OUT OF SIGHT, by the same rule: the stack draws beyond its room, so the
+    /// label leaves past the scroller's edge.
+    func testAnExitOutOfItsRoomGoesOutOfSight() throws {
+        var (runtime, label, stack, tree) = try scrolled(Transition(enter: .identity, exit: .outside(.down)), clips: false)
+        (stack.native as? NoView)?.keepsExits = true
+        var emptied = HostPatch(id: .manual("stack"), type: .vStack)
+        emptied.children = .arranged([])
+        tree.children = .arranged([emptied])
+        runtime.tree.apply(tree, complete: false)
+        XCTAssertEqual(label.lifecycle, .exiting)
+        XCTAssertEqual(label.exitEnds[.translationY] ?? .nan, 670, accuracy: 0.001, "past the scroller's foot: 800 - 130")
+    }
+
     /// WHERE NOTHING MOVES, A CHILD STANDS AS DECLARED AT ONCE: less motion, or an application that moves nothing
     /// and a view of no motion of its own.
     func testWhereNothingMovesAChildStandsAtOnce() {

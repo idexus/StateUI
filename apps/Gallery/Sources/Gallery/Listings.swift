@@ -5576,7 +5576,7 @@ enum Listings {
                 .interaction(.drag(.both))
                 .layoutBody(.onChange(response: .milliseconds(320), damping: 0.7))
 
-                // THROWN UP FAR ENOUGH, THE TICKET FLIES ON OUT OF THE STACK, AND `onDismissed` IS TOLD ONCE IT IS OUT.
+                // THROWN UP FAR ENOUGH, THE TICKET FLIES ON OUT OF SIGHT, AND `onDismissed` IS TOLD ONCE IT IS OUT.
                 // Nothing removes it here, so it comes back where the stack puts it.
                 ZStack {
                     Rectangle()
@@ -13853,7 +13853,7 @@ enum Listings {
         static let ways = ["Rising", "Growing", "From outside"]
 
         /// What a note comes from and goes to: faded and lower, faded and
-        /// smaller, or wholly out of the stack to the right.
+        /// smaller, or wholly out of sight to the right.
         static func effect(_ way: Int) -> TransitionEffect {
             switch way {
             case 1: .opacity.combined(with: .scale(0.6))

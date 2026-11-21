@@ -254,10 +254,10 @@ beside the drag's axes (`HostDismissal`), so a view described again is the
 same program.
 
 `onDismissed` hears `ViewContract.dismissed` - the way the view left and the
-hand's speed, a `Dismissal` - once the view has left the room that holds it.
+hand's speed, a `Dismissal` - once the view is out of sight.
 Its handler removes what the view shows; a view no handler removes comes
 back, once every handler it started has ended - an awaiting one keeps the
-view out of the room while it runs. A motion layout hears the same of its
+view out of sight while it runs. A motion layout hears the same of its
 views with `onItemDismissed`, by the item. How the view leaves, is caught
 and comes back is the host layer's
 ([a view thrown away](../host/interaction.md#a-view-thrown-away)).

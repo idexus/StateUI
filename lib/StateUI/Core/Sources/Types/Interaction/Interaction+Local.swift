@@ -98,7 +98,8 @@ extension Interaction {
     }
 
     /// The drag letting its view go as a dismissal where the hand took it far enough one of `directions`, or threw
-    /// it that far: the view flies on out of the room that holds it, and `onDismissed` is told once it has left.
+    /// it that far: the view flies on out of sight - past the edge of its layout where that clips its content, else
+    /// of the nearest scroller or page above - and `onDismissed` is told once it has left.
     /// A view nobody removes then comes back to its place.
     ///
     ///     Card(card)

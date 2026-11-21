@@ -78,6 +78,43 @@ final class DismissalTests: XCTestCase {
         XCTAssertFalse(view.awaitsDismissal)
     }
 
+    /// A VIEW THROWN AWAY LEAVES WHAT SHOWS IT: its stack draws beyond its own room, so it is told once it has
+    /// passed the edge of the scroller above - 100 points down the scroller the stack stands, the card 80 down that.
+    func testAViewThrownAwayLeavesWhatShowsIt() throws {
+        let told = Told()
+        bench.mounted {
+            ScrollView {
+                VStack {
+                    Rectangle()
+                        .width(100).height(40)
+                        .interaction(.drag(.vertical).dismissal(directions: .up, threshold: 30))
+                        .onDismissed { dismissal in told.dismissals.append(dismissal) }
+                }
+            }
+            .node
+        }
+        let view = try XCTUnwrap(bench.element(.rectangle))
+        let stack = try XCTUnwrap(view.parent)
+        let scroller = try XCTUnwrap(bench.element(.scrollView))
+        (scroller.native as? NoView)?.frame = [0, 0, 300, 600, 0, 0, 0, 0]
+        (stack.native as? NoView)?.frame = [0, 100, 300, 200, 0, 100, 0, 100]
+        bench.cycle(on: view) { runtime, view in
+            stack.reportFrame([0, 100, 300, 200, 0, 100, 0, 100], in: runtime)
+            view.reportFrame([0, 80, 100, 40, 0, 180, 0, 0], in: runtime)
+        }
+
+        hand(.began, point: Point(x: 10, y: 10), on: view)
+        hand(.changed, moved: Point(x: 0, y: -40), on: view)
+        hand(.ended, speed: Point(x: 0, y: -200), on: view)
+        var frames = 0
+        while told.dismissals.isEmpty, frames < 300 {
+            bench.frames(1)
+            frames += 1
+        }
+        XCTAssertEqual(told.dismissals.map(\.direction), [.up])
+        XCTAssertLessThanOrEqual(view.drawingTransform.translationY, -220, "wholly past the scroller's top: 180 down, 40 tall")
+    }
+
     /// A THROW DISMISSES A VIEW THE HAND TOOK NO FURTHER THAN ITS THRESHOLD: where it stands and what its law
     /// carries at the hand's speed count together; a view let go slowly short of it goes back, told nothing.
     func testAThrowDismissesAndASlowLetGoDoesNot() async throws {

@@ -4,7 +4,7 @@
 // Design: docs/design/views/transitions.md#an-effect
 
 /// How a view is drawn while it is absent, against how it stands: what its entry comes from, and what its exit goes
-/// to. An effect is made of steps - faded out, moved, scaled, out of its room - combined in the order written.
+/// to. An effect is made of steps - faded out, moved, scaled, out of sight - combined in the order written.
 ///
 ///     .transition(.symmetric(.opacity.combined(with: .translation(y: 12))))
 public struct TransitionEffect: Equatable, Sendable {
@@ -51,7 +51,8 @@ public struct TransitionEffect: Equatable, Sendable {
         return TransitionEffect(steps: [.scale(factor)])
     }
 
-    /// The view wholly out of the room that holds it, one way: moved until its far edge has passed the room's.
+    /// The view wholly out of sight, one way: moved until its far edge has passed the edge of what shows it - its
+    /// layout where that clips its content, else the nearest scroller or page above.
     ///
     /// - Parameter direction: which way out.
     /// - Returns: the effect.
@@ -70,7 +71,7 @@ public struct TransitionEffect: Equatable, Sendable {
 }
 
 /// An effect as a host draws it: the opacity it multiplies the view's by, how far it moves the view, how many
-/// times as large it draws it, and the way out of its room, if any.
+/// times as large it draws it, and the way out of sight, if any.
 @_spi(Host) public struct HostTransitionEffect: Equatable, Sendable {
     /// What the view's opacity is multiplied by.
     public var opacity = 1.0
@@ -81,7 +82,7 @@ public struct TransitionEffect: Equatable, Sendable {
     /// How many times as large the view is drawn about its middle.
     public var scale = 1.0
 
-    /// The way the view stands wholly out of the room that holds it; nil where it stands in it.
+    /// The way the view stands wholly out of sight; nil where it stands in it.
     public var outside: SwipeDirection?
 
     /// Whether the effect changes nothing.

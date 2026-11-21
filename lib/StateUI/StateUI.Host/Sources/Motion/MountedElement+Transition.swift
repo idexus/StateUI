@@ -21,8 +21,8 @@ extension MountedElement {
     func enter(by effect: HostTransitionEffect, on view: some FadingView) {
         guard let tree, let law = tree.layoutMotion.law(of: motion) else { return }
 
-        let placed = tree.layoutMotion.placed(mount)
-        let moved = effect.move(of: placed?.place, in: placed?.room)
+        let sight = placeInWhatShowsIt()
+        let moved = effect.move(of: sight?.place, in: sight?.room)
         let starts: [(Prop, Double, Double)] = [
             (.opacity, 1, effect.opacity), (.translationX, 0, moved.x), (.translationY, 0, moved.y),
             (.scale, 1, effect.scale),

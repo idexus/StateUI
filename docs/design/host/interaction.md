@@ -410,7 +410,9 @@ from where the hand left it at the hand's speed, its way out no slower than
 the room's length in the law's time, until none of it stands in the room -
 its layout's room for a view a program places, else the room of what holds
 it, each read off the frame its host reports (`readsOwnFrame` is true for a
-view saying a dismissal and for what holds one). A layout's view is measured
+view saying a dismissal and for what holds one), or the room of the nearest
+view above that cuts what it holds where that one draws beyond its own
+([out of sight](motion.md#out-of-sight)). A layout's view is measured
 from its place at rest, not from where it is shown under the hand. A room
 nothing laid out gives no pace, and the operation ends once the law's time
 has run twice: it always ends. The element stays active and keeps its place

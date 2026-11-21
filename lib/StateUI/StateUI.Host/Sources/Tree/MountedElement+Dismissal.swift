@@ -3,8 +3,8 @@
 
 @_spi(Host) import StateUI
 
-/// A view the user throws away: let go far enough a way its drag's dismissal names, it flies on out of the room
-/// that holds it, its handlers are told, and it comes back where nobody removed it.
+/// A view the user throws away: let go far enough a way its drag's dismissal names, it flies on out of what shows
+/// it, its handlers are told, and it comes back where nobody removed it.
 /// Design: docs/design/host/interaction.md#a-view-thrown-away
 extension MountedElement {
     /// Whether the element waits for what its dismissal's handlers do with it: it hears nothing meanwhile.
@@ -29,15 +29,14 @@ extension MountedElement {
 
         let mirrored = programPlacing?.layout.runDirection == .rightToLeft
         let flown: SwipeDirection = mirrored && way == .left ? .right : mirrored && way == .right ? .left : way
-        let room = dismissalRoom.map { LayoutSize(width: $0.width, height: $0.height) } ?? LayoutSize(width: 0, height: 0)
-        flight = PresentationOperation(
-            .outside(flown), from: offset, speed: speed, pace: Double(rule.motion.milliseconds), room: room,
-            at: runtime.clock.now())
         // Where the view stands with no hand on it: a layout's view is shown where the hand left it, that far
         // from the place it is measured from.
         flownFrom = programPlacing.flatMap { layout, place in layout.programPlace(at: place)?.bounds }.map {
             Rect(x: $0.x - offset.x, y: $0.y - offset.y, width: $0.width, height: $0.height)
         } ?? laidOutFrame
+        flight = PresentationOperation(
+            .outside(flown), from: offset, speed: speed, pace: Double(rule.motion.milliseconds),
+            room: dismissalSight?.room ?? LayoutSize(width: 0, height: 0), at: runtime.clock.now())
         dismissing = (way, told)
         runtime.handPace.opened(self)
     }
@@ -46,8 +45,8 @@ extension MountedElement {
     func flown(in runtime: HostRuntime) {
         guard var flying = flight else { return }
 
-        let room = dismissalRoom.map { LayoutSize(width: $0.width, height: $0.height) }
-        let out = flying.step(to: runtime.clock.now(), frame: flownFrom, room: room)
+        let sight = dismissalSight
+        let out = flying.step(to: runtime.clock.now(), frame: sight?.from, room: sight?.room)
         flight = out ? nil : flying
         if local.held != flying.offset {
             local.held = flying.offset
@@ -66,9 +65,19 @@ extension MountedElement {
         return flying.offset
     }
 
-    /// The room the view leaves, and where it stands in it: its layout's for a view a program places, else the
-    /// room of what holds it - as the toolkit laid each out; nil before it did.
-    private var dismissalRoom: (width: Double, height: Double)? { (programPlacing?.layout ?? parent)?.laidOutRoom }
+    /// The room the view leaves, and where it flies from in it: what holds it - its layout for a view a program
+    /// places, else its parent - as the toolkit laid it out, or what shows that where it draws beyond its own room;
+    /// nil before the toolkit laid it out.
+    private var dismissalSight: (from: Rect?, room: LayoutSize)? {
+        guard let holder = programPlacing?.layout ?? parent, let laid = holder.laidOutRoom else { return nil }
+        guard let sight = holder.standingInWhatShowsIt() else {
+            return (flownFrom, LayoutSize(width: laid.width, height: laid.height))
+        }
+        let from = flownFrom.map {
+            Rect(x: $0.x + sight.corner.x, y: $0.y + sight.corner.y, width: $0.width, height: $0.height)
+        }
+        return (from, sight.room)
+    }
 
     private var laidOutFrame: Rect? {
         guard let corner = laidOutCorner, let size = laidOutRoom else { return nil }
