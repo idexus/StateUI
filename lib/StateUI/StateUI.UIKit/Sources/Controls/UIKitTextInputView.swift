@@ -94,6 +94,7 @@ extension UIKitTextInputView where Self: UITextField {
         case .next: .next
         case .done: .done
         }
+        typing.takesKeyboardDown = InputTraits.takesKeyboardDown(key)
         if isFirstResponder { reloadInputViews() }
     }
 

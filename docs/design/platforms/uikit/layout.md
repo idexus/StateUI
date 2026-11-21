@@ -66,6 +66,8 @@ joined until the next frame, and the movement rests where the finger lets go
 without a throw, where a throw runs out, or once the scroller has stood still.
 An offset the tree writes moves the scroller within its reach as the program's
 move, heard by nobody; one written before the first layout waits for it.
+A drag of a scroller, or of a list, takes the keyboard down with the finger
+([the keyboard down](../../types/keyboard.md#the-keyboard-down)).
 
 UIKit pulls a scroller's offset back within its reach whenever its frame is
 set - set again to the same frame too - so the host sets the frame only where

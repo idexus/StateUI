@@ -15,8 +15,10 @@ final class UIKitTyping: NSObject, UITextFieldDelegate, UITextViewDelegate {
     /// What the view does when the user changed its words, handed all of them.
     var onTextChanged: ((String) -> Void)?
 
-    /// What a field does when the user submits it with the return key.
+    /// What a field does when the user submits it with the return key, and whether its return - Done, or the
+    /// platform's own - then takes the keyboard down (`InputTraits.takesKeyboardDown`).
     var onSubmitted: (() -> Void)?
+    var takesKeyboardDown = true
 
     /// How many characters the view accepts; nil for no bound.
     var maximumLength: Int?
@@ -43,6 +45,8 @@ final class UIKitTyping: NSObject, UITextFieldDelegate, UITextViewDelegate {
 
     func textFieldShouldReturn(_ field: UITextField) -> Bool {
         onSubmitted?()
+        // Design: docs/design/types/keyboard.md#the-keyboard-down
+        if takesKeyboardDown, field.isFirstResponder { field.resignFirstResponder() }
         return true
     }
 

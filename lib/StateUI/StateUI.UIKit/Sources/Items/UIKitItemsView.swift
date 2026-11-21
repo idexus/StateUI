@@ -36,6 +36,8 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing, U
         collection.backgroundColor = .clear
         // What it keeps clear of the bars over it is the page's word (`keepClear`), never UIKit's own guess.
         collection.contentInsetAdjustmentBehavior = .never
+        // A drag takes the keyboard down with the finger. Design: docs/design/types/keyboard.md#the-keyboard-down
+        collection.keyboardDismissMode = .interactive
         collection.allowsSelection = false
         collection.delegate = self
         collection.setCollectionViewLayout(madeLayout(layout), animated: false)

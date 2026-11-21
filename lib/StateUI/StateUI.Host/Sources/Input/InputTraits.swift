@@ -125,4 +125,12 @@
     public static func submitLabel(_ written: SubmitLabel?, searching: Bool) -> SubmitLabel {
         written ?? (searching ? .search : .automatic)
     }
+
+    /// Whether a field submitted by the return key `label` - as the keyboard shows it - takes an on-screen keyboard
+    /// down: Done, the platform's own, Go and Search end the typing; Next hands the keyboard on, and Send leaves it
+    /// up for the next message.
+    /// Design: docs/design/types/keyboard.md#the-keyboard-down
+    public static func takesKeyboardDown(_ label: SubmitLabel) -> Bool {
+        label != .next && label != .send
+    }
 }

@@ -41,4 +41,22 @@ final class UIKitScrollViewTests: XCTestCase {
         }
         XCTAssertEqual(offset.wrappedValue.y, -40, accuracy: 0.001, "and the state follows it")
     }
+
+    /// A DRAG TAKES THE KEYBOARD DOWN WITH IT: a scroller's and a list's, the keyboard following the finger down -
+    /// the road out of an editor, whose return starts a new line.
+    /// Design: docs/design/types/keyboard.md#the-keyboard-down
+    @MainActor
+    func testADragTakesTheKeyboardDownWithIt() throws {
+        let host = UIKitRenderer.running {
+            VStack {
+                ScrollView { Text("A page") }.height(200)
+                ItemsView(0..<3) { Text("Row \($0)") }.height(200)
+            }
+        }
+        defer { host.finish() }
+        let scroller = try XCTUnwrap(host.views(UIKitScrollView.self).first?.scroller)
+        let list = try XCTUnwrap(host.views(UIKitItemsView.self).first?.collection)
+
+        XCTAssertEqual([scroller.keyboardDismissMode, list.keyboardDismissMode], [.interactive, .interactive])
+    }
 }

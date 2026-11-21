@@ -293,7 +293,7 @@ of its own:
 | `isSpellCheckEnabled` | every field | whether the platform marks what it takes to be misspelled |
 | `isTextPredictionEnabled` | every field | whether the platform offers the next word |
 | `isPassword` | `TextField` | what is typed hides behind the platform's secure-entry marks |
-| `submitLabel` | `TextField`, `SearchField` | the return key's caption - `.done`, `.go`, `.next`, `.search`, `.send`; what the key does is `.onSubmitted`, whatever it says, and `.next` hands the keyboard on to the next field |
+| `submitLabel` | `TextField`, `SearchField` | the return key's caption - `.done`, `.go`, `.next`, `.search`, `.send`; what the key does is `.onSubmitted`, whatever it says. On a keyboard on the screen, `.done`, the platform's own, `.go` and `.search` take the keyboard down, `.next` hands it on to the next field, and `.send` leaves it up for the next message |
 | `showsClearButton` | `TextField` | whether the native button that empties the field shows, where the platform's field has one; it does unless told otherwise |
 | `stroke`, `lineWidth`, `shape` | every field | an outline of the application's own and the shape the field's ground and outline follow, in place of the platform's frame - as a button's box; AppKit's search field keeps its own |
 

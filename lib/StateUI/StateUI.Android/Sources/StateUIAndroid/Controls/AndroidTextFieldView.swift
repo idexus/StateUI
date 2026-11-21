@@ -34,6 +34,18 @@ final class AndroidTextFieldView: AndroidTextualView {
     /// What the field does when the user submits it.
     var onSubmitted: (() -> Void)?
 
+    /// Whether the field's return - Done, Go or Search - takes the keyboard down (`InputTraits.takesKeyboardDown`).
+    private(set) var returnTakesKeyboardDown = false
+
+    /// The user submitted the field: it says so, and a return that ends the typing takes the keyboard down, the
+    /// focus with it, as `window.hideOnScreenKeyboard()` does - Android's own field does so for Done alone.
+    /// Design: docs/design/types/keyboard.md#the-keyboard-down
+    func submitted() {
+        onSubmitted?()
+        guard returnTakesKeyboardDown else { return }
+        _ = Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(reference))
+    }
+
     /// The most characters the user can type; nil for no bound.
     var maximumLength: Int?
 
@@ -54,9 +66,7 @@ final class AndroidTextFieldView: AndroidTextualView {
         super.init { _ in Java.new(JavaAPI.editText, JavaAPI.newEditText, .object(AndroidRenderer.context)) }
         applyInputType()
         switch kind {
-        case .field:
-            break
-        case .search:
+        case .field, .search:
             setReturnKey(nil)
         case .editor:
             Java.call(
@@ -127,11 +137,15 @@ final class AndroidTextFieldView: AndroidTextualView {
         applyTypeface()
     }
 
-    /// What the keyboard's return key does; nil for the kind's own - the platform's, or a search.
+    /// What the keyboard's return key does; nil for the kind's own - one that ends the typing, or a search.
     func setReturnKey(_ key: SubmitLabel?) {
-        // EditorInfo.IME_ACTION_UNSPECIFIED, _GO, _SEARCH, _SEND, _NEXT and _DONE.
-        let action: Int32 = switch InputTraits.submitLabel(key, searching: kind == .search) {
-        case .automatic: 0
+        // EditorInfo.IME_ACTION_DONE, _GO, _SEARCH, _SEND and _NEXT. The platform's own return ends the typing as
+        // Done does, the keyboard going down; left unspecified, the keyboard would offer a Next StateUI's own Next
+        // alone takes. Design: docs/design/types/keyboard.md#the-keyboard-down
+        let label = InputTraits.submitLabel(key, searching: kind == .search)
+        returnTakesKeyboardDown = InputTraits.takesKeyboardDown(label)
+        let action: Int32 = switch label {
+        case .automatic: 6
         case .go: 2
         case .search: 3
         case .send: 4

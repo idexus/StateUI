@@ -53,6 +53,8 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefresh
         movement.onFramesWanted = { [weak self] in self?.onFramesWanted?() }
         scroller.delegate = self
         scroller.contentInsetAdjustmentBehavior = .never
+        // A drag takes the keyboard down with the finger. Design: docs/design/types/keyboard.md#the-keyboard-down
+        scroller.keyboardDismissMode = .interactive
         scroller.addSubview(document)
         addSubview(scroller)
         configure(vertical: .automatic, horizontal: .automatic)

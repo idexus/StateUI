@@ -96,6 +96,37 @@ keyboard does the same though nothing captions it; Android's keyboard would
 search for a next view by its own reckoning, so its listener keeps the Next
 action StateUI's.
 
+## The keyboard down
+
+A return that ends the typing takes an on-screen keyboard down as the field
+is submitted (`InputTraits.takesKeyboardDown`):
+
+```text
+  Done, the platform's own,   the keyboard goes down: the field gives up the focus
+  Go, Search
+  Next                        the keyboard goes on to the next field (above)
+  Send                        the keyboard stays for the next message; the application
+                              takes it down itself where it wants (`window.hideOnScreenKeyboard()`)
+```
+
+The submission is raised first, so a handler that focuses a field has the
+last word. UIKit's field gives up the keyboard as its return is pressed
+(`UIKitTyping`); Android's field hides it and gives up the focus as
+`hideOnScreenKeyboard` does (`AndroidTextFieldView.submitted`), and a text
+field whose tree names no return asks for Done: left unspecified, the
+keyboard would offer a Next only StateUI's own Next takes. A desktop keyboard
+is no view on the screen, and Return leaves the field focused.
+
+An editor's return starts a new line, so the keyboard goes down another
+way. On iOS a drag of a scroller or a list takes it down with the finger
+(`keyboardDismissMode` `.interactive`); Android's own Back takes it down
+anywhere.
+
+The trap is a page that owns its screen. With no scroller to drag and an
+editor on it, nothing of the platform takes an iOS keyboard down: the page
+offers a button that does (`window.hideOnScreenKeyboard()`), as the
+Gallery's scratchpad does.
+
 ## In a window
 
 What a shortcut reaches is decided once, in the host layer

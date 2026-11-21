@@ -358,6 +358,12 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### Fixed
 
+- **Return takes the keyboard down on iOS and Android.** A field submitted by a return that says Done, Go or
+  Search, or that says nothing of its own, gives up an on-screen keyboard, as `SubmitLabel` now says: on iOS no
+  return did, and a page with no scroller left no way to close the keyboard. Next hands it on, as before; Send
+  leaves it up for the next message. On Android a text field that names no return offers Done. On iOS a drag of
+  a `ScrollView` or an `ItemsView` takes the keyboard down with the finger, the road out of a `TextEditor`.
+
 - **A motion layout that leaves stands its views where its program put them.** As it faded out, or went along
   with a card opening into its detail, every view in it was drawn across the layout's whole room, the last one
   over the rest, until it was gone.

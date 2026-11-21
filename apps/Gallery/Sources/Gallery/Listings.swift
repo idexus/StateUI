@@ -11303,6 +11303,11 @@ enum Listings {
                     Text("Scratchpad windows: \(scene.windows.count) · scenes open: \(application.scenes.count)")
 
                     HStack {
+                        // The editor's return starts a new line, and nothing scrolls here: on a phone the keyboard goes
+                        // down by this.
+                        Button("Done")
+                            .onClicked(policy: .ignoreWhileRunning) { _ = try await window.hideOnScreenKeyboard() }
+
                         Button("Close this window")
                             .onClicked(policy: .ignoreWhileRunning) { try await window.close() }
 

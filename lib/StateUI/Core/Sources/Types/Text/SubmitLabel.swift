@@ -6,13 +6,14 @@
 
 /// The label on the keyboard's return key.
 public enum SubmitLabel: Int32, Sendable {
-    /// Whatever the platform calls it.
+    /// Whatever the platform calls it: as the field is submitted, an
+    /// on-screen keyboard goes down, as it does for Done.
     case automatic = 0
 
-    /// "Done".
+    /// "Done": as the field is submitted, an on-screen keyboard goes down.
     case done = 1
 
-    /// "Go".
+    /// "Go": as the field is submitted, an on-screen keyboard goes down.
     case go = 2
 
     /// "Next": as the field is submitted, the keyboard goes on to the next
@@ -20,10 +21,11 @@ public enum SubmitLabel: Int32, Sendable {
     /// hidden or disabled; after the last it stays.
     case next = 3
 
-    /// "Search".
+    /// "Search": as the field is submitted, an on-screen keyboard goes down.
     case search = 4
 
-    /// "Send".
+    /// "Send": the keyboard stays up for the next message as the field is
+    /// submitted.
     case send = 5
 }
 

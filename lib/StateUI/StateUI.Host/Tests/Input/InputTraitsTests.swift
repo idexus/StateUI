@@ -79,4 +79,11 @@ final class InputTraitsTests: XCTestCase {
         XCTAssertEqual(InputTraits.submitLabel(.go, searching: true), .go)
         XCTAssertEqual(InputTraits.submitLabel(.done, searching: false), .done)
     }
+
+    /// A RETURN THAT ENDS THE TYPING TAKES THE KEYBOARD DOWN: Done, the platform's own, Go and Search; Next hands it
+    /// on, and Send leaves it up for the next message.
+    func testAReturnThatEndsTheTypingTakesTheKeyboardDown() {
+        let labels: [SubmitLabel] = [.automatic, .done, .go, .next, .search, .send]
+        XCTAssertEqual(labels.map(InputTraits.takesKeyboardDown), [true, true, true, false, true, false])
+    }
 }

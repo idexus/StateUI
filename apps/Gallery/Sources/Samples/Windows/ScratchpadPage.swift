@@ -31,6 +31,12 @@ struct ScratchpadPage: View {
                 .textColor(Palette.subtle)
 
             HStack {
+                // The editor's return starts a new line, and nothing scrolls here: on a phone the keyboard goes
+                // down by this.
+                Button("Done")
+                    .accessibilityIdentifier("scratchpad.done")
+                    .onClicked(policy: .ignoreWhileRunning) { _ = try await window.hideOnScreenKeyboard() }
+
                 Button("Close this window")
                     .accessibilityIdentifier("scratchpad.close")
                     .onClicked(policy: .ignoreWhileRunning) { try await window.close() }

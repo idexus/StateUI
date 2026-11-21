@@ -225,7 +225,7 @@ enum JavaNatives {
         }
         let submitted: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidTextFieldView)?.onSubmitted?()
+                (AndroidView.find(number) as? AndroidTextFieldView)?.submitted()
             }
         }
         let scrolled: @convention(c) (Environment, jclass?, jlong) -> Void = { _, _, number in

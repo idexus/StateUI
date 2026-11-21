@@ -115,7 +115,9 @@ its input type again.
 
 A text field, a search field and a text editor are one `EditText` of three
 kinds. A search field is a field whose keyboard's return key is captioned for
-a search; a text field's is the platform's until the tree names one. An
+a search; a text field's is Done until the tree names one, so the
+platform's own return takes the keyboard down
+([the keyboard down](../../types/keyboard.md#the-keyboard-down)). An
 editor takes several lines, standing from its top, and Return starts a new
 one. One that does not grow with its words is one line tall where nothing
 gives it room, and scrolls within the room it is given; one that grows is as

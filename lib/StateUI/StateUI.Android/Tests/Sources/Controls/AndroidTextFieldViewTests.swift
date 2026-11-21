@@ -33,6 +33,7 @@ final class AndroidTextFieldViewTests: XCTestCase {
             ("testAReturnsReleaseStaysOnTheFieldItsSubmitAimedAt", testAReturnsReleaseStaysOnTheFieldItsSubmitAimedAt),
             ("testAHardwareReturnStartsANewLineInAnEditor", testAHardwareReturnStartsANewLineInAnEditor),
             ("testAReturnKeyIsCaptionedAsTheTreeSays", testAReturnKeyIsCaptionedAsTheTreeSays),
+            ("testAReturnThatEndsTheTypingTakesTheKeyboardDown", testAReturnThatEndsTheTypingTakesTheKeyboardDown),
             ("testASearchFieldSubmitsItsSearch", testASearchFieldSubmitsItsSearch),
             ("testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold", testAnEditorTakesSeveralLinesAndGrowsOnlyWhenTold),
             ("testWordsStandAcrossAsTheTreeSaysAndDownAsTheKindDoes", testWordsStandAcrossAsTheTreeSaysAndDownAsTheKindDoes),
@@ -255,8 +256,8 @@ final class AndroidTextFieldViewTests: XCTestCase {
         }
     }
 
-    /// A field's return key is the platform's where nothing is said, and the tree's choice where it is; a
-    /// search field's is a search.
+    /// A field's return key is Done where nothing is said - the platform's own return ends the typing, and the
+    /// keyboard goes down - and the tree's choice where it is; a search field's is a search.
     func testAReturnKeyIsCaptionedAsTheTreeSays() {
         onMainActor {
             let host = AndroidRenderer.running {
@@ -268,8 +269,31 @@ final class AndroidTextFieldViewTests: XCTestCase {
             }
             let fields = host.views(AndroidTextFieldView.self)
 
-            // EditorInfo.IME_ACTION_UNSPECIFIED, IME_ACTION_NEXT and IME_ACTION_SEARCH.
-            XCTAssertEqual(fields.map { Java.callInt($0.reference, TestJava.getImeOptions) }, [0, 5, 3])
+            // EditorInfo.IME_ACTION_DONE, IME_ACTION_NEXT and IME_ACTION_SEARCH.
+            XCTAssertEqual(fields.map { Java.callInt($0.reference, TestJava.getImeOptions) }, [6, 5, 3])
+        }
+    }
+
+    /// A RETURN THAT ENDS THE TYPING TAKES THE KEYBOARD DOWN, the focus with it - Go and Search as Done does, which
+    /// Android's own field would leave up; Send keeps both for the next message.
+    func testAReturnThatEndsTheTypingTakesTheKeyboardDown() {
+        onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    TextField("").submitLabel(.go)
+                    TextField("").submitLabel(.send)
+                    SearchField("")
+                }
+            }
+            let fields = host.views(AndroidTextFieldView.self)
+            XCTAssertEqual(fields.count, 3)
+
+            let keeps = fields.map { field in
+                XCTAssertTrue(Java.callBool(field.reference, TestJava.requestFocus), "the field takes the focus")
+                field.submitted()
+                return Java.callBool(field.reference, TestJava.hasFocus)
+            }
+            XCTAssertEqual(keeps, [false, true, false], "Send alone keeps the keyboard")
         }
     }
 

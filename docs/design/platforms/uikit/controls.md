@@ -45,7 +45,8 @@ text view; each takes the words the tree changed and leaves the user's typing
 and caret alone. One delegate serves them all: it reports the user's words,
 cut to the view's bound, keeps a field's words unchanged while it is read
 only - a read-only editor is not editable - and hears the return key as
-submitting a field. A caret and a selection are
+submitting a field, giving up the keyboard where the return ends the typing
+([the keyboard down](../../types/keyboard.md#the-keyboard-down)). A caret and a selection are
 counted in characters and handed to UIKit in its UTF-16 units. A text view has
 no placeholder of its own, so an editor shows one in a label over itself; an
 editor that grows with its words asks for their whole height instead of
