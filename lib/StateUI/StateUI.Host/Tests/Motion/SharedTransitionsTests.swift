@@ -188,6 +188,22 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertNil(bench.drawn(.scaleX, of: "detail"))
     }
 
+    /// A VIEW DRAWN UNDER WHAT HOLDS IT SETS ITS PARTNER OUT FROM THERE: the transform of every view above it, up to
+    /// its scope, draws it too - a list drawn at half its size draws its thumbnail at half, about the list's middle.
+    func testAViewDrawnUnderWhatHoldsItSetsItsPartnerOutFromThere() {
+        let bench = Bench()
+        var list = Bench.holder("list", [Bench.keyed("thumbnail", 5)])
+        list.properties = [.scale: .number(0.5)]
+        bench.show([list], complete: true)
+        bench.stands("list", at: Point(x: 40, y: 50), size: LayoutSize(width: 100, height: 100))
+        bench.stands("thumbnail", at: Point(x: 50, y: 60), size: LayoutSize(width: 40, height: 40))
+
+        paged(bench)
+        XCTAssertEqual(bench.drawn(.scaleX, of: "detail") ?? .nan, 0.1, accuracy: 0.001, "20 of 200: drawn at half")
+        XCTAssertEqual(bench.drawn(.translationX, of: "detail") ?? .nan, -50, accuracy: 0.001, "80 against 130 across")
+        XCTAssertEqual(bench.drawn(.translationY, of: "detail") ?? .nan, -110, accuracy: 0.001, "90 against 200 down")
+    }
+
     /// A HOLDER MADE WITH A VIEW SETTING OUT FROM ITS PARTNER COMES AS IT STANDS: joining a layout that stands, it
     /// does not fade in - its fade would hide where that view sets out. A holder made with no partner in it fades in.
     func testAHolderMadeWithAViewSettingOutFromItsPartnerComesAsItStands() {

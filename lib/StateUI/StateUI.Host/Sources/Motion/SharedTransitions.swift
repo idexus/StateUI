@@ -57,9 +57,10 @@
     /// under it is noted where it is drawn.
     func dropped(_ element: MountedElement) {
         if let key = Self.key(of: element), let numbers = element.native.frameNumbers(), numbers.count >= 8 {
-            let drawn = element.presentationFrame(from: numbers)
+            let own = element.presentationFrame(from: numbers)
             sources[key, default: []].append(Source(
-                patch: patch, drawn: Rect(x: drawn[4], y: drawn[5], width: drawn[2], height: drawn[3]),
+                patch: patch,
+                drawn: Self.drawn(Rect(x: own[4], y: own[5], width: own[2], height: own[3]), above: element, to: key.scope),
                 window: element.enclosing(type: .window)?.mount, page: element.enclosing(type: .page)?.mount,
                 element: element))
             framesLeft = PresentationChanges.layoutWindow
@@ -145,6 +146,20 @@
             made.removeAll()
             born.removeAll()
         }
+    }
+
+    /// `rect`, drawn by `element`, as every view above it up to the scope `scope` draws it too - each one's
+    /// transform about its own pivot, as its toolkit stands it, no transform in that.
+    private static func drawn(_ rect: Rect, above element: MountedElement, to scope: UInt64) -> Rect {
+        var (drawn, above) = (rect, element.parent)
+        while let holder = above, holder.mount != scope {
+            if let frame = holder.native.frameNumbers(), frame.count >= 8 {
+                drawn = holder.drawingTransform.bounds(
+                    of: drawn, within: Rect(x: frame[4], y: frame[5], width: frame[2], height: frame[3]))
+            }
+            above = holder.parent
+        }
+        return drawn
     }
 
     /// The key `element` wears in the scope it stands under; nil where it wears none or stands under no scope.

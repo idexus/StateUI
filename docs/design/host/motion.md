@@ -410,7 +410,8 @@ The host layer keeps the notes of one patch (`SharedTransitions`, the tree's
 
 ```text
   a patch drops a child     every view wearing a key in it or under it is noted, with the
-                            rectangle it is DRAWN in - its own transform in it - in its window
+                            rectangle it is DRAWN in - its own transform in it, and every one
+                            above it up to the scope - in its window
   a patch makes a view      wearing a key: noted
   its first place           one view dropped and one made under the key, in that patch, one window
                             and one page, and both rectangles known:
@@ -457,7 +458,12 @@ and so goes on from there.
 
 The trap is the leaving view's place. Its layout's rectangle is where it
 would stand; a view half way through its own entry is drawn elsewhere, and
-the partner must set out from what the user sees.
+the partner must set out from what the user sees. A view drawn under what
+holds it - an app the hand pulls up and shrinks by its own root - is drawn
+there too: a host says each corner with no transform in it
+([a corner in the window](runtime.md#a-corner-in-the-window)), so the host
+layer lays each holder's transform, up to the scope, over the rectangle, about
+that holder's own pivot (`HostDrawingTransform.bounds(of:within:)`).
 
 The trap is what holds the made view. A holder the same patch makes - the
 row a thumbnail comes back in - joins a layout that stands, and would fade in
