@@ -96,3 +96,47 @@ transition the view declares.
 The trap is a transition read as the view's state. It is the last one a
 patch said: nothing follows it, and writing another to a standing view
 starts no motion.
+
+## A shared transition
+
+Two views may be one thing to the user - a thumbnail and its picture. A
+transition of each says how each comes and goes; a shared transition says
+that as one goes and the other comes, in the same change, what the user sees
+is one view growing from where the first was.
+
+```text
+  .transitionScope(id)     on a layout: the views in it are matched in it          LayoutContract.transitionScope
+  .sharedTransition(id)    on a view: the one of this id in its scope is its partner   ViewContract.sharedTransition
+```
+
+The views stay two views. Nothing of the leaving one's state is the entering
+one's, and the key is no `.id(_:)`: it ties what is drawn, not who a view is.
+
+A scope is a layout - the type refuses the modifier anywhere else - as it is
+what holds the views that come and go: a scope written on a view that holds
+none would promise nothing. A view's scope is the nearest layout above it
+that says one; a view under none is tied to nothing.
+
+Both identities are any `Hashable`, and a host compares none of them. The
+modifier asks the core for the number an identity crosses as
+(`SharedIdentities`): the same number while an element wears it - so the view
+a walk drops and the view the same walk makes, written with equal
+identities, cross under one number - and forgotten once a walk ends with
+nobody wearing it, so an identity written again later gets another. No
+number is given twice.
+
+```text
+  a view is made or said    the differ notes it wears the number
+  a view is forgotten       it wears it no more
+  a walk ends               the numbers nobody wears are let go
+```
+
+What a host does with the two numbers is
+[the host layer's](../host/motion.md#a-shared-transition): where one view
+dropped and one view made meet under a key, the made one enters from where
+the dropped one was drawn; anywhere else each goes by its own transition.
+
+The trap is a key read as an identity. Two views of one `.id(_:)` are one
+element continued; two views of one shared key are two elements, each with
+its own life, tied for the length of one entry.
+

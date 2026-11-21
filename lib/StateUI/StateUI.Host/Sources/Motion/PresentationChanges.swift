@@ -229,13 +229,15 @@
         ended(.rest(mount), as: .detached)
     }
 
-    /// `element` left by an exit nothing draws - `reason` says why: every change whose patch is being applied over
-    /// it hears so, the movement born and ended in one step.
+    /// A movement of `element` a patch asked for is not drawn - `reason` says why: every change whose patch is
+    /// being applied over it, or whose layout window is open over it, hears so, the movement born and ended in
+    /// one step.
     func refused(_ element: MountedElement, _ reason: PresentationInterruption) {
-        guard !opened.isEmpty else { return }
+        let hearing = opened + waiting.filter { $0.framesLeft > 0 }
+        guard !hearing.isEmpty else { return }
 
         let above = Self.mounts(from: element)
-        for group in opened where above.contains(group.root) { group.reasons.append(reason) }
+        for group in hearing where above.contains(group.root) { group.reasons.append(reason) }
     }
 
     /// The render's patch is applied: the changes it opened are answered so, and wait for their members and for

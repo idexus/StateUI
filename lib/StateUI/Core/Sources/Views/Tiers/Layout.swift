@@ -8,6 +8,24 @@ public protocol LayoutProperties: ViewProperties {}
 public protocol Layout: ElementView, LayoutProperties, PaddingElement, BorderElement, KeyboardElement {}
 
 extension LayoutProperties {
+    /// Makes this layout the scope the shared transitions under it are matched in: a view leaving and a view
+    /// entering in it under one `sharedTransition(_:)` are one.
+    ///
+    ///     ZStack {
+    ///         if let chosen { Detail(chosen) } else { Thumbnails() }
+    ///     }
+    ///     .transitionScope("catalog")
+    ///
+    /// The scope is a layout that stands while the views in it come and go. Two scopes of one identity are two
+    /// scopes.
+    ///
+    /// - Parameter id: what tells this scope from another; any `Hashable`.
+    public func transitionScope(_ id: some Hashable) -> Modified {
+        setValue(
+            LayoutContract.transitionScope,
+            Renderer.shared.sharedIdentities.number(for: ElementIdentity(AnyHashable(id))))
+    }
+
     /// Whether a child drawn outside the layout's bounds is cut off at them.
     public func clipsContent(_ value: Bool) -> Modified {
         setValue(LayoutContract.clipsContent, value)

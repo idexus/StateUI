@@ -27,3 +27,4 @@ How each of them realizes these members is on its own page.
 | `clipsContent` | property | `Bool` | native |
 | `letsInputThrough` | property | `Bool` | native |
 | `layoutBodies` | property | `LayoutBody` | stateUI |
+| `transitionScope` | property | `Int` | stateUI |

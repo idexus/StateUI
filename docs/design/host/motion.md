@@ -375,6 +375,50 @@ motion of its own, in an application that says none, would then never
 enter; so the layout says only that the child joined, and under what law
 its own children move, and the element reads its transition.
 
+## A shared transition
+
+A view made wearing a key enters from where the one view its patch dropped
+wearing that key was drawn ([the declaration](../views/transitions.md#a-shared-transition)).
+The host layer keeps the notes of one patch (`SharedTransitions`, the tree's
+`shared`), and no host adds to it:
+
+```text
+  a patch drops a child     every view wearing a key in it or under it is noted, with the
+                            rectangle it is DRAWN in - its own transform in it - in its window
+  a patch makes a view      wearing a key: noted
+  its first place           one view dropped and one made under the key, in that patch, one window
+                            and one page, and both rectangles known:
+                              it is drawn moved by the difference of their middles and scaled by
+                              the ratio of their sizes, each way apart, and brought onto what it
+                              declares under its own motion, else the application's
+                              the dropped one, still leaving by its own exit, ends at once
+                            anything else: it enters as any view does, and a change that waits
+                            for the patch hears `.unsupported`
+  two frames later          the notes are let go
+```
+
+A key is the scope's element and the key's number: the scope is the nearest
+layout above the view that says `transitionScope`, found by walking up, so
+two scopes of one identity are two scopes. One commit is one patch - a view
+made by an earlier patch is no partner of one a later patch drops.
+
+Where the made view stands is worked out from what the tree knows as its
+layout places it: the place its layout gave it, and each place a layout gave
+what holds it, up to its scope or to the first view no layout's motion
+placed, whose corner the toolkit says. Where that is not known yet, nothing
+is guessed.
+
+The entry is the road every entry takes
+([a view that enters](#a-view-that-enters)) - numbers set out from and
+brought onto what the view declares - so it needs no view kept as it leaves,
+and no surface of its own: a host that draws a move and two scales draws
+it. A return during the movement reads where the view now leaving is drawn,
+and so goes on from there.
+
+The trap is the leaving view's place. Its layout's rectangle is where it
+would stand; a view half way through its own entry is drawn elsewhere, and
+the partner must set out from what the user sees.
+
 ## Showing and hiding
 
 An element's showing moves by one rule on every host (`MountedElement`'s

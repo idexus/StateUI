@@ -124,6 +124,9 @@ public final class Renderer {
     /// Design: docs/design/core/cycle.md#the-board
     let board = CycleBoard()
 
+    /// The numbers the identities of shared transitions cross as.
+    let sharedIdentities = SharedIdentities()
+
     /// Every state issued a number, held weakly: a storage belongs to its view.
     var states: [Int32: () -> HostStorage?] = [:]
 

@@ -21,7 +21,7 @@
             [
                 margined(element), drawn(element), sampled(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
                 tapped(element), pressedAsAButton(element), longPressed(element), longPressedAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), thrown(element), pressTakenAway(element), takenFromTheHand(element), swiped(element), pinched(element), rotated(element), pointed(element),
-                dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element), entered(element), joined(element), left(element), returned(element),
+                dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element), entered(element), joined(element), left(element), returned(element), shared(element),
             ]
         } + [
             scrolledInItsWindow, scrolledInAList, atItsPagesCorner, carriedToItsPlace, onAFirstBaseline, showsItsPress,
@@ -412,6 +412,54 @@
         }
     }
 
+    /// A view made wearing a key enters from where the one view dropped wearing it was drawn, in the layout that
+    /// is their scope: its first drawn frame is as large as that view was - not its own size, which it grows to.
+    @MainActor
+    static func shared(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aViewMadeEntersFromWhereItsPartnerWasDrawn", proves: [
+            Covered(ViewContract.sharedTransition, on: element),
+        ], needs: [
+            Covered(LayoutContract.transitionScope, on: VStackContract.self),
+            Covered(ViewContract.presentationFrameChanged, on: element),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+        ]) { s in
+            let clock = TestClock()
+            let detailed = State(wrappedValue: false)
+            let drawn = Received<[Double]>()
+            s.start(clock: clock) {
+                VStack {
+                    Button("Toggle").onClicked { detailed.wrappedValue.toggle() }.id("toggle")
+                    if detailed.wrappedValue {
+                        Specimens.view(element, [
+                            Write(VisualElementContract.width, 160), Write(VisualElementContract.height, 80),
+                            Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
+                        ], id: "detail")
+                        .sharedTransition("picture")
+                        .motion(.eased(.milliseconds(600), curve: .linear))
+                    } else {
+                        Specimens.view(element, [
+                            Write(VisualElementContract.width, 40), Write(VisualElementContract.height, 40),
+                        ], id: "thumbnail")
+                        .sharedTransition("picture")
+                    }
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+                .transitionScope("scope")
+            }
+            s.frames(of: clock, until: 200)
+
+            try s.perform(.activate, on: s.element("toggle"))
+            s.settle { !drawn.values.isEmpty }
+            let first = drawn.values.first.map(FrameReport.size) ?? []
+            s.expect(first.map { $0.rounded() }, [40, 40], "it sets out as large as its partner was drawn")
+
+            s.frames(of: clock, until: 1_400)
+            s.settle { drawn.values.last.map(FrameReport.size) == [160, 80] }
+            s.expect(drawn.values.last.map(FrameReport.size), [160, 80], "and grows onto its own place")
+        }
+    }
+
     /// A view joining a layout already standing says where that layout puts it, and nothing before: no frame it
     /// was made at, and none of a size it was born with.
     @MainActor
@@ -643,10 +691,12 @@
             let early = try s.place(of: s.element("specimen"))
             s.expect(placed.values.last.map(FrameReport.place), [160, 0, 40, 40], "where it is going, said")
             s.expect(early.x < 150, true, "before it is there: \(early.x)")
+            s.turn()
             s.expect(settled.values, [], "the change is not settled: its view has not set out")
 
             // Five sixths of the way: the place set out in a layout pass after the patch, and is waited for.
             s.frames(of: clock, until: 700)
+            s.turn()
             s.expect(settled.values, [], "nor while the view is on its way")
 
             s.frames(of: clock, until: 1_400)

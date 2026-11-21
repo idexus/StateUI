@@ -16,7 +16,7 @@
                 clipped(element), throughIt(element), underTheBars(element), clearOfTheKeyboard(element),
                 Aspects.holds(LayoutContract.clipsContent, on: element, false, then: true),
                 Aspects.holds(LayoutContract.letsInputThrough, on: element, false, then: true),
-                bodied(element), unbodied(element),
+                bodied(element), unbodied(element), scoped(element),
             ]
         }
     }
@@ -231,6 +231,48 @@ extension LayoutTests {
         }
     }
 
+    /// A layout that is a scope ties the views in it by their keys: one made as its partner is dropped sets out
+    /// as large as that one was drawn, and grows to its own size.
+    @MainActor
+    static func scoped(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).theViewsInItAreTiedByTheirKeysWhereItIsAScope", proves: [
+            Covered(LayoutContract.transitionScope, on: element),
+        ], needs: [
+            Covered(ViewContract.sharedTransition, on: RectangleContract.self),
+            Covered(ViewContract.presentationFrameChanged, on: RectangleContract.self),
+            Covered(ViewContract.layoutFrameChanged, on: RectangleContract.self),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+        ]) { s in
+            let clock = TestClock()
+            let detailed = State(wrappedValue: false)
+            let drawn = Received<[Double]>()
+            let placed = Received<[Double]>()
+            s.start(clock: clock) {
+                VStack {
+                    Button("Toggle").onClicked { detailed.wrappedValue.toggle() }.id("toggle")
+                    Specimens.holding(
+                        element, Swapped(detailed: detailed.projectedValue, drawn: drawn, placed: placed),
+                        [Write(LayoutContract.transitionScope, 1)])
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.frames(of: clock, until: 200)
+
+            try s.perform(.activate, on: s.element("toggle"))
+            s.settle { !drawn.values.isEmpty }
+            let first = drawn.values.first.map(FrameReport.size) ?? []
+            s.expect(first.map { $0.rounded() }, [40, 40], "it sets out as large as its partner was drawn")
+
+            // How large the layout makes it is the layout's own: a motion layout gives it its room.
+            s.frames(of: clock, until: 1_400)
+            s.settle { drawn.values.last.map(FrameReport.size) == placed.values.last.map(FrameReport.size) }
+            let rests = drawn.values.last.map(FrameReport.size) ?? []
+            s.expect(rests, placed.values.last.map(FrameReport.size) ?? [], "and grows onto the place its layout gives it")
+            s.expect(rests == [40, 40], false, "larger than its partner was: \(rests)")
+        }
+    }
+
     /// A layout whose bodies are none stands a child at its new place at once, though the layout's own motion
     /// would take it there in time.
     @MainActor
@@ -343,5 +385,36 @@ enum Holding {
         default: dressing.dress(VStack { held })
         }
         return AnyView(layout)
+    }
+}
+
+/// A small picture or - once `detailed` - a large one in its place, each wearing one key: the large one says where
+/// it is drawn to `drawn`, and where its layout puts it to `placed`.
+private struct Swapped: View {
+    let detailed: Binding<Bool>
+    let drawn: Received<[Double]>
+    let placed: Received<[Double]>
+
+    var body: some View {
+        VStack {
+            if detailed.wrappedValue {
+                Rectangle()
+                    .fill(.red)
+                    .width(160)
+                    .height(80)
+                    .onEvent(ViewContract.presentationFrameChanged) { drawn.values.append($0) }
+                    .onEvent(ViewContract.layoutFrameChanged) { placed.values.append($0) }
+                    .sharedTransition("picture")
+                    .motion(.eased(.milliseconds(600), curve: .linear))
+            } else {
+                Rectangle()
+                    .fill(.red)
+                    .width(40)
+                    .height(40)
+                    .sharedTransition("picture")
+            }
+        }
+        .horizontalAlignment(.start)
+        .verticalAlignment(.start)
     }
 }

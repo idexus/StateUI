@@ -137,6 +137,14 @@ extension Differ {
             .flatMap(\.chain)
             .filter { convertedOnce.insert(ObjectIdentifier($0)).inserted }
 
+        // A shared transition's number is worn while the element says it.
+        for property in [Prop.transitionScope, .sharedTransition] {
+            let (said, was) = (node.props[property]?.int, rendered?.props[property]?.int)
+            guard said != was else { continue }
+            if let was { Renderer.shared.sharedIdentities.unwear(was) }
+            if let said { Renderer.shared.sharedIdentities.wear(said) }
+        }
+
         // Properties described last render and not now are named for the host to clear.
         // Design: docs/design/core/identity-and-diffing.md#properties-no-longer-described
         let lost = (rendered?.props.keys.filter { node.props[$0] == nil } ?? []).sorted()

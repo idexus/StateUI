@@ -469,6 +469,19 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         setValue(LayoutContract.layoutBodies, body)
     }
 
+    /// Makes the layout the scope the shared transitions of its views are matched in, as on any layout: a view
+    /// leaving and a view entering in it under one `sharedTransition(_:)` are one.
+    ///
+    ///     .transitionScope("cards")
+    ///
+    /// - Parameter id: what tells this scope from another; any `Hashable`.
+    /// - Returns: the layout, a scope.
+    public func transitionScope(_ id: some Hashable) -> Self {
+        setValue(
+            LayoutContract.transitionScope,
+            Renderer.shared.sharedIdentities.number(for: ElementIdentity(AnyHashable(id))))
+    }
+
     /// Whether the layout follows the direction its language is read in, as a stack does: laid out right to left,
     /// it turns about its middle - each view's place, its move along and its turn - and the hand over it turns
     /// with it, so the arithmetic stays left to right.

@@ -28,6 +28,12 @@ public enum LayoutContract: Tier {
     /// (`ViewContract.layoutBody`); where the layout says none, under the layout's motion.
     public static let layoutBodies = ElementProperty<Self, LayoutBody>("layoutBodies", layer: .stateUI, travels: false)
 
+    /// The scope the shared transitions of the views the layout holds are matched in, as the number its identity
+    /// crosses by.
+    public static let transitionScope = ElementProperty<Self, Int>("transitionScope", layer: .stateUI, travels: false)
+
     /// The tier's own members.
-    public static let members: [any ContractMember] = [ignoresSafeArea, clipsContent, letsInputThrough, layoutBodies]
+    public static let members: [any ContractMember] = [
+        ignoresSafeArea, clipsContent, letsInputThrough, layoutBodies, transitionScope,
+    ]
 }

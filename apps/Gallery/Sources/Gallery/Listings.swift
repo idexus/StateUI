@@ -11489,6 +11489,48 @@ enum Listings {
             }
         }
         """#,
+        "SharedPictures": #"""
+        // Sources/Samples/Animation/TransitionSample.swift
+        static let tints: [Color] = [Palette.accent, Palette.brand, AppColors.violetLight]
+
+        @State private var chosen: Int?
+
+        var body: some View {
+            ZStack {
+                if let chosen {
+                    // THE PICTURE: another view than its thumbnail, tied to it by
+                    // the key - it sets out from where the thumbnail is drawn.
+                    Rectangle()
+                        .fill(Self.tints[chosen])
+                        .height(150)
+                        .sharedTransition(chosen)
+                        // Slow enough to see the way.
+                        .motion(.eased(.milliseconds(700), curve: .sineInOut))
+                        .onTapped { self.chosen = nil }
+                } else {
+                    HStack {
+                        ForEach([0, 1, 2]) { item in
+                            Rectangle()
+                                .fill(Self.tints[item])
+                                .width(56)
+                                .height(40)
+                                // THE THUMBNAIL wears the same key as its picture;
+                                // going back, it sets out from where the picture
+                                // is drawn at that moment.
+                                .sharedTransition(item)
+                                .motion(.eased(.milliseconds(700), curve: .sineInOut))
+                                .onTapped { chosen = item }
+                        }
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+            }
+            // THE SCOPE: a layout that stands while the views in it come and go.
+            .transitionScope("pictures")
+            .height(150)
+        }
+        """#,
         "ShortList": #"""
         // Sources/Samples/Collections/LoadingItemsSample.swift
         @State private var shown = false

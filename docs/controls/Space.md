@@ -33,13 +33,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (82)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>43 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>42 ✅ · 3 ☑️ · 36 ✓ · 1 –</td><td>custom <code>UIView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>65 ✅ · 5 ☑️ · 10 ✓ · 2 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>46 ✅ · 3 ☑️ · 29 ✓ · 4 –</td><td>custom <code>Panel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>50 ✅ · 3 ☑️ · 22 ✓ · 7 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>55 ✅ · 3 ☑️ · 21 ✓ · 3 –</td><td>CSS grid, one shared cell</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (83)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>44 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>43 ✅ · 3 ☑️ · 36 ✓ · 1 –</td><td>custom <code>UIView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>66 ✅ · 5 ☑️ · 10 ✓ · 2 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>47 ✅ · 3 ☑️ · 29 ✓ · 4 –</td><td>custom <code>Panel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>51 ✅ · 3 ☑️ · 22 ✓ · 7 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 3 ☑️ · 21 ✓ · 3 –</td><td>CSS grid, one shared cell</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/SpaceContract.swift`.
@@ -177,6 +177,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td><code>presentationSample</code></td><td>act</td><td><code>() -&gt; PresentationSample</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onRotationUpdated</code> (<code>rotationUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: rotate on Space: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: rotate on Space: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: rotate on Space: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: rotate on Space: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>sharedTransition</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeDirections</code></td><td>property</td><td><code>SwipeDirections</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pan on Space: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on Space: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pan on Space: the relay's report of the press dragged handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeThreshold</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>

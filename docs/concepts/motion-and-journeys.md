@@ -388,6 +388,60 @@ Hiding a view with `isVisible(_:)` keeps the view and its state, and crosses
 as [visibility](#visibility-and-layout-motion) does, whatever transition the
 view declares.
 
+## A shared transition
+
+A thumbnail and its picture are two views and, to the user, one thing.
+`.sharedTransition(_:)` ties them by a key: as one leaves and the other
+enters in the same change, the entering one sets out from where the leaving
+one is drawn and grows onto its own place.
+
+```swift
+struct Catalog: View {
+    @State private var chosen: Int?
+
+    var body: some View {
+        ZStack {
+            if let chosen {
+                Rectangle()
+                    .fill(.indigo)
+                    .width(240)
+                    .height(160)
+                    .sharedTransition(chosen)
+                    .onTapped { self.chosen = nil }
+            } else {
+                HStack {
+                    ForEach([1, 2, 3]) { item in
+                        Rectangle()
+                            .fill(.indigo)
+                            .width(48)
+                            .height(32)
+                            .sharedTransition(item)
+                            .onTapped { chosen = item }
+                    }
+                }
+                .spacing(8)
+            }
+        }
+        .transitionScope("catalog")
+        .motion(.spring(response: .milliseconds(420), damping: 0.8))
+    }
+}
+```
+
+`.transitionScope(_:)` goes on a layout that stands while the views in it
+come and go: the views under it are matched in it, and a view under no
+scope is tied to nothing. Both take any `Hashable`.
+
+The two views stay two views - the picture's state is its own, and nothing
+of the thumbnail's is carried over. The entry moves under the entering
+view's own `.motion(_:)`, else the application's. Going back during the
+movement sets out from where the picture is drawn at that moment.
+
+One view leaving and one entering under a key, in one window and on one
+page, are tied. Anything else - two views of one key, a partner in another
+window or on another page - is not: each view then goes by its own
+`.transition(_:)`.
+
 ## A change and what it started
 
 One write often moves several things - a panel fades, the lines in it fade

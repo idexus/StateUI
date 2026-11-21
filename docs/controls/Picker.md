@@ -33,13 +33,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (101)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>55 ✅ · 3 ☑️ · 37 ✓ · 3 –</td><td><code>NSPopUpButton</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>48 ✅ · 4 ☑️ · 41 ✓ · 5 –</td><td>pop-up <code>UIButton</code> menu</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>72 ✅ · 6 ☑️ · 13 ✓ · 5 –</td><td><code>android.widget.Spinner</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>65 ✅ · 3 ☑️ · 27 ✓ · 6 –</td><td><code>ComboBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>60 ✅ · 4 ☑️ · 24 ✓ · 13 –</td><td><code>GtkDropDown</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>55 ✅ · 2 ☑️ · 20 ✓ · 16 –</td><td><code>&lt;select&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (102)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>56 ✅ · 3 ☑️ · 37 ✓ · 3 –</td><td><code>NSPopUpButton</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>49 ✅ · 4 ☑️ · 41 ✓ · 5 –</td><td>pop-up <code>UIButton</code> menu</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>73 ✅ · 6 ☑️ · 13 ✓ · 5 –</td><td><code>android.widget.Spinner</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>66 ✅ · 3 ☑️ · 27 ✓ · 6 –</td><td><code>ComboBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>61 ✅ · 4 ☑️ · 24 ✓ · 13 –</td><td><code>GtkDropDown</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>56 ✅ · 2 ☑️ · 20 ✓ · 16 –</td><td><code>&lt;select&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PickerContract.swift`.
@@ -187,6 +187,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td><code>presentationSample</code></td><td>act</td><td><code>() -&gt; PresentationSample</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onRotationUpdated</code> (<code>rotationUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: rotate on Picker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: rotate on Picker: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: rotate on Picker: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: rotate on Picker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>sharedTransition</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeDirections</code></td><td>property</td><td><code>SwipeDirections</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pan on Picker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on Picker: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pan on Picker: the relay's report of the press dragged handed to the host, no pointer sent<br>Web: The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no long press, drag or swipe of it, and its release only where it was pressed.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeThreshold</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">–</td></tr>

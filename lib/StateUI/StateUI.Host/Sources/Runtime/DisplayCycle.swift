@@ -112,6 +112,7 @@ extension FramePresenter {
         // A change waiting for the layout pass after its patch counts the frame.
         // Design: docs/design/host/motion.md#a-change-and-what-it-started
         runtime?.tree.changes.frameEnded()
+        runtime?.tree.shared.frameEnded()
         presenter?.renderIfNeeded()
         hold()
     }

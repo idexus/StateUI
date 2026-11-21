@@ -131,6 +131,7 @@ final class Differ {
 
         let walked = element(id: id, rendered: previous, node: tree)
         settleChannels()
+        Renderer.shared.sharedIdentities.prune()
         return walked
     }
 
@@ -151,6 +152,7 @@ final class Differ {
 
         let walked = revisit(rendered)
         settleChannels()
+        Renderer.shared.sharedIdentities.prune()
         return walked
     }
 
@@ -339,6 +341,9 @@ final class Differ {
         node.conversions.forEach(Renderer.shared.board.conversions.unwear)
 
         departures.forget(node.id)
+        for property in [Prop.transitionScope, .sharedTransition] {
+            if let worn = node.props[property]?.int { Renderer.shared.sharedIdentities.unwear(worn) }
+        }
 
         for child in node.children {
             forget(child)

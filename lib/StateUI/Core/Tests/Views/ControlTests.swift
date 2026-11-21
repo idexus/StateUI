@@ -370,6 +370,7 @@ final class ControlTests: XCTestCase {
                         .fill(.black)
                 }
                 .layoutBodies(.onChange())
+                .transitionScope("cards")
                 .mirrorsRightToLeft(true)
                 .onItemActivated { _ in }
                 .onItemDragged { _ in }
@@ -586,6 +587,8 @@ final class ControlTests: XCTestCase {
                 .letsInputThrough(true)
                 // How its children come onto their places is the layout tier's too.
                 .layoutBodies(.onChange(response: .milliseconds(320), damping: 0.8))
+                // And the scope its views' shared transitions are matched in.
+                .transitionScope("catalog")
                 .style(.card)
                 .padding(start: 24, top: 16, end: 24, bottom: 16)
                 .margin(start: 4, top: 8, end: 4, bottom: 8)
@@ -834,7 +837,7 @@ final class ControlTests: XCTestCase {
             // A value the host cannot be handed whole - a gradient among them.
             "icon", "pageIcon", "dash", "points", "options", "columns", "rows",
             "shape", "geometryTransform", "transform", "motion", "release", "interaction", "layoutBody",
-            "layoutBodies", "transition",
+            "layoutBodies", "transition", "transitionScope", "sharedTransition",
             "id", "assign", "area",
             // Tiers no view wears: a bar's item, a run of text, a map's marker - and an entry's automation name,
             // whose twin a view's tier carries.

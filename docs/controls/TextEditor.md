@@ -33,13 +33,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (108)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>65 ✅ · 4 ☑️ · 36 ✓ · 3 –</td><td><code>NSTextView</code> in an <code>NSScrollView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>65 ✅ · 3 ☑️ · 38 ✓ · 2 –</td><td><code>UITextView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>86 ✅ · 6 ☑️ · 12 ✓ · 2 –</td><td>multi-line <code>EditText</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>71 ✅ · 4 ☑️ · 27 ✓ · 6 –</td><td>multi-line <code>TextBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>67 ✅ · 6 ☑️ · 28 ✓ · 7 –</td><td><code>GtkTextView</code> in a <code>GtkScrolledWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>81 ✅ · 3 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;textarea&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (109)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>66 ✅ · 4 ☑️ · 36 ✓ · 3 –</td><td><code>NSTextView</code> in an <code>NSScrollView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>66 ✅ · 3 ☑️ · 38 ✓ · 2 –</td><td><code>UITextView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>87 ✅ · 6 ☑️ · 12 ✓ · 2 –</td><td>multi-line <code>EditText</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>72 ✅ · 4 ☑️ · 27 ✓ · 6 –</td><td>multi-line <code>TextBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>68 ✅ · 6 ☑️ · 28 ✓ · 7 –</td><td><code>GtkTextView</code> in a <code>GtkScrolledWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>82 ✅ · 3 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;textarea&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextEditorContract.swift`.
@@ -181,6 +181,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td><code>presentationSample</code></td><td>act</td><td><code>() -&gt; PresentationSample</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onRotationUpdated</code> (<code>rotationUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: rotate on TextEditor: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: rotate on TextEditor: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: rotate on TextEditor: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: rotate on TextEditor: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>sharedTransition</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeDirections</code></td><td>property</td><td><code>SwipeDirections</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pan on TextEditor: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on TextEditor: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pan on TextEditor: the relay's report of the press dragged handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeThreshold</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>

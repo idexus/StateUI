@@ -39,7 +39,8 @@ extension MountedElement {
     /// Whether the element may come moving as it is given its first place: by the transition it declares, else
     /// fading in where its view `presentsOpacity` and no state owns it.
     public func entersMoving(presentsOpacity: Bool) -> Bool {
-        transition != nil || (presentsOpacity && driven[.opacity] == nil)
+        transition != nil || value(ViewContract.sharedTransition.token) != nil
+            || (presentsOpacity && driven[.opacity] == nil)
     }
 
     /// The element enters on `view` as it is given its first place. Declaring a transition, it comes from the
@@ -51,6 +52,11 @@ extension MountedElement {
         if let returned {
             self.returned = nil
             return comeBack(as: returned, on: view)
+        }
+        // One view left wearing the key this one wears: it sets out from where that one was drawn.
+        if !isRemade, let tree, let shared = tree.shared.source(for: self, in: tree) {
+            shared.leaving?.endExit(.interrupted, arranging: true)
+            return enter(from: shared.from, to: shared.to, on: view)
         }
         guard let transition = transition?.host else {
             if case .joining(let law) = entry, law.animates { fadeIn(view, under: law) }

@@ -349,6 +349,7 @@
         made = nil
         tree.tally?.made += 1
         apply(patch)
+        if !isRemade { tree.shared.made(self) }
     }
 
     isolated deinit {
@@ -737,6 +738,7 @@
     private func leave(_ previous: [MountedElement], presented: [MountedElement]) {
         let staying = Set(held.map(ObjectIdentifier.init))
         for child in previous where !staying.contains(ObjectIdentifier(child)) {
+            if tree?.remakes == false { tree?.shared.dropped(child) }
             if !child.exit(from: self) { child.leave() }
         }
         orderPresented(after: presented)

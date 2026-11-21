@@ -1,21 +1,26 @@
-# revision 5.2
+# revision 6.2
 Grid.clipsContent: ✅
 Grid.ignoresSafeArea: – A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.
 Grid.layoutBodies: ✅
 Grid.letsInputThrough: ✅
+Grid.transitionScope: ✅
 HStack.clipsContent: ✅
 HStack.ignoresSafeArea: – A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.
 HStack.layoutBodies: ✅
 HStack.letsInputThrough: ✅
+HStack.transitionScope: ✅
 MotionLayout.clipsContent: ✅
 MotionLayout.ignoresSafeArea: – A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.
 MotionLayout.layoutBodies: ✅
 MotionLayout.letsInputThrough: ✅
+MotionLayout.transitionScope: ✅
 VStack.clipsContent: ✅
 VStack.ignoresSafeArea: – A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.
 VStack.layoutBodies: ✅
 VStack.letsInputThrough: ✅
+VStack.transitionScope: ✅
 ZStack.clipsContent: ✅
 ZStack.ignoresSafeArea: – A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.
 ZStack.layoutBodies: ✅
 ZStack.letsInputThrough: ✅
+ZStack.transitionScope: ✅

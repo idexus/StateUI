@@ -219,6 +219,14 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### New
 
+- **Two views tied by a key are one to the eye.** `.sharedTransition(_:)`, on any view, ties it to the view of
+  the same key in its scope - a layout that says `.transitionScope(_:)`: as one of them leaves and the other
+  enters in the same change, the entering one sets out from where the leaving one is drawn and grows onto its
+  own place, under its own `.motion(_:)`; going back during the movement goes on from where it has got to.
+  The two stay two views. Where no single partner is found - none, two of one key, another window or page -
+  each goes by its own `.transition(_:)`. Both take any `Hashable`, and a host compares no value: the core
+  hands it numbers. For a host: nothing to write - the entry is drawn by the move and the scales it presents.
+
 - **A change says how what it started ended.** `Aim.presentationChange { ... }`, on the aim of any view, runs
   the writes at once and answers a `PresentationChange`: `applied()` waits until the host took them, and
   `settled()` until every movement they started under the aimed view has ended - `.settled`,

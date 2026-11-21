@@ -6,6 +6,10 @@ struct TransitionSample: SampleContent, ExampleContent {
     static let title = "A view that comes and goes"
     static let summary = "Add a note, then remove one: each comes from, and goes to, where its transition says."
 
+    var examples: [Example] {
+        [Example(self), Example(SharedPictures())]
+    }
+
     // listing: TransitionSample
     static let ways = ["Rising", "Growing", "From outside"]
 
@@ -142,5 +146,63 @@ struct TransitionSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
         }
         .spacing(8)
+    }
+}
+
+/// A thumbnail growing into its picture, and back: two views tied by a key.
+struct SharedPictures: ExampleContent {
+    // listing: SharedPictures
+    static let tints: [Color] = [Palette.accent, Palette.brand, AppColors.violetLight]
+
+    @State private var chosen: Int?
+
+    var body: some View {
+        ZStack {
+            if let chosen {
+                // THE PICTURE: another view than its thumbnail, tied to it by
+                // the key - it sets out from where the thumbnail is drawn.
+                Rectangle()
+                    .fill(Self.tints[chosen])
+                    .cornerRadius(12)
+                    .height(150)
+                    .sharedTransition(chosen)
+                    // Slow enough to see the way.
+                    .motion(.eased(.milliseconds(700), curve: .sineInOut))
+                    .onTapped { self.chosen = nil }
+                    .accessibilityIdentifier("shared.picture")
+            } else {
+                HStack {
+                    ForEach([0, 1, 2]) { item in
+                        Rectangle()
+                            .fill(Self.tints[item])
+                            .cornerRadius(6)
+                            .width(56)
+                            .height(40)
+                            // THE THUMBNAIL wears the same key as its picture;
+                            // going back, it sets out from where the picture
+                            // is drawn at that moment.
+                            .sharedTransition(item)
+                            .motion(.eased(.milliseconds(700), curve: .sineInOut))
+                            .onTapped { chosen = item }
+                            .accessibilityIdentifier("shared.thumbnail.\(item)")
+                    }
+                }
+                .spacing(8)
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+        }
+        // THE SCOPE: a layout that stands while the views in it come and go.
+        .transitionScope("pictures")
+        .height(150)
+    }
+    // listing: end
+
+    var notes: (any View)? {
+        Text("Press a thumbnail: its picture grows from it. Press the picture: the thumbnail comes back "
+            + "from it - press it before the picture has finished growing, and it sets out from where "
+            + "the picture has got to.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

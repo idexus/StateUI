@@ -49,11 +49,14 @@ extension Registry {
         everyElementRealizes(VisualElementContract.pivotY)
     }
 
-    /// A view coming by the transition it declares as its layout gives it its first place (`MountedElement.enter`),
-    /// drawn by the opacity, the move and the scale the host already presents.
+    /// A view coming by the transition it declares as its layout gives it its first place (`MountedElement.enter`)
+    /// - or, sharing a key with one view its patch dropped, from where that one was drawn in the layout that is
+    /// their scope (`SharedTransitions`) - drawn by the opacity, the move and the scales the host already presents.
     /// Design: docs/design/host/motion.md#a-view-that-enters
     public func everyElementEntersByItsTransition() {
         everyElementRealizes(ViewContract.transition)
+        everyElementRealizes(ViewContract.sharedTransition)
+        everyElementRealizes(LayoutContract.transitionScope)
     }
 
     /// What assistive technology meets of a view, put together by one rule (`MountedElement.accessibilityWords`):

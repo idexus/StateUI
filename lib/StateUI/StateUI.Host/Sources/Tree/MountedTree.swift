@@ -156,6 +156,9 @@
     /// The presentation changes the renders carry, and what each waits for.
     public let changes: PresentationChanges
 
+    /// The views a patch dropped and made under one key of a shared transition.
+    public let shared = SharedTransitions()
+
     /// Called when a property animation starts, so the frame clock is held while it runs.
     public var onAnimation: () -> Void = {}
 
@@ -345,6 +348,7 @@
             if let ended { self?.changes.runEnded(state, run, as: ended) } else { self?.changes.runBorn(state, run) }
         }
         changes.layouts = { [weak self] state, root in self?.layouts(runBy: state, under: root) ?? [] }
+        shared.refused = { [weak self] element in self?.changes.refused(element, .unsupported) }
         // The first take starts the recording, so the log holds every pass from here on.
         if diagnostics.inspects { _ = core.takeInspectionLog() }
     }
@@ -362,7 +366,10 @@
         appliesCompleteMessage = complete
         remakes = root != nil && (complete || patch.replace)
         if remakes { exits.endAll(.detached) }
-        if patchTime == nil { patchTime = now() }
+        if patchTime == nil {
+            patchTime = now()
+            shared.patchBegins()
+        }
         if patchReducesMotion == nil { patchReducesMotion = reducesMotion() }
         let inspecting = core.inspecting
         tally = inspecting || diagnostics.tallies ? RenderTally() : nil
