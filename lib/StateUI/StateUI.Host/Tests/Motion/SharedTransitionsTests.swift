@@ -336,7 +336,8 @@ final class SharedTransitionsTests: XCTestCase {
 
     /// A VIEW MADE WITH A LAYOUT ITS PROGRAM PLACES SETS OUT TOWARD NO PLACE THE TREE DOES NOT KNOW: as the layout's
     /// toolkit lays its views out before the program has shown any - the holder across the layout's room - the
-    /// card coming back from its detail draws no way, and a change waiting for it hears `.unsupported`.
+    /// card coming back from its detail draws no way, and a change waiting for it hears `.unsupported`. The layout,
+    /// holding no view that sets out, fades in as it joins.
     func testAViewMadeWithALayoutItsProgramPlacesSetsOutTowardNoUnknownPlace() throws {
         detailShown.wrappedValue = true
         CardBoardApplication.register()
@@ -351,6 +352,15 @@ final class SharedTransitionsTests: XCTestCase {
         let card = try XCTUnwrap(find("card 5"))
         let holder = try XCTUnwrap(card.parent)
         (holder.native as? NoView)?.frame = [0, 0, 300, 200, 10, 20, 10, 20]
+        let deck = try XCTUnwrap(holder.parent)
+        runtime.layoutMotion.place(
+            Placed(), mount: deck.mount, at: Rect(x: 0, y: 0, width: 300, height: 200), stated: [], words: .none,
+            natural: { LayoutSize(width: 300, height: 200) },
+            enter: { entry in deck.enter(Shown(), as: entry) },
+            in: Arrangement(law: .eased(.milliseconds(200), curve: .linear), lanes: .all, joins: true), room: nil)
+        XCTAssertEqual(
+            runtime.tree.presentedPropertyValue(mount: deck.mount, property: .opacity)?.number ?? .nan, 0, accuracy: 0.001,
+            "nothing in it sets out: it fades in")
         runtime.layoutMotion.place(
             Placed(), mount: card.mount, at: Rect(x: 0, y: 0, width: 300, height: 200), stated: [], words: .none,
             natural: { LayoutSize(width: 300, height: 200) },

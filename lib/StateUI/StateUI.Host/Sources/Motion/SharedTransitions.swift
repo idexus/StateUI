@@ -83,19 +83,16 @@
     /// is not known yet.
     func source(for element: MountedElement, in tree: MountedTree) -> (from: Rect, to: Rect, leaving: MountedElement?)? {
         guard let key = Self.key(of: element),
-              let mine = made[key]?.first(where: { $0.mount == element.mount })?.patch
+              let mine = made[key]?.first(where: { $0.mount == element.mount })?.patch,
+              sources[key]?.contains(where: { $0.patch == mine }) == true
         else { return nil }
-        let left = (sources[key] ?? []).filter { $0.patch == mine }
-        guard !left.isEmpty else { return nil }
         defer {
             sources[key]?.removeAll { $0.patch == mine }
             made[key]?.removeAll { $0.patch == mine }
         }
-        guard pairs(key, in: mine), let source = left.first,
-              source.window == element.enclosing(type: .window)?.mount,
-              source.page == element.enclosing(type: .page)?.mount,
+        guard let source = partner(of: element, key: key, patch: mine),
               let destination = placeInWindow(of: element, scope: key.scope, in: tree),
-              destination.width > 0, destination.height > 0, source.drawn.width > 0, source.drawn.height > 0
+              destination.width > 0, destination.height > 0
         else {
             refused?(element)
             return nil
@@ -103,17 +100,34 @@
         return (source.drawn, destination, source.element)
     }
 
-    /// Whether a view made under `element`, by the patch that made it, sets out from the one view that patch
-    /// dropped wearing its key: `element` then comes as it stands, as its fade would hide where that one sets out.
+    /// Whether a view made under `element`, by the patch that made it, sets out from its partner, as far as is known
+    /// before it is placed: `element` then comes as it stands, as its fade would hide where that view sets out.
+    /// Design: docs/design/host/motion.md#a-shared-transition
     func holdsAPartner(_ element: MountedElement) -> Bool {
         made.contains { key, entering in
-            entering.contains { pairs(key, in: $0.patch) && element.first(mount: $0.mount) != nil }
+            entering.contains { mine in
+                element.first(mount: mine.mount).map { partner(of: $0, key: key, patch: mine.patch) != nil } ?? false
+            }
         }
     }
 
-    /// Whether the patch `patch` dropped one view wearing `key` and made one: the two are one.
-    private func pairs(_ key: Key, in patch: Int) -> Bool {
-        (sources[key] ?? []).count { $0.patch == patch } == 1 && (made[key] ?? []).count { $0.patch == patch } == 1
+    /// The one view the patch `patch` dropped wearing `key` that `element`, made by it wearing the key, sets out
+    /// from - all that is known before `element` is placed: one dropped and one made, drawn, in one window and one
+    /// page, and nothing between `element` and its scope standing where the tree does not know.
+    private func partner(of element: MountedElement, key: Key, patch: Int) -> Source? {
+        let left = (sources[key] ?? []).filter { $0.patch == patch }
+        guard left.count == 1, let source = left.first, (made[key] ?? []).count(where: { $0.patch == patch }) == 1,
+              source.drawn.width > 0, source.drawn.height > 0,
+              source.window == element.enclosing(type: .window)?.mount,
+              source.page == element.enclosing(type: .page)?.mount
+        else { return nil }
+
+        var above: MountedElement? = element
+        while let view = above, view.mount != key.scope {
+            if standsUnknown(view) { return nil }
+            above = view.parent
+        }
+        return source
     }
 
     /// A display frame ended: the notes of a patch laid out by now are let go.
@@ -183,7 +197,13 @@
     /// made it - its toolkit stands it across the layout's room until the program is asked - else the place a
     /// layout's motion gave it.
     private func place(of element: MountedElement, in tree: MountedTree) -> Place {
-        if born.contains(element.mount), element.parent?.layoutProgram != nil { return .unknown }
+        if standsUnknown(element) { return .unknown }
         return tree.layoutMotion.placed(element.mount).map { .at($0.place) } ?? .toolkits
+    }
+
+    /// Whether `element` was made with the notes kept and a layout program places it: its toolkit holds it where
+    /// the program has not been asked yet.
+    private func standsUnknown(_ element: MountedElement) -> Bool {
+        born.contains(element.mount) && element.parent?.layoutProgram != nil
     }
 }

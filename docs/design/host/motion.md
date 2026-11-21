@@ -447,7 +447,12 @@ from nothing under the application's law: the view setting out inside it,
 whole where its partner was drawn, would be drawn at none of its opacity,
 the partner already gone. So a holder of a view that sets out from its
 partner comes as it stands (`SharedTransitions.holdsAPartner`); a transition
-it declares is its own still.
+it declares is its own still. A layout places a holder before what it holds,
+so the holder is decided first, by what is known before the view is placed
+- the one partner, drawn, in one window and page, no place unknown on the
+way to the scope - the same rule that view's own entry asks first
+(`partner(of:key:patch:)`). A view refused all the same - its place found
+empty - leaves its holder unfaded, never faded over a view setting out.
 
 ## Showing and hiding
 
