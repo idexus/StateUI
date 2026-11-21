@@ -96,6 +96,35 @@ final class InteractionSessionsTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(bench.journey).value[0], 3, accuracy: 0.000_1, "a new gesture moves again")
     }
 
+    /// A WRITE THAT TOOK A NUMBER FROM ONE HAND TAKES NOTHING FROM TWO FINGERS THAT HELD NONE: the hand's gesture
+    /// ended there, and once it lifts the sessions keep nothing of the view - so two fingers that come after move
+    /// their own number from their first report, a beginning heard or not.
+    func testAWriteTakingAHandsNumberLeavesTwoFingersTheirs() throws {
+        let orbit = State(wrappedValue: Orbit())
+        let moved = orbit.traveling(linear)
+        bench.laid {
+            MotionLayout([0], parameters: moved) { Text("\($0)") } placements: { _, _ in
+                [Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
+            }
+            .interaction(.simultaneous([
+                .value(moved, axis: \.turn, input: .translation(.horizontal, unit: .points(100))).range(0...4),
+                .value(moved, axis: \.tilt, input: .rotation(degreesPerUnit: 90)).range(0...4),
+            ]).release(.nearest(self.linear)))
+            .node
+        }
+        let runtime = try XCTUnwrap(bench.runtime)
+
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(x: 140, y: 0))
+        orbit.wrappedValue.turn = 4
+        bench.cycle()
+        bench.hand(.ended)
+        XCTAssertEqual(runtime.interactions.entries, 0, "the gesture over, nothing of it is kept")
+
+        bench.pinch(.changed, degrees: 90)
+        XCTAssertEqual(try XCTUnwrap(bench.journey).value[1], 1, accuracy: 0.000_1, "the fingers' own number moves")
+    }
+
     /// A WRITE OF ANOTHER NUMBER LEAVES THE HAND ITS OWN: the tilt travels where the program sent it while the hand
     /// goes on holding the turn, and letting the turn go leaves the tilt on its way.
     func testAWriteOfAnotherNumberLeavesTheHandItsOwn() throws {

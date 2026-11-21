@@ -216,6 +216,12 @@ own, and both travel beside each other.
                  motion, and that write's waiter is answered by that run
 ```
 
+A gesture is one hand's, or two fingers': a hold remembers which took it.
+A write ends the gestures that hold a number on that view, and no other -
+two fingers that held nothing move their own number from their first report -
+and a gesture that begins or is over is forgotten as one that lost its
+numbers, so the sessions keep nothing of a view no hand is on.
+
 ## A hand taken away
 
 A gesture ends two ways: the hand lets go, or it is taken away - and a

@@ -14,10 +14,11 @@ import StateUIFoundation
         let lane: Int
     }
 
-    /// One number held: whose hand, where it holds it, and - a swipe - the snap it took it at with the unit it
-    /// moves it by.
+    /// One number held: whose hand and which gesture of it, where it holds it, and - a swipe - the snap it took it
+    /// at with the unit it moves it by.
     private struct Hold {
         let mount: UInt64
+        let stream: Stream
         weak var element: MountedElement?
         var value: Double
         var grip: (target: Double, unit: Double?)?
@@ -65,15 +66,15 @@ import StateUIFoundation
         let (moved, speed) = (Self.told(moved), Self.told(speed))
         switch phase {
         case .began:
-            lost[element.mount]?.remove(.hand)
-            show(axes.compactMap { axis in take(axis, on: element).map { (axis, $0) } })
+            over(.hand, on: element.mount)
+            show(axes.compactMap { axis in take(axis, by: .hand, on: element).map { (axis, $0) } })
         case .changed:
             guard lost[element.mount]?.contains(.hand) != true else { return }
 
             var shown: [(InteractionAxis, Double)] = []
             for axis in axes {
                 // A move with no beginning heard is one: the number is taken where it stands.
-                guard let value = mine(axis, on: element)?.value ?? take(axis, on: element),
+                guard let value = mine(axis, on: element)?.value ?? take(axis, by: .hand, on: element),
                       // A room not yet measured draws no view, so a hand over it moves none.
                       let per = unit(of: axis, at: value, on: element)
                 else { continue }
@@ -82,7 +83,7 @@ import StateUIFoundation
             }
             show(shown)
         case .ended, .cancelled:
-            lost[element.mount]?.remove(.hand)
+            over(.hand, on: element.mount)
             letGo(axes.compactMap { axis in
                 guard let hold = mine(axis, on: element) else { return nil }
 
@@ -139,7 +140,7 @@ import StateUIFoundation
     ) {
         let axes = axes(of: element) { if case .translation = $0 { false } else { true } }
         guard !axes.isEmpty else { return }
-        if phase == .began || phase == .ended || phase == .cancelled { lost[element.mount]?.remove(.fingers) }
+        if phase == .began || phase == .ended || phase == .cancelled { over(.fingers, on: element.mount) }
         guard phase != .changed || lost[element.mount]?.contains(.fingers) != true else { return }
 
         let (scale, degrees, speed) = (scale.isFinite && scale > 0 ? scale : 1, degrees.isFinite ? degrees : 0, Self.told(speed))
@@ -159,9 +160,10 @@ import StateUIFoundation
 
             switch phase {
             case .began:
-                if let value = take(axis, on: element) { shown.append((axis, value)) }
+                if let value = take(axis, by: .fingers, on: element) { shown.append((axis, value)) }
             case .changed:
-                guard mine(axis, on: element) != nil || take(axis, on: element) != nil else { continue }
+                guard mine(axis, on: element) != nil || take(axis, by: .fingers, on: element) != nil
+                else { continue }
                 shown.append((axis, move(axis, by: step)))
             case .ended, .cancelled:
                 guard let hold = mine(axis, on: element) else { continue }
@@ -195,13 +197,14 @@ import StateUIFoundation
     /// so what the user pressed stays under the hand - and
     /// a swiping hand grips it at the snap nearest, with the unit the number would have resting there. Where it
     /// took it; nil for a number another view's hand holds, or one nothing shows.
-    private func take(_ axis: InteractionAxis, on element: MountedElement) -> Double? {
+    private func take(_ axis: InteractionAxis, by stream: Stream, on element: MountedElement) -> Double? {
         let lane = Lane(state: axis.value.state, lane: axis.value.lane)
         if let other = held[lane], other.mount != element.mount { return nil }
         guard let standing = channels.standing(lane.state), standing.value.indices.contains(lane.lane)
         else { return nil }
 
-        var hold = Hold(mount: element.mount, element: element, value: standing.value[lane.lane], grip: nil)
+        var hold = Hold(
+            mount: element.mount, stream: stream, element: element, value: standing.value[lane.lane], grip: nil)
         if axis.swipes {
             let target = axis.nearest(hold.value)
             let unit = axis.unit == .frontItem
@@ -317,10 +320,17 @@ import StateUIFoundation
         let written = Set(lanes.map { Lane(state: state, lane: $0) })
         let mounts = Set(written.compactMap { held[$0]?.mount })
         for mount in mounts.sorted() {
-            lost[mount] = [.hand, .fingers]
+            lost[mount] = Set(held.values.filter { $0.mount == mount }.map(\.stream))
             for lane in written where held[lane]?.mount == mount { held[lane] = nil }
             cancel(held.filter { $0.value.mount == mount }.map(\.key))
         }
+    }
+
+    /// The gesture `stream` of the element mounted as `mount` begins or is over: it is one that lost its numbers no
+    /// more.
+    private func over(_ stream: Stream, on mount: UInt64) {
+        lost[mount]?.remove(stream)
+        if lost[mount]?.isEmpty == true { lost[mount] = nil }
     }
 
     /// `element`'s program changed from `old`: a number its hand holds that the program moves no longer, or by
