@@ -12,7 +12,7 @@
 /// where a view stands in its window as a scroller's or a list's scroll moves it, and from the safe area at its page's
 /// corner; how a view of a motion layout moves as a body following its place; and what a hand does to a number a
 /// motion layout's interaction names; and how a view joining a standing layout says where it stands and comes by
-/// its transition, and one dropped from it goes by it.
+/// its transition, one dropped from it goes by it, and one that comes back as it leaves goes on from where it left.
 @_spi(Host) public enum ViewTests: ConformanceFamily {
     public static let name = "View"
 
@@ -21,7 +21,7 @@
             [
                 margined(element), drawn(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
                 tapped(element), pressedAsAButton(element), longPressed(element), longPressedAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), thrown(element), pressTakenAway(element), takenFromTheHand(element), swiped(element), pinched(element), rotated(element), pointed(element),
-                dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element), entered(element), joined(element), left(element),
+                dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element), entered(element), joined(element), left(element), returned(element),
             ]
         } + [
             scrolledInItsWindow, scrolledInAList, atItsPagesCorner, carriedToItsPlace, onAFirstBaseline, showsItsPress,
@@ -341,6 +341,66 @@
             s.settle { leaving.lifecycle == .released }
             s.expect(leaving.lifecycle == .released, true, "released as its exit lands")
             s.expect(holder?.presentedChildren.contains { $0 === leaving }, false, "and its holder holds it no more")
+        }
+    }
+
+    /// A view that comes back under its name while it is still leaving goes on from how the leaving one is drawn:
+    /// another element, the leaving one over, one view of it standing, and its drawn frame setting out where that
+    /// one was - not at its entry's effect. Where nothing keeps a leaving view, it was gone at once.
+    @MainActor
+    static func returned(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aViewComingBackGoesOnFromWhereItLeft", proves: [
+            Covered(ViewContract.transition, on: element),
+        ], needs: [
+            Covered(ViewContract.presentationFrameChanged, on: element),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+        ]) { s in
+            let clock = TestClock()
+            let shown = State(wrappedValue: true)
+            let drawn = Received<[Double]>()
+            s.start(clock: clock) {
+                VStack {
+                    Button("Toggle").onClicked { shown.wrappedValue.toggle() }.id("toggle")
+                    if shown.wrappedValue {
+                        Specimens.view(element, [
+                            Write(VisualElementContract.width, 120), Write(VisualElementContract.height, 40),
+                            Write(ViewContract.transition, Transition(enter: .translation(x: 80), exit: .translation(x: 40))),
+                            Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
+                        ])
+                        .motion(.eased(.milliseconds(600), curve: .linear))
+                    }
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.frames(of: clock, until: 200)
+            s.settle { drawn.values.last.map(FrameReport.size) == [120, 40] }
+            let home = drawn.values.last.map(FrameReport.place) ?? []
+            let leaving = try s.element("specimen")
+            let holder = leaving.parent
+
+            try s.perform(.activate, on: s.element("toggle"))
+            s.settle { leaving.lifecycle != .active }
+            guard holder?.native.keepsExits == true, !NodeType.engineTypes.contains(leaving.type) else {
+                s.expect(leaving.lifecycle == .released, true, "gone at once, where nothing keeps it")
+                return
+            }
+
+            // Half way out: twenty of its exit's forty across.
+            s.frames(of: clock, until: 500)
+            let heard = drawn.values.count
+            try s.perform(.activate, on: s.element("toggle"))
+            s.settle { drawn.values.count > heard }
+            let back = try s.element("specimen")
+            s.expect(back === leaving, false, "another element")
+            s.expect(leaving.lifecycle == .released, true, "the leaving one is over")
+            s.expect(holder?.presentedChildren.filter { $0.id == back.id }.count, 1, "one view of it stands")
+            let across = drawn.values.dropFirst(heard).first.map { ($0.first ?? .nan) - (home.first ?? .nan) }
+            s.expect(across.map { $0.rounded() }, 20, "it sets out where the leaving one was drawn, not at its entry's effect")
+
+            s.frames(of: clock, until: 1_600)
+            s.settle { drawn.values.last.map(FrameReport.place) == home }
+            s.expect(drawn.values.last.map(FrameReport.place), home, "and onto its place")
         }
     }
 
