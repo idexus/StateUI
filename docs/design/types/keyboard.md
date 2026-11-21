@@ -114,7 +114,8 @@ last word. UIKit's field gives up the keyboard as its return is pressed
 (`UIKitTyping`); Android's field hides it and gives up the focus as
 `hideOnScreenKeyboard` does (`AndroidTextFieldView.submitted`), and a text
 field whose tree names no return asks for Done: left unspecified, the
-keyboard would offer a Next only StateUI's own Next takes. A desktop keyboard
+keyboard may offer a Next of its own reckoning (`focusSearch`), which moves
+nothing here - only StateUI's own Next hands the keyboard on. A desktop keyboard
 is no view on the screen, and Return leaves the field focused.
 
 An editor's return starts a new line, so the keyboard goes down another

@@ -262,7 +262,10 @@ another value makes the text anew rather than changing it in place.
 expresses search intent. All three share two-way text and `onTextChanged`. A
 `TextField` and a `SearchField` report the return key as `onSubmitted`; a
 `TextEditor` takes a Return as text, and `isFocused` says when its editing
-ends.
+ends. So an editor's keyboard on the screen goes down another way: on iOS a
+drag of the `ScrollView` or `ItemsView` holding it takes the keyboard down
+with the finger, on Android the system's Back does; a page with no scroller
+offers a button calling `window.hideOnScreenKeyboard()`.
 
 ```swift
 @State var query = ""

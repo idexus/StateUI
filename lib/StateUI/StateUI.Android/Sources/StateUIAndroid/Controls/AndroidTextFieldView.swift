@@ -140,8 +140,8 @@ final class AndroidTextFieldView: AndroidTextualView {
     /// What the keyboard's return key does; nil for the kind's own - one that ends the typing, or a search.
     func setReturnKey(_ key: SubmitLabel?) {
         // EditorInfo.IME_ACTION_DONE, _GO, _SEARCH, _SEND and _NEXT. The platform's own return ends the typing as
-        // Done does, the keyboard going down; left unspecified, the keyboard would offer a Next StateUI's own Next
-        // alone takes. Design: docs/design/types/keyboard.md#the-keyboard-down
+        // Done does, the keyboard going down; left unspecified, the keyboard may offer a Next of its own, which moves
+        // nothing here. Design: docs/design/types/keyboard.md#the-keyboard-down
         let label = InputTraits.submitLabel(key, searching: kind == .search)
         returnTakesKeyboardDown = InputTraits.takesKeyboardDown(label)
         let action: Int32 = switch label {
