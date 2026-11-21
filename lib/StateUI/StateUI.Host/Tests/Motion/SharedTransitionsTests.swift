@@ -5,8 +5,12 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
-/// Whether the board below shows its detail, else its deck.
+/// Whether the board below shows its detail, else its deck; the board's scope, which changes are aimed at.
 @MainActor private let detailShown = State(wrappedValue: false)
+@MainActor private let cardBoardScope = Aim(VStack.self)
+
+/// Whether the one item of the deck below shows its large view, else its small one.
+@MainActor private let itemDetailed = State(wrappedValue: false)
 
 /// A deck of two cards a motion layout places, and the detail of the first outside it: under one scope, tied by a key.
 private struct CardBoard: View {
@@ -23,11 +27,34 @@ private struct CardBoard: View {
             }
         }
         .transitionScope("board")
+        .aim(cardBoardScope)
     }
 }
 
 private struct CardBoardApplication: Application {
     var body: some Scene { WindowGroup { CardBoard() } }
+}
+
+/// A deck of one item whose small view and large view are tied by a key: a swap inside the item, which stands.
+private struct SwappingDeck: View {
+    var body: some View {
+        VStack {
+            MotionLayout([5], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
+                if itemDetailed.wrappedValue {
+                    Rectangle().sharedTransition(5)
+                } else {
+                    Text("small").sharedTransition(5)
+                }
+            } placements: { _, _ in
+                [Placement(Rect(x: 40, y: 40, width: 100, height: 60))]
+            }
+        }
+        .transitionScope("deck")
+    }
+}
+
+private struct SwappingDeckApplication: Application {
+    var body: some Scene { WindowGroup { SwappingDeck() } }
 }
 
 /// A shared transition on the host's side: one view dropped and one made in a patch under one key of one scope are
@@ -257,6 +284,96 @@ final class SharedTransitionsTests: XCTestCase {
         let drawn = { (property: Prop) in runtime.tree.presentedPropertyValue(mount: detail.mount, property: property)?.number }
         XCTAssertEqual(drawn(.scaleX) ?? .nan, 0.2, accuracy: 0.001, "40 of 200: it sets out as large as the card")
         XCTAssertEqual(drawn(.translationX) ?? .nan, -60, accuracy: 0.001, "the card's middle, 70, against 130")
+    }
+
+    /// A runtime with nothing native behind it, the application motion 200 ms, showing what is registered, and a
+    /// finder of its elements by their words or type.
+    private func joint() throws -> (runtime: HostRuntime, find: (String) -> MountedElement?) {
+        let runtime = HostRuntime(clock: WoundClock(), reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
+        runtime.layoutMotion.applicationMotion = .eased(.milliseconds(200), curve: .linear)
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let root = try XCTUnwrap(runtime.tree.root)
+        func find(_ words: String) -> MountedElement? {
+            func walk(_ element: MountedElement) -> MountedElement? {
+                if element.value(.text)?.string == words || (words == "rectangle" && element.type == .rectangle) {
+                    return element
+                }
+                return element.children.lazy.compactMap(walk).first
+            }
+            return walk(root)
+        }
+        return (runtime, find)
+    }
+
+    /// The display's frames from `from` to `to` milliseconds, a turn after each.
+    private func frames(_ runtime: HostRuntime, from: Double, to: Double) {
+        for time in stride(from: from, through: to, by: 16) {
+            (runtime.clock as? WoundClock)?.time = time
+            runtime.displayCycle.frame(now: time)
+            runtime.pump.turn()
+        }
+    }
+
+    /// A VIEW MADE WITH A LAYOUT ITS PROGRAM PLACES SETS OUT TOWARD NO PLACE THE TREE DOES NOT KNOW: as the layout's
+    /// toolkit lays its views out before the program has shown any - the holder across the layout's room - the
+    /// card coming back from its detail draws no way, and a change waiting for it hears `.unsupported`.
+    func testAViewMadeWithALayoutItsProgramPlacesSetsOutTowardNoUnknownPlace() throws {
+        detailShown.wrappedValue = true
+        CardBoardApplication.register()
+        let (runtime, find) = try joint()
+        let detail = try XCTUnwrap(find("detail"))
+        let scope = try XCTUnwrap(detail.parent)
+        (scope.native as? NoView)?.frame = [0, 0, 300, 400, 10, 20, 10, 20]
+        (detail.native as? NoView)?.frame = [20, 30, 200, 100, 30, 50, 30, 50]
+
+        let change = try cardBoardScope.presentationChange { detailShown.wrappedValue = false }
+        runtime.pump.turn()
+        let card = try XCTUnwrap(find("card 5"))
+        let holder = try XCTUnwrap(card.parent)
+        (holder.native as? NoView)?.frame = [0, 0, 300, 200, 10, 20, 10, 20]
+        runtime.layoutMotion.place(
+            Placed(), mount: card.mount, at: Rect(x: 0, y: 0, width: 300, height: 200), stated: [], words: .none,
+            natural: { LayoutSize(width: 300, height: 200) },
+            enter: { entry in card.enter(Shown(), as: entry) },
+            in: Arrangement(law: .eased(.milliseconds(200), curve: .linear), lanes: .all, joins: true), room: nil)
+
+        XCTAssertNil(runtime.tree.presentedPropertyValue(mount: card.mount, property: .scaleY), "no way to a place unknown")
+        frames(runtime, from: 16, to: 400)
+        XCTAssertEqual(change.answered.settled, .interrupted([.unsupported]))
+    }
+
+    /// A VIEW SWAPPED INSIDE AN ITEM A PROGRAM PLACES SETS OUT FROM ITS PARTNER: the item stands where the program
+    /// showed it, so the view made in it enters from where the view dropped was drawn, to its place there.
+    func testAViewSwappedInsideAnItemAProgramPlacesSetsOutFromItsPartner() throws {
+        itemDetailed.wrappedValue = false
+        SwappingDeckApplication.register()
+        let (runtime, find) = try joint()
+        let small = try XCTUnwrap(find("small"))
+        let holder = try XCTUnwrap(small.parent)
+        let layout = try XCTUnwrap(holder.parent)
+        XCTAssertEqual(layout.type, .motionLayout)
+        (layout.native as? NoView)?.frame = [0, 0, 300, 200, 10, 20, 10, 20]
+        layout.reportFrame([0, 0, 300, 200, 10, 20, 10, 20], in: runtime)
+        frames(runtime, from: 16, to: 64)
+        XCTAssertEqual(layout.programPlace(at: 0)?.bounds, Rect(x: 40, y: 40, width: 100, height: 60))
+        (holder.native as? NoView)?.frame = [40, 40, 100, 60, 50, 60, 50, 60]
+        (small.native as? NoView)?.frame = [0, 0, 40, 30, 50, 60, 50, 60]
+
+        itemDetailed.wrappedValue = true
+        runtime.pump.turn()
+        let large = try XCTUnwrap(find("rectangle"))
+        XCTAssertTrue(large.parent === holder, "the item stands")
+        runtime.layoutMotion.place(
+            Placed(), mount: large.mount, at: Rect(x: 0, y: 0, width: 100, height: 60), stated: [], words: .none,
+            natural: { LayoutSize(width: 100, height: 60) },
+            enter: { entry in large.enter(Shown(), as: entry) },
+            in: Arrangement(law: .eased(.milliseconds(200), curve: .linear), lanes: .all, joins: true), room: nil)
+
+        let drawn = { (property: Prop) in runtime.tree.presentedPropertyValue(mount: large.mount, property: property)?.number }
+        XCTAssertEqual(drawn(.scaleX) ?? .nan, 0.4, accuracy: 0.001, "40 of 100")
+        XCTAssertEqual(drawn(.scaleY) ?? .nan, 0.5, accuracy: 0.001, "30 of 60")
+        XCTAssertEqual(drawn(.translationX) ?? .nan, -30, accuracy: 0.001, "the small one's middle, 70, against 100")
     }
 
     /// A RETURN DURING THE MOVEMENT SETS OUT FROM WHERE THE VIEW NOW LEAVING IS DRAWN, and a view still leaving by

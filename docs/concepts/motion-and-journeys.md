@@ -439,8 +439,10 @@ movement sets out from where the picture is drawn at that moment.
 
 One view leaving and one entering under a key, in one window and on one
 page, are tied. Anything else - two views of one key, a partner in another
-window or on another page - is not: each view then goes by its own
-`.transition(_:)`.
+window or on another page, a view entering with the `MotionLayout` that
+places it, whose place its arithmetic has not said yet - is not: each view
+then goes by its own `.transition(_:)`. A view swapped inside an item that
+stands is tied.
 
 ## A change and what it started
 

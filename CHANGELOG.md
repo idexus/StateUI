@@ -223,8 +223,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   the same key in its scope - a layout that says `.transitionScope(_:)`: as one of them leaves and the other
   enters in the same change, the entering one sets out from where the leaving one is drawn and grows onto its
   own place, under its own `.motion(_:)`; going back during the movement goes on from where it has got to.
-  The two stay two views. Where no single partner is found - none, two of one key, another window or page -
-  each goes by its own `.transition(_:)`. Both take any `Hashable`, and a host compares no value: the core
+  The two stay two views. Where no single partner is found - none, two of one key, another window or page, a
+  view entering with the `MotionLayout` that places it before its arithmetic said where - each goes by its own
+  `.transition(_:)`; a view swapped inside an item that stands is tied. Both take any `Hashable`, and a host compares no value: the core
   hands it numbers. For a host: nothing to write - the entry is drawn by the move and the scales it presents.
 
 - **A change says how what it started ended.** `Aim.presentationChange { ... }`, on the aim of any view, runs

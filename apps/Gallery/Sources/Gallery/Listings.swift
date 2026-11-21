@@ -2530,8 +2530,11 @@ enum Listings {
         private func change(_ words: String, _ update: () -> Void) async throws {
             let change = try board.presentationChange(update)
             said = "\(words) · under way"
-            let result = try await change.settled()
-            said = "\(words) · \(result == .settled ? "settled" : "\(result)")"
+            said = switch try await change.settled() {
+            case .settled: "\(words) · settled"
+            case .interrupted(let why): "\(words) · interrupted: \(why.map { "\($0)" }.joined(separator: ", "))"
+            case .notPresented: "\(words) · not presented"
+            }
         }
 
         /// The card in front, as the turn stands.
@@ -2602,6 +2605,8 @@ enum Listings {
                         .fontWeight(.semibold)
                 }
                 // TIED TO ITS DETAIL by its name: opened, the detail grows from it.
+                // Back, the card comes with its deck, which its arithmetic has not
+                // placed yet: it is no partner, and the change says so.
                 .sharedTransition(card.name)
                 .motion(.eased(.milliseconds(600), curve: .sineInOut))
                 .scale(held ? 1.1 : 1)

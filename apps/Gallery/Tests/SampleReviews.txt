@@ -27,7 +27,7 @@ CheckBoxSample.swift 59e11010b2651d72
 ChoosingItemsSample.swift 85105c1d71a4884c
 ClipboardSample.swift a210a3c26540a05e
 ColorPickerSample.swift e4dfd0184c4251ec
-CommonBoardSample.swift 7feb2f26470761e2
+CommonBoardSample.swift dd81d3391f8a8fec
 ComplaintsSample.swift 12dd4def1812d374
 ConcurrentAnimationSample.swift 172bb3654221727f
 ConcurrentStateSample.swift ea26ba1bc9d59073

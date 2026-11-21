@@ -405,8 +405,20 @@ made by an earlier patch is no partner of one a later patch drops.
 Where the made view stands is worked out from what the tree knows as its
 layout places it: the place its layout gave it, and each place a layout gave
 what holds it, up to its scope or to the first view no layout's motion
-placed, whose corner the toolkit says. Where that is not known yet, nothing
-is guessed.
+placed, whose corner the toolkit says. Where that is not known yet,
+nothing is guessed - and a view a layout program places, made with the
+patch - a motion layout's new item, in its holder - is not known yet.
+
+The trap is the first place of a view made with its motion layout. The
+toolkit lays the new layout out before its program is asked, in the
+display's next frame, and stands each holder across the whole room
+meanwhile: the view's first place - where its entry is decided - is that
+room, not the item's. Read from the toolkit, the view would set out toward
+the room and be drawn squashed into it until the program moved its holder.
+So it is no partner: it enters by its own transition, and a waiting change
+hears `.unsupported` - an item joining a layout that stands too. A view made
+inside an item that stands - a swap in the item - stands where its toolkit
+draws the item, and travels.
 
 The entry is the road every entry takes
 ([a view that enters](#a-view-that-enters)) - numbers set out from and
