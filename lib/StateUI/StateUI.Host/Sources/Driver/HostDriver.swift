@@ -88,7 +88,8 @@
     /// it: a view drawn away is reached where it is drawn.
     func reaches(_ element: MountedElement, at point: Point) throws -> Bool
 
-    /// The children of `layout` in the order its toolkit draws them, back to front, as its native view holds them.
+    /// The views `layout` presents - its children and those kept as they leave - in the order its toolkit draws
+    /// them, back to front, as its native view holds them.
     func drawingOrder(of layout: MountedElement) throws -> [MountedElement]
 
     /// Whether assistive technology meets `element`'s view as a heading, whatever level it says.

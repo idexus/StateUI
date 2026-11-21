@@ -317,15 +317,15 @@ final class AndroidDriver: HostDriver {
             guard let order = Java.callStaticObject(Self.testDrawing, Self.drawingOrderOf, .object(group.reference))
             else { return [] }
             let drawn = Java.intsOf(order).compactMap { Java.callObject(group.reference, TestJava.getChildAt, .int($0)) }
-            return layout.children.map { (child: MountedElement) -> Int? in
+            return layout.presentedChildren.map { (child: MountedElement) -> Int? in
                 guard let view = (child.native as? AndroidElement)?.view else { return nil }
                 return drawn.firstIndex { (holder: jobject) in
                     Java.callStaticBool(Self.testDrawing, Self.isWithin, .object(view.reference), .object(holder))
                 }
             }
         }
-        guard places.count == layout.children.count else { throw cannot }
-        return try zip(layout.children, places).map { child, place in
+        guard places.count == layout.presentedChildren.count else { throw cannot }
+        return try zip(layout.presentedChildren, places).map { child, place in
             guard let place else { throw cannot }
             return (child, place)
         }

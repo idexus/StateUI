@@ -13,6 +13,21 @@ extension MountedElement {
         keptExits.isEmpty ? arrangedChildren : Self.order(arrangedChildren, keeping: keptExits, asIn: presentedOrder ?? [])
     }
 
+    /// The views the element presents in the order they stand, each by the mount its layout knows it by - an
+    /// arranged child's as `item` says, one kept as it leaves by its own - and the mounts of those kept.
+    public func presentedMounts(item: (MountedElement) -> UInt64?) -> (mounts: [UInt64], kept: Set<UInt64>) {
+        var (mounts, kept) = ([UInt64](), Set<UInt64>())
+        for child in presentedChildren {
+            if child.lifecycle == .exiting {
+                mounts.append(child.mount)
+                kept.insert(child.mount)
+            } else if let mount = item(child) {
+                mounts.append(mount)
+            }
+        }
+        return (mounts, kept)
+    }
+
     /// How many mounted elements stand in this subtree.
     var mountCount: Int {
         held.reduce(1) { $0 + $1.mountCount }
@@ -71,7 +86,7 @@ extension MountedElement {
     }
 
     /// One of the numbers the exit moves came to its end, landed or cut short.
-    private func exitLanded() {
+    func exitLanded() {
         exitsRunning -= 1
         if exitsRunning <= 0, !isAbsorbed { endExit(.finished, arranging: true) }
     }

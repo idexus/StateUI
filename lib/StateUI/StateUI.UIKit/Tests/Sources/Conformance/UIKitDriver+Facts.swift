@@ -238,7 +238,7 @@ extension UIKitDriver {
     func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
         let cannot = DriverCannot("read the drawing order of \(layout.type.name)")
         guard let parent = (layout.native as? UIKitElement)?.view else { throw cannot }
-        return try layout.children.map { child in
+        return try layout.presentedChildren.map { child in
             guard var view = (child.native as? UIKitElement)?.view else { throw cannot }
             while let above = view.superview, above !== parent { view = above }
             guard let place = parent.subviews.firstIndex(where: { $0 === view }) else { throw cannot }

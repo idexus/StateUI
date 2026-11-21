@@ -144,8 +144,9 @@ effect, and the rows around it close over its place under the layout's own
 motion. Found leaving, it is made deaf to input - a press reaches what
 stands behind it - and taken out of what assistive technology meets. As its
 exit ends the tree arranges its holder again, and the view is a subview no
-more. A ZStack a run places orders its items' views itself; a leaving view
-stays over them.
+more. A layout orders its items' views and the leaving ones together
+([drawing order](../../host/layout.md#drawing-order)): a leaving view after
+the one it stood after, the layout told the mounts of those it keeps.
 
 The trap is one list for both. A view that stays a layout item is measured
 and placed after its element stopped being the application's: its row would

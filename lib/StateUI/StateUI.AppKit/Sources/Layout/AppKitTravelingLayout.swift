@@ -22,21 +22,23 @@ class AppKitTravelingLayout: AppKitHitTestView, AppKitDirectedLayout {
     /// How the children travel to their places, by the host layer's rule.
     let places = TravelingPlaces()
 
-    /// The views it presents, in the tree's order - its items' and those kept as they leave - as they last came.
+    /// The views it presents, in the tree's order - its items' and those kept as they leave - as they last came; and
+    /// the mounts of those kept.
     var presented: [NSView] = []
+    var keptMounts: [ObjectIdentifier: UInt64] = [:]
 
     /// Draws the children again as the layout draws them; a layout of no order of its own keeps the tree's.
     func orderChildren() {}
 
-    /// Stands the subviews as the layout draws them: the tree's order, a run's ranks where `placements` say them, a
-    /// child a shared entry carries last - a view kept as it leaves over them all where they move.
+    /// Stands the subviews as the layout draws them: the tree's order, a run's ranks where `placements` say them,
+    /// each view kept as it leaves after the one it stood after, a view a shared transition carries last.
     /// Design: docs/design/host/layout.md#drawing-order
     func standInDrawingOrder(of items: [AppKitLayoutItem], placedBy placements: [HostPlacement]) {
-        let ordered = places.drawingOrder(of: items.map(\.mount), placedBy: placements)
-        guard !placements.isEmpty || ordered != Array(items.indices) else { return replaceSubviews(with: presented) }
-
-        let leaving = presented.filter { view in !items.contains { $0.view === view } }
-        replaceSubviews(with: ordered.map { items[$0].view } + leaving)
+        var mounts = keptMounts
+        for item in items { mounts[ObjectIdentifier(item.view)] = item.mount }
+        let ordered = places.drawingOrder(
+            of: presented.map { mounts[ObjectIdentifier($0)] ?? 0 }, kept: Set(keptMounts.values), placedBy: placements)
+        replaceSubviews(with: ordered.map { presented[$0] })
     }
 
     override func layout() {

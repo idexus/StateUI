@@ -27,19 +27,21 @@ extension AndroidElement {
         let layout = view as? AndroidLayoutView
         layout?.direction = element.layoutDirection
         (view as? AndroidSplitView)?.framesDetail = element.arrangedChildren.dropFirst().first?.type == .page
-        if keepsExits { layout?.keep(leavingViews()) }
+        if keepsExits {
+            layout?.keep(leavingViews(), presented: element.presentedMounts { $0.android.layoutItem?.mount }.mounts)
+        }
         layout?.setItems(element.arrangedChildren.compactMap { $0.android.layoutItem })
     }
 
-    /// The views of the children kept as they leave, each made deaf to touches and taken out of what assistive
-    /// technology meets as it is found leaving.
+    /// The views of the children kept as they leave, by their mounts, each made deaf to touches and taken out of
+    /// what assistive technology meets as it is found leaving.
     /// Design: docs/design/platforms/android/layout.md#a-view-kept-as-it-leaves
-    private func leavingViews() -> [AndroidView] {
-        element.presentedChildren.filter { $0.lifecycle == .exiting }.compactMap { child -> AndroidView? in
+    private func leavingViews() -> [(mount: UInt64, view: AndroidView)] {
+        element.presentedChildren.filter { $0.lifecycle == .exiting }.compactMap { child in
             guard let view = child.android.view else { return nil }
             view.setIgnoresInput(child.ignoresInput)
             view.setAccessibility(child.accessibilityWords) { _ in false }
-            return view
+            return (child.mount, view)
         }
     }
 

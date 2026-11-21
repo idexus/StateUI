@@ -48,6 +48,11 @@ class WinUILayoutView: WinUIView {
     private(set) var leaving: [WinUIView] = []
     private var keptChanged = false
 
+    /// The mounts of the views kept as they leave, in their order, and of every view the panel presents, in the
+    /// order they stand.
+    private(set) var keptMounts: [UInt64] = []
+    private(set) var presented: [UInt64] = []
+
     init() {
         super.init { number in stateui_winui_panel_make(number) }
     }
@@ -55,11 +60,13 @@ class WinUILayoutView: WinUIView {
     /// Says the views of children kept as they leave, before the items are set: the panel holds them on, after
     /// its items' views, and lets go of one kept no more.
     /// Design: docs/design/platforms/winui/layout.md#a-view-kept-as-it-leaves
-    func keep(_ leaving: [WinUIView]) {
-        guard leaving.count != self.leaving.count || !zip(leaving, self.leaving).allSatisfy({ $0 === $1 })
+    func keep(_ leaving: [(mount: UInt64, view: WinUIView)], presented: [UInt64]) {
+        (keptMounts, self.presented) = (leaving.map(\.mount), presented)
+        let views = leaving.map(\.view)
+        guard views.count != self.leaving.count || !zip(views, self.leaving).allSatisfy({ $0 === $1 })
         else { return }
 
-        self.leaving = leaving
+        self.leaving = views
         keptChanged = true
     }
 

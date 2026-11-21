@@ -217,7 +217,8 @@
         return try driven { try driver.isHeading(element) }
     }
 
-    /// The ids of the children of `layout`, in the order its toolkit draws them, back to front.
+    /// The ids of the views `layout` presents - its children and those kept as they leave - in the order its toolkit
+    /// draws them, back to front.
     public func drawingOrder(of layout: MountedElement) throws -> [ElementID] {
         note("read the drawing order of \(layout.type.name)")
         return try driven { try driver.drawingOrder(of: layout).map(\.id) }

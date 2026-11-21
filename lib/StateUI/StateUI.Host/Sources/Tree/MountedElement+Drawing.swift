@@ -42,6 +42,14 @@ extension MountedElement {
             scaleY: local.pressed.scaleY, pivotX: 0.5, pivotY: 0.5))
     }
 
+    /// How the view is drawn over its place: its own transform, under the one its layout's program places it with.
+    var drawnTransform: HostDrawingTransform {
+        guard let parent, let run = parent.placement, let index = parent.children.firstIndex(where: { $0 === self }),
+              run.placements.indices.contains(index)
+        else { return drawingTransform }
+        return drawingTransform.under(run.drawing(of: index))
+    }
+
     /// The property a layout's own placing run is presented under, where the element runs a layout program: the
     /// run moves the children without changing what the layout measures.
     public var ownPlacementRun: Set<Prop> {

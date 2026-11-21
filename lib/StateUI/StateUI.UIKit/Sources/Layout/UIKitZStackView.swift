@@ -73,11 +73,7 @@ final class UIKitZStackView: UIKitLayoutView {
     /// The children back to front as the run ranks them, or in their order without one: a touch reaches the front
     /// one first.
     override func orderChildren() {
-        let order = places.drawingOrder(of: items.map(\.mount), placedBy: placement?.placements ?? [])
-        let host = childrenHost
-        for index in order where index < items.count {
-            host.bringSubviewToFront(items[index].view)
-        }
+        standInDrawingOrder(placedBy: placement?.placements ?? [])
     }
 
     /// Stands each child where the run says, drawn as it says.

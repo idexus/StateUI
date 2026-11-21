@@ -25,19 +25,21 @@ extension WinUIElement {
         let arranged = element.arrangedChildren.map(\.winUI)
         let layout = view as? WinUILayoutView
         layout?.direction = element.layoutDirection
-        if keepsExits { layout?.keep(leavingViews()) }
+        if keepsExits {
+            layout?.keep(leavingViews(), presented: element.presentedMounts { $0.winUI.layoutItem?.mount }.mounts)
+        }
         layout?.setItems(arranged.compactMap(\.layoutItem))
     }
 
-    /// The views of the children kept as they leave, each made deaf to the pointer and taken out of what
-    /// assistive technology meets as it is found leaving.
+    /// The views of the children kept as they leave, by their mounts, each made deaf to the pointer and taken out
+    /// of what assistive technology meets as it is found leaving.
     /// Design: docs/design/platforms/winui/layout.md#a-view-kept-as-it-leaves
-    private func leavingViews() -> [WinUIView] {
-        element.presentedChildren.filter { $0.lifecycle == .exiting }.compactMap { child -> WinUIView? in
+    private func leavingViews() -> [(mount: UInt64, view: WinUIView)] {
+        element.presentedChildren.filter { $0.lifecycle == .exiting }.compactMap { child in
             guard let view = child.winUI.view else { return nil }
             view.setIgnoresInput(child.ignoresInput)
             view.setAccessibility(child.accessibilityWords)
-            return view
+            return (child.mount, view)
         }
     }
 

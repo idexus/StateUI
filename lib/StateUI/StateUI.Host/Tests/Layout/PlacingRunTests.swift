@@ -23,6 +23,19 @@ final class PlacingRunTests: XCTestCase {
         XCTAssertEqual(DrawingOrder.of(5, placedBy: placements, inFront: { [1, 3].contains($0) }), [0, 2, 4, 1, 3])
     }
 
+    /// A view kept as it leaves is drawn after the view it stood after, whatever order the arranged ones are drawn
+    /// in - first where it stood first - and one a shared transition carries is drawn last, kept or arranged.
+    func testAViewKeptAsItLeavesIsDrawnAfterTheViewItStoodAfter() {
+        // Standing: a, kept b, c, kept d - the run drawing c under a.
+        let kept = [false, true, false, true]
+        let placements = [placed(z: 2), placed(z: 0)]
+        XCTAssertEqual(DrawingOrder.of(presented: kept, placedBy: placements, inFront: { _ in false }), [2, 3, 0, 1])
+        XCTAssertEqual(DrawingOrder.of(presented: kept, placedBy: [], inFront: { _ in false }), [0, 1, 2, 3])
+        XCTAssertEqual(DrawingOrder.of(presented: [true, false], placedBy: [], inFront: { _ in false }), [0, 1])
+        XCTAssertEqual(DrawingOrder.of(presented: kept, placedBy: [], inFront: { $0 == 1 }), [0, 2, 3, 1], "the kept b carried")
+        XCTAssertEqual(DrawingOrder.of(presented: kept, placedBy: [], inFront: { $0 == 0 }), [1, 2, 3, 0])
+    }
+
     /// A placed child has no size below nothing, and its opacity stands between 0 and 1.
     func testAPlaceHasNoSizeBelowNothing() {
         let run = HostPlacementRun(placements: [placed(z: 0, width: -3)], direction: .leftToRight)

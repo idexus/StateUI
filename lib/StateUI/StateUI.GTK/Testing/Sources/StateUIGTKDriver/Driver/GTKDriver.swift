@@ -457,7 +457,7 @@ final class GTKDriver: HostDriver {
             drawn.append(each)
             child = gtk_widget_get_next_sibling(each)
         }
-        return try layout.children.map { child in
+        return try layout.presentedChildren.map { child in
             guard let widget = (child.native as? GTKElement)?.view?.widget,
                   let place = drawn.firstIndex(where: { $0 == widget || gtk_widget_is_ancestor(widget, $0) != 0 })
             else { throw cannot }

@@ -155,8 +155,10 @@ view.
 It stands so until its release: `pointer-events: none`, `inert` and
 `aria-hidden`, so nothing is pressed, focused or met in it or under it, and
 the numbers of its exit - opacity, a move, a scale - reach it as any frame's
-do. The element's deactivation leaves its views on the page where it
-`staysDrawn`; its release (`releasePresentation`) lets each of them go, the
+do. Its z-index stands it after the view it stood after, the layout told
+the mounts of those it keeps
+([drawing order](../../host/layout.md#drawing-order)). The element's
+deactivation leaves its views on the page where it `staysDrawn`; its release (`releasePresentation`) lets each of them go, the
 kept one and everything under it, and the element is off the page with its
 number.
 

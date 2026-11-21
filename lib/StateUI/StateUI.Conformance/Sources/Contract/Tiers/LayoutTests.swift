@@ -18,6 +18,7 @@
                 Aspects.holds(LayoutContract.letsInputThrough, on: element, false, then: true),
                 bodied(element), unbodied(element), scoped(element),
             ] + (SettingOut.kinds.contains(element) ? [drawnInFront(element)] : [])
+                + (SettingOut.keeping.contains(element) ? [keptForItsPartner(element)] : [])
         }
     }
 
@@ -297,9 +298,11 @@ extension LayoutTests {
 
             // Read as the patch is laid out, no frame passing first: a toolkit lays a patch out within its frame.
             let layout = try s.element("layout")
+            // The one setting out is drawn last; the one leaving, kept for it, stands where it stood.
             let traveling = { () -> [ElementID] in
                 let written = layout.children.map(\.id)
-                return written.count == 3 ? [written[0], written[2], written[1]] : []
+                guard written.count == 3 else { return [] }
+                return layout.presentedChildren.map(\.id).filter { $0 != written[1] } + [written[1]]
             }
             try s.perform(.activate, on: s.element("toggle"))
             try s.settle { try s.drawingOrder(of: layout) == traveling() }
@@ -309,6 +312,46 @@ extension LayoutTests {
             s.frames(of: clock, until: 1_400)
             try s.settle { try s.drawingOrder(of: layout) == written }
             s.expect(try s.drawingOrder(of: layout), written, "landed: in its layout's order")
+        }
+    }
+
+    /// A layout that is a scope and keeps a view that leaves keeps the one leaving it for its partner: drawn where
+    /// it stood, behind the larger one setting out, until that one lands - and gone then.
+    @MainActor
+    static func keptForItsPartner(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).theViewLeavingItStandsUntilItsPartnerLands", proves: [
+            Covered(LayoutContract.transitionScope, on: element),
+        ], needs: [
+            Covered(ViewContract.sharedTransition, on: RectangleContract.self),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+        ]) { s in
+            let clock = TestClock()
+            let detailed = State(wrappedValue: false)
+            s.start(clock: clock) {
+                VStack {
+                    Button("Toggle").onClicked { detailed.wrappedValue.toggle() }.id("toggle")
+                    SettingOut.layout(element, detailed: detailed.wrappedValue)
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.frames(of: clock, until: 200)
+
+            let layout = try s.element("layout")
+            let small = layout.children.map(\.id)
+            let standing = { () -> [ElementID] in
+                small.count == 3 && layout.children.count == 3 ? small + [layout.children[1].id] : []
+            }
+            try s.perform(.activate, on: s.element("toggle"))
+            try s.settle { try s.drawingOrder(of: layout) == standing() }
+            s.expect(try s.drawingOrder(of: layout), standing(), "the small one where it stood, the large in front")
+            s.frames(of: clock, until: 400)
+            s.expect(try s.drawingOrder(of: layout), standing(), "both drawn on the way")
+
+            s.frames(of: clock, until: 1_400)
+            let landed = layout.children.map(\.id)
+            try s.settle { try s.drawingOrder(of: layout) == landed }
+            s.expect(try s.drawingOrder(of: layout), landed, "landed: the one that left is gone")
         }
     }
 
@@ -464,6 +507,9 @@ private struct Swapped: View {
 enum SettingOut {
     /// The layouts whose children are its own views, side by side or over each other.
     static let kinds: Set<String> = ["VStack", "HStack", "Grid", "ZStack", "MotionLayout"]
+
+    /// The layouts that keep a view leaving them: a stack, a grid, a ZStack.
+    static let keeping: Set<String> = ["VStack", "HStack", "Grid", "ZStack"]
 
     static func layout(_ element: String, detailed: Bool) -> AnyView {
         let dressing = Dressing([Write(LayoutContract.transitionScope, 1)], id: "layout")

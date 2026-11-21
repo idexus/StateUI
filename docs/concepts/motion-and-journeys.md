@@ -435,12 +435,21 @@ scope is tied to nothing. Both take any `Hashable`.
 
 The two views stay two views - the picture's state is its own, and nothing
 of the thumbnail's is carried over. The entry moves under the entering
-view's own `.motion(_:)`, else the application's. Going back during the
-movement sets out from where the picture is drawn at that moment. On its
+view's own `.motion(_:)`, else the application's. Where the layout that held
+the leaving view keeps a view that leaves - a stack, a grid, a ZStack - the
+two are drawn as one on the way: the leaving one goes along onto where the
+entering one lands, at the speed it had, so a view the hand throws goes on
+as thrown; they cross over near the smaller of the two, and a rounded corner
+goes from the one's to the other's. Elsewhere the leaving one goes at once.
+Going back during the movement sets out from where the picture is drawn at
+that moment. On its
 way the entering view is drawn in front of what it passes over - every
 sibling in a stack, and what stood before it in a layout that layers its
 children - until it lands; what came in with it keeps its layers, so a
-picture's own caption stays over it.
+picture's own caption stays over it. The leaving one, going along, is drawn
+in front so too, and where one layout holds them both, the larger of the two
+is in front there: a picture closing onto its thumbnail is drawn over the
+other thumbnails all the way.
 
 One view leaving and one entering under a key, in one window and on one
 page, are tied. Anything else - two views of one key, a partner in another

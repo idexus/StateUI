@@ -404,10 +404,11 @@ final class AppKitLayoutMotionTests: XCTestCase {
     }
 
     /// A thumbnail coming back from its picture - made in a row the same patch makes, under an application that
-    /// moves - is drawn over the picture's rectangle from the layout pass that places it, the row unfaded: the
-    /// picture gone, nothing else stands in for it.
+    /// moves - is set out over the picture's rectangle from the layout pass that places it, the row unfaded; the
+    /// picture, kept by its ZStack, stands drawn whole where it was and in front of the row, the larger of the two,
+    /// the thumbnail waiting to cross over late.
     @MainActor
-    func testAThumbnailComingBackIsDrawnOverItsPictureFromItsFirstPass() throws {
+    func testAThumbnailComingBackSetsOutUnderItsPictureFromItsFirstPass() throws {
         let renderer = testRenderer(
             resourceDirectory: nil, presentsWindows: false, clock: { 0 }, reducesMotion: { false })
         defer { renderer.finish() }
@@ -440,6 +441,8 @@ final class AppKitLayoutMotionTests: XCTestCase {
         window.contentView?.addSubview(native)
         native.frame = NSRect(x: 0, y: 0, width: 300, height: 150)
         native.layoutSubtreeIfNeeded()
+        // Frames pass before the picture is pressed: the scope is no layout its patch made any more.
+        for _ in 0..<3 { renderer.runtime.displayCycle.frame(now: 0) }
 
         renderer.applyForTesting(scope([row]))
         native.layoutSubtreeIfNeeded()
@@ -447,12 +450,20 @@ final class AppKitLayoutMotionTests: XCTestCase {
         let layer = try XCTUnwrap(thumbnail.layer)
         XCTAssertEqual(layer.transform.m11, 300.0 / 56, accuracy: 0.01, "as wide as the picture, at once")
         XCTAssertEqual(layer.transform.m22, 150.0 / 40, accuracy: 0.01, "as tall as the picture, at once")
-        var shown: NSView? = thumbnail
+        var shown: NSView? = thumbnail.superview
         while let view = shown, view !== native {
             XCTAssertFalse(view.isHidden, "\(view) hidden")
             XCTAssertEqual(view.alphaValue, 1, accuracy: 0.001, "\(view) faded")
             shown = view.superview
         }
+        XCTAssertEqual(thumbnail.alphaValue, 0, accuracy: 0.001, "shrinking, it crosses over late")
+        let kept = renderer.runtime.tree.root?.keptExits.first { $0.id == .manual("picture") }
+        let picture = try XCTUnwrap((kept?.native as? AppKitElement)?.view)
+        XCTAssertTrue(picture.superview === native, "the picture kept as it goes along")
+        XCTAssertEqual(picture.alphaValue, 1, accuracy: 0.001, "drawn whole as it sets out")
+        let thumbnails = try XCTUnwrap(renderer.viewForTesting(id: .manual("row")))
+        let drawn = native.subviews.filter { $0 === thumbnails || $0 === picture }
+        XCTAssertEqual(drawn, [thumbnails, picture], "the picture in front")
     }
 
     /// A view leaving out of its room, in a stack narrower than the scroller showing it, goes wholly past the

@@ -74,15 +74,15 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     /// How the boards turn - and the dots with them: one state, one motion.
     static let turning = Motion.spring(response: .milliseconds(380), damping: 0.86)
 
-    /// How an icon grows into its app, and the app back into the icon.
+    /// How an icon grows into its app, and how the app closes onto the icon.
     static let opening = Motion.spring(response: .milliseconds(320), damping: 0.88)
-
-    /// How the app and its icon change places at the end of a close: slowly,
-    /// then all at once; how the app goes onto its icon; and how it follows
-    /// the hand pulling it - a short spring a step behind, still moving at the
-    /// hand's speed as the hand lets go, so the close goes on from there.
-    static let late = Motion.eased(.milliseconds(300), curve: .cubicIn)
     static let closing = Motion.spring(response: .milliseconds(280), damping: 0.9)
+
+    /// How the words on an app come in: slowly, then all at once; and how the
+    /// app follows the hand pulling it - a short spring a step behind, still
+    /// moving at the hand's speed as the hand lets go, so the close goes on
+    /// from there.
+    static let late = Motion.eased(.milliseconds(300), curve: .cubicIn)
     static let following = Motion.spring(response: .milliseconds(80), damping: 1)
 
     /// The icons, in order.
@@ -100,25 +100,8 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     @State private var room = Rect.zero
     @State private var fit = Fit()
 
-    /// The icon whose app is open, by its name, and whether that app is
-    /// closing - its icon back in its place, under it.
+    /// The icon whose app is open, by its name.
     @State private var opened: String?
-    @State private var closing = false
-
-    /// Where the app is drawn as the hand pulls it and as it closes - moved,
-    /// and scaled about its foot - and how opaque; the app's room and its
-    /// icon's place in the window, as the platform lays them out.
-    @State(motion: Self.opening) private var appX = 0.0
-    @State(motion: Self.opening) private var appY = 0.0
-    @State(motion: Self.opening) private var appWide = 1.0
-    @State(motion: Self.opening) private var appTall = 1.0
-    @State(motion: Self.late) private var appShown = 1.0
-    @State private var appRoom = Rect.zero
-    @State private var iconPlace = Rect.zero
-
-    /// The corner of the app's surface on its own scale: whatever the surface
-    /// is scaled to, it is drawn rounded as far as it has got from its icon.
-    @State(motion: .none) private var surfaceRounding = 110.0
     // listing: end
 
     // The boards are turned by the hand of their own, so the example is not
@@ -142,9 +125,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                 MotionLayout(icons, id: \.name, parameters: $board) { icon in
                     // A VIEW OF ITS OWN: a new order builds no icon again,
                     // only the one lifted or let go, opened or closed.
-                    HomeTile(
-                        icon: icon, lifted: lifted == icon.name, open: opened == icon.name && !closing,
-                        opened: $opened, place: $iconPlace)
+                    HomeTile(icon: icon, lifted: lifted == icon.name, open: opened == icon.name, opened: $opened)
                 } placements: { context, board in
                     (0..<count).map { Self.place($0, board, context.bounds, fit) }
                 }
@@ -199,9 +180,12 @@ struct HomeScreenSample: SampleContent, ExampleContent {
             .height(16)
             .gridRow(1)
 
-            // AN ICON OPENED: its app over the boards, grown out of the icon.
+            // AN ICON OPENED: its app over the boards and their dots, grown out
+            // of the icon - and closed, by `opened = nil`, back onto it.
             if let icon = icons.first(where: { $0.name == opened }) {
-                app(icon)
+                HomeApp(icon: icon, opened: $opened)
+                    .gridRow(0)
+                    .gridRowSpan(2)
             }
         }
         .rows(.fill, .automatic)
@@ -280,156 +264,108 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     /// How what is on an app's surface comes in: faded in as the app appears.
     static let landing = Transition(enter: .opacity, exit: .identity).initialAppearance(true)
 
-    /// An icon's app, over the boards: its surface grows out of the icon, its
-    /// words come in as it lands, never squeezed on the way; pulled up by the
-    /// bar at its foot, or pressed there, it closes onto the icon.
-    private func app(_ icon: HomeIcon) -> some View {
-        ZStack {
-            // THE SURFACE, tied to the icon's square by the icon's name,
-            // rounded on its way as it is drawn - as it grows, frame by frame.
-            Rectangle()
-                .fill(icon.color)
-                .cornerRadius($surfaceRounding)
-                .sharedTransition(icon.name)
-                .motion(Self.opening)
-                .onEvent(ViewContract.presentationFrameChanged) { frame in rounded(wide: frame[2], tall: frame[3]) }
+    /// An icon's app, over the boards: its surface grows out of the icon's
+    /// square and closes back onto it, its words come in as it lands; pulled
+    /// up by the bar at its foot, or pressed there, it closes.
+    struct HomeApp: View {
+        let icon: HomeIcon
+        @Binding var opened: String?
 
-            // THE WORDS come in slowly, then all at once: unseen while the
-            // surface is still small.
-            VStack {
+        /// Where the hand draws the app: moved, and scaled about its foot -
+        /// the same each way. An app opened again stands whole.
+        @State(motion: HomeScreenSample.opening) private var x = 0.0
+        @State(motion: HomeScreenSample.opening) private var y = 0.0
+        @State(motion: HomeScreenSample.opening) private var size = 1.0
+
+        var body: some View {
+            ZStack {
+                // THE SURFACE, tied to the icon's square by the icon's name:
+                // the two are drawn as one on the way, its corner going from
+                // the square's to its own as far as it has got.
+                Rectangle()
+                    .fill(icon.color)
+                    .cornerRadius(24)
+                    .sharedTransition(icon.name)
+                    .motion(HomeScreenSample.opening)
+
+                // THE WORDS come in slowly, then all at once: unseen while the
+                // surface is still small.
+                VStack {
+                    ZStack {
+                        Rectangle()
+                            .fill(.white)
+                            .cornerRadius(48)
+                            .opacity(0.3)
+                        Image(.platform(icon.glyph))
+                            .width(48)
+                            .height(48)
+                            .horizontalAlignment(.center)
+                            .verticalAlignment(.center)
+                    }
+                    .width(96)
+                    .height(96)
+                    .horizontalAlignment(.center)
+
+                    Text(icon.name)
+                        .fontSize(24)
+                        .fontWeight(.semibold)
+                        .textColor(.white)
+                        .horizontalAlignment(.center)
+                }
+                .spacing(12)
+                .verticalAlignment(.center)
+                .transition(HomeScreenSample.landing)
+                .motion(HomeScreenSample.late)
+
+                // THE BAR AT ITS FOOT, coming in with the words: held, it takes
+                // the app up with the hand; pressed, it closes the app.
                 ZStack {
                     Rectangle()
                         .fill(.white)
-                        .cornerRadius(48)
-                        .opacity(0.3)
-                    Image(.platform(icon.glyph))
-                        .width(48)
-                        .height(48)
+                        .cornerRadius(3)
+                        .opacity(0.7)
+                        .width(120)
+                        .height(6)
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
                 }
-                .width(96)
-                .height(96)
-                .horizontalAlignment(.center)
-
-                Text(icon.name)
-                    .fontSize(24)
-                    .fontWeight(.semibold)
-                    .textColor(.white)
-                    .horizontalAlignment(.center)
+                .height(40)
+                .verticalAlignment(.end)
+                .transition(HomeScreenSample.landing)
+                .motion(HomeScreenSample.late)
+                .onPanUpdated { pan in pulled(pan) }
+                .onTapped { opened = nil }
+                .accessibilityIdentifier("home.app.bar")
             }
-            .spacing(12)
-            .verticalAlignment(.center)
-            .transition(Self.landing)
-            .motion(Self.late)
+            // THE APP AS THE HAND DRAWS IT: moved, and scaled about its foot,
+            // where the hand holds it. Closed, it goes on from there onto its
+            // icon at the speed it had.
+            .translationX($x)
+            .translationY($y)
+            .scaleX($size)
+            .scaleY($size)
+            .pivotY(1)
+            .accessibilityIdentifier("home.app")
+        }
 
-            // THE BAR AT ITS FOOT, coming in with the words: held, it takes
-            // the app up with the hand; pressed, it closes the app.
-            ZStack {
-                Rectangle()
-                    .fill(.white)
-                    .cornerRadius(3)
-                    .opacity(0.7)
-                    .width(120)
-                    .height(6)
-                    .horizontalAlignment(.center)
-                    .verticalAlignment(.center)
+        /// The hand on the app's bar: the app follows it, smaller the farther
+        /// up; let go high enough, or thrown up, it closes; let go lower, it
+        /// goes back.
+        private func pulled(_ pan: PanUpdate) {
+            switch pan.phase {
+            case .began:
+                break
+            case .changed:
+                let lift = min(pan.total.y, 0)
+                $x.journey.move(to: pan.total.x, HomeScreenSample.following)
+                $y.journey.move(to: lift, HomeScreenSample.following)
+                $size.journey.move(to: max(0.4, 1 + lift / 450), HomeScreenSample.following)
+            case .ended where pan.total.y < -120 || pan.velocity.y < -800:
+                opened = nil
+            default:
+                (x, y, size) = (0, 0, 1)
             }
-            .height(40)
-            .verticalAlignment(.end)
-            .transition(Self.landing)
-            .motion(Self.late)
-            .onPanUpdated(policy: .runConcurrently) { pan in try await pulled(pan) }
-            .onTapped(policy: .runConcurrently) { try await close() }
-            .accessibilityIdentifier("home.app.bar")
         }
-        // THE APP AS THE HAND AND THE CLOSE DRAW IT: moved, and scaled about
-        // its foot - where the hand holds it - and faded out at the very end.
-        .translationX($appX)
-        .translationY($appY)
-        .scaleX($appWide)
-        .scaleY($appTall)
-        .pivotY(1)
-        .opacity($appShown)
-        .onEvent(ViewContract.layoutFrameChanged) { frame in
-            appRoom = Rect(x: frame[4], y: frame[5], width: frame[2], height: frame[3])
-        }
-        // ROUNDED AS IT IS PULLED AND AS IT CLOSES, wherever its size stands.
-        .engine(following: $appWide.journey) { _ in
-            guard let wide = $appWide.journey.sample?.value, let tall = $appTall.journey.sample?.value else { return }
-            rounded(wide: wide * appRoom.width, tall: tall * appRoom.height)
-        }
-        .gridRow(0)
-        .accessibilityIdentifier("home.app")
-    }
-
-    /// The hand on the app's bar: the app follows it, smaller the farther up;
-    /// let go high enough, or thrown up, it closes; let go lower, it goes back.
-    private func pulled(_ pan: PanUpdate) async throws {
-        guard !closing else { return }
-        switch pan.phase {
-        case .began:
-            break
-        case .changed:
-            let lift = min(pan.total.y, 0)
-            let size = max(0.4, 1 + lift / 450)
-            $appX.journey.move(to: pan.total.x, Self.following)
-            $appY.journey.move(to: lift, Self.following)
-            $appWide.journey.move(to: size, Self.following)
-            $appTall.journey.move(to: size, Self.following)
-        case .ended where pan.total.y < -120 || pan.velocity.y < -800:
-            try await close()
-        default:
-            (appX, appY, appWide, appTall) = (0, 0, 1, 1)
-        }
-    }
-
-    /// THE APP CLOSES ONTO ITS ICON from where it is drawn, going on as it
-    /// went - the hand's speed in it - and only as it lands does the icon
-    /// fade in under it while the app fades out; then the app is gone.
-    private func close() async throws {
-        guard !closing else { return }
-        guard let icon = iconDrawn() else {
-            opened = nil
-            return
-        }
-        closing = true
-        let room = appRoom
-        $appX.journey.move(to: icon.x + icon.width / 2 - room.x - room.width / 2, Self.closing)
-        $appY.journey.move(to: icon.y + icon.height - room.y - room.height, Self.closing)
-        $appWide.journey.move(to: icon.width / room.width, Self.closing)
-        $appTall.journey.move(to: icon.height / room.height, Self.closing)
-        _ = try await $appShown.journey.move(to: 0).result()
-
-        opened = nil
-        closing = false
-        for state in [$appX, $appY] { state.journey.snap(to: 0) }
-        for state in [$appWide, $appTall, $appShown] { state.journey.snap(to: 1) }
-    }
-
-    /// The surface drawn `wide` by `tall` points is rounded as the app is (24
-    /// points) at its whole size, as its icon is at the icon's, and in between
-    /// as far as it has got: on its own scale, that over how far it is scaled.
-    private func rounded(wide: Double, tall: Double) {
-        guard appRoom.width > 0, appRoom.height > 0 else { return }
-        let enlarged = Self.enlarged(room, fit)
-        let (icon, corner) = (60 * enlarged, 14 * enlarged)
-        let way = min(max((wide - icon) / max(appRoom.width - icon, 1), 0), 1)
-        let scale = (wide / appRoom.width * tall / appRoom.height).squareRoot()
-        surfaceRounding = (corner + (24 - corner) * way) / max(scale, 0.01)
-    }
-
-    /// Where the open app's icon is drawn in the window: its place in its tile,
-    /// enlarged with its cell about the cell's middle; nil before both were
-    /// laid out.
-    private func iconDrawn() -> Rect? {
-        guard let slot = icons.firstIndex(where: { $0.name == opened }), iconPlace.width > 0, appRoom.width > 0
-        else { return nil }
-        let (cell, scale) = (Self.cell(slot, board, room, fit), Self.enlarged(room, fit))
-        let (x, y) = (appRoom.x + cell.x + cell.width / 2, appRoom.y + cell.y + cell.height / 2)
-        return Rect(
-            x: x + (iconPlace.x - x) * scale, y: y + (iconPlace.y - y) * scale,
-            width: iconPlace.width * scale, height: iconPlace.height * scale)
     }
 
     /// One icon: its glyph on a light disc on a rounded square of its color -
@@ -441,7 +377,6 @@ struct HomeScreenSample: SampleContent, ExampleContent {
         let lifted: Bool
         let open: Bool
         @Binding var opened: String?
-        @Binding var place: Rect
 
         var body: some View {
             VStack {
@@ -452,16 +387,8 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                         .width(60)
                         .height(60)
                         .horizontalAlignment(.center)
-                        // Where the app closes onto.
-                        .onEvent(ViewContract.layoutFrameChanged) { frame in
-                            place = Rect(x: frame[4], y: frame[5], width: frame[2], height: frame[3])
-                        }
                 } else {
                     ZStack {
-                        Rectangle()
-                            .fill(icon.color)
-                            .cornerRadius(14)
-
                         Rectangle()
                             .fill(.white)
                             .cornerRadius(21)
@@ -477,15 +404,16 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                             .horizontalAlignment(.center)
                             .verticalAlignment(.center)
                     }
+                    .background(icon.color)
+                    .shape(.roundedRectangle(14))
                     .width(60)
                     .height(60)
                     .horizontalAlignment(.center)
                     // TIED TO ITS APP by the icon's name: the app grows out of
-                    // the square. Back as the app closes, it fades in under it,
-                    // slowly, then all at once.
+                    // the square and closes onto it, the two crossing over
+                    // near the square.
                     .sharedTransition(icon.name)
-                    .transition(Transition(enter: .opacity, exit: .identity))
-                    .motion(HomeScreenSample.late)
+                    .motion(HomeScreenSample.closing)
                 }
 
                 Text(icon.name)

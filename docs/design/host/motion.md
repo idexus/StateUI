@@ -410,15 +410,17 @@ The host layer keeps the notes of one patch (`SharedTransitions`, the tree's
 
 ```text
   a patch drops a child     every view wearing a key in it or under it is noted, with the
-                            rectangle it is DRAWN in - its own transform in it, and every one
-                            above it up to the scope - in its window
+                            rectangle it is DRAWN in - its own transform in it, the one its
+                            layout's program places it with, and every one above it up to the
+                            scope - in its window, and the corner it is drawn with
   a patch makes a view      wearing a key: noted
   its first place           one view dropped and one made under the key, in that patch, one window
                             and one page, and both rectangles known:
                               it is drawn moved by the difference of their middles and scaled by
                               the ratio of their sizes, each way apart, and brought onto what it
                               declares under its own motion, else the application's
-                              the dropped one, still leaving by its own exit, ends at once
+                              the dropped one, kept for it, goes along (drawn by both, below);
+                              one still leaving by its own exit ends at once
                             anything else: it enters as any view does, and a change that waits
                             for the patch hears `.unsupported`
   two frames later          the notes are let go
@@ -451,10 +453,10 @@ draws the item, and travels.
 
 The entry is the road every entry takes
 ([a view that enters](#a-view-that-enters)) - numbers set out from and
-brought onto what the view declares - so it needs no view kept as it leaves,
-and no surface of its own: a host that draws a move and two scales draws
-it. A return during the movement reads where the view now leaving is drawn,
-and so goes on from there.
+brought onto what the view declares - and the view kept for it is any view
+kept as it leaves: no surface of its own, a host that draws a move and two
+scales draws it. A return during the movement reads where the view now
+leaving is drawn, and so goes on from there.
 
 The trap is the leaving view's place. Its layout's rectangle is where it
 would stand; a view half way through its own entry is drawn elsewhere, and
@@ -479,6 +481,59 @@ way to the scope - the same rule that view's own entry asks first
 (`partner(of:key:patch:)`). A view refused all the same - its place found
 empty - leaves its holder unfaded, never faded over a view setting out.
 
+## A shared transition drawn by both
+
+Where what held the view dropped keeps a view that leaves, the two views of
+a shared transition are drawn as one on the way, the same on every host
+(`SharedWay`, `MountedElement+SharedWay`):
+
+```text
+  a patch drops a child   holding a key, its holder keeping a view that leaves, no engine under it,
+                          the window's budget holding: kept for its partner (`awaitsPartner`) - no
+                          more the application's, each number it is drawn with held where it stands,
+                          with its speed, a state's too
+  the patch is applied    a kept view its patch made no partner for goes at once
+  the partner's first     the kept view goes along (`goAlong`): from where it is drawn, at the speed
+  place                   it had, its keyed view onto where the partner lands, under the partner's
+                          motion; released as it lands
+  every frame             how far the way has got, read off the number that moves most - a scale,
+                          else a move; from it each one's opacity, and each rounded one's corner
+  no partner in two       the kept view goes
+  frames
+```
+
+The two cross over near the smaller: a view growing out of a small one
+comes in over the way's first part (0 to 0.45), one shrinking onto a small
+one over its last (0.55 to 1), two of one size in its middle (0.25 to 0.75),
+each by a smoothstep, and the one leaving goes out as it comes in
+(`SharedWay.crossing(from:to:)`). An app closing onto its icon is the app
+nearly all the way and the icon only as it lands; an icon opening is the app
+nearly at once.
+
+A view rounded by one corner - a rectangle's, a layout's rounded outline -
+carries it: from the corner the leaving one is drawn with to the one the
+entering one is drawn with as it lands, straight as the way goes. Each frame
+its own corner is that over the scale it is drawn at, its own and that of
+all that holds it up to the scope (`scaleInScope`): a view grown six times
+is drawn with the way's corner, never six times its own.
+
+The trap is the space a rectangle stands in. A host says each corner with no
+transform in it, a layout program's placement is drawn over its child's own
+transform, and what holds the entering view may be scaled - an icon enlarged
+with its cell. So the rectangles are worked out in the scope's drawing
+(`SharedTransitions.drawn`): where the leaving view is drawn, and where the
+entering one lands as drawn, which the kept view goes onto; the entering view
+sets out from the leaving one's rectangle with the transforms of what holds
+it undone (`undrawn`, `HostDrawingTransform.place(drawnAs:within:)`), as its
+own transform is drawn under them.
+
+The trap is the speed. A view the hand pulls is moved by its states'
+channels: what it is drawn with is a state's lane, not the tree's animation.
+Kept, it is no state's any more, so its numbers are read off the channels
+before it is deactivated - where each run is and how fast
+(`StateChannels.standing(of:now:)`) - and the way sets out at that speed: a
+throw goes on as thrown.
+
 ## Drawn in front
 
 A view setting out from its partner passes over what stands around it, so
@@ -501,6 +556,17 @@ The trap is a holder made with the view. The rule that keeps an app's words
 over its surface would, by "what stood before", keep a row of thumbnails
 made with the one coming back over it; a stack is no layering, so there the
 view is in front of every sibling.
+
+A view kept for its partner goes along over what stands around it too: it,
+and each layout holding it, is drawn in front up to the scope
+(`MountedElement.drawKeptInFront`) until it is released. The two are drawn
+as one, and the eye follows the larger - they cross over near the smaller -
+so in the first layout holding both, the two ways up meeting there, the
+larger alone is put in front: the other stands as it stood. The trap is an
+app closing onto its icon, or a picture onto its thumbnail: the icon's
+boards, the thumbnail's row, put in front as the view setting out in them,
+would be drawn over the app or the picture kept beside them in the scope,
+and it would shrink under every icon and every other thumbnail.
 
 ## Showing and hiding
 

@@ -45,10 +45,14 @@ extension MountedElement {
     /// The element enters from the rectangle `source` onto the place `destination` its layout gave it, both in
     /// one window's coordinates: moved by the difference of their middles and scaled by the ratio of their
     /// sizes, each way apart, then brought onto what it declares under its own motion, else the application's.
-    /// A number a state owns is left to it; with nothing to move by, it stands as declared. How many numbers set
-    /// out, each telling `entryLanded` as it ends.
+    /// A number a state owns is left to it; with nothing to move by, it stands as declared. Its corner is carried
+    /// on the way by `corner`, and it fades in as a partner drawn with it crosses over in `crossing`, where one is.
+    /// How many numbers set out, each telling `entryLanded` as it ends.
     /// Design: docs/design/host/motion.md#a-shared-transition
-    func enter(from source: Rect, to destination: Rect, on view: some FadingView) -> Int {
+    func enter(
+        from source: Rect, to destination: Rect, on view: some FadingView,
+        corner: (from: Double, to: Double)? = nil, crossing: ClosedRange<Double>? = nil
+    ) -> Int {
         guard let tree, let law = tree.layoutMotion.law(of: motion) else { return 0 }
 
         let across = source.x + source.width / 2 - destination.x - destination.width / 2
@@ -58,17 +62,24 @@ extension MountedElement {
             (.scaleX, 1, source.width / destination.width, true), (.scaleY, 1, source.height / destination.height, true),
         ]
         var started: Set<Prop> = []
+        var spans: [Prop: (from: Double, to: Double)] = [:]
         for (property, unsaid, part, scales) in starts where driven[property] == nil {
             let declared = resolvedValue(property)?.number ?? unsaid
             let standing = scales ? declared * part : declared + part
             guard standing != declared else { continue }
+            spans[property] = (standing, declared)
             if tree.receiveProperty(
                 mount: mount, property: property, standing: .number(standing), target: .number(declared), motion: law,
                 landed: { [weak self] in self?.entryLanded() }
             ) { started.insert(property) }
         }
+        if !started.isEmpty, corner != nil || crossing != nil {
+            way = SharedWay(spans: spans, rounded: self, corner: corner, comes: crossing.map { _ in true },
+                            crossing: crossing ?? 0...1)
+            if corner != nil, let rounding = roundingProperty { started.insert(rounding) }
+        }
         presentsFromItsFirstFrame(started, on: view)
-        return started.count
+        return started.subtracting([.cornerRadius, .shape]).count
     }
 
     /// The element comes back as the view of its id was leaving: each number goes on from where that one was

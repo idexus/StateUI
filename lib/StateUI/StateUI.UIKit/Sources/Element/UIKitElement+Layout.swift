@@ -25,19 +25,21 @@ extension UIKitElement {
         guard let layout = view as? UIKitLayoutView else { return }
         layout.direction = element.layoutDirection
         layout.laidOut = { [weak host] in host?.runtime.frames.laidOut() }
-        if keepsExits { layout.keep(leavingViews()) }
+        if keepsExits {
+            layout.keep(leavingViews(), presented: element.presentedMounts { $0.uiKit.layoutItem?.mount }.mounts)
+        }
         layout.setItems(element.arrangedChildren.compactMap { $0.uiKit.layoutItem })
     }
 
-    /// The views of the children kept as they leave, each made deaf to input and taken out of what assistive
-    /// technology meets as it is found leaving.
+    /// The views of the children kept as they leave, by their mounts, each made deaf to input and taken out of what
+    /// assistive technology meets as it is found leaving.
     /// Design: docs/design/platforms/uikit/layout.md#a-view-kept-as-it-leaves
-    private func leavingViews() -> [UIView] {
-        element.presentedChildren.filter { $0.lifecycle == .exiting }.compactMap { child -> UIView? in
+    private func leavingViews() -> [(mount: UInt64, view: UIView)] {
+        element.presentedChildren.filter { $0.lifecycle == .exiting }.compactMap { child in
             guard let view = child.uiKit.view else { return nil }
             view.isUserInteractionEnabled = !child.ignoresInput
             child.uiKit.applyAccessibility()
-            return view
+            return (child.mount, view)
         }
     }
 

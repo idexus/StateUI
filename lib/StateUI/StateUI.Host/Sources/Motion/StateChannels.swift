@@ -102,6 +102,19 @@
         return HostBoundary.value(of: channel.presented)
     }
 
+    /// Where the one lane of the state `state` stands at `now`, and how fast it goes; nil where it has no channel,
+    /// or more lanes than one.
+    func standing(of state: Int32, now: Double) -> (value: Double, velocity: Double)? {
+        guard let channel = channels[state], channel.value.count == 1 else { return nil }
+
+        for number in channel.runs.keys.sorted() {
+            guard let animation = animator.animation(for: .state(state, run: number)) else { continue }
+            let position = animation.position(at: now)
+            return (position.value.first ?? channel.value[0], position.velocity.first ?? 0)
+        }
+        return (channel.value[0], channel.velocity[0])
+    }
+
     /// Applies a sparse StateUI cycle change to the channel it names.
     public func receive(
         _ change: HostStateChange,

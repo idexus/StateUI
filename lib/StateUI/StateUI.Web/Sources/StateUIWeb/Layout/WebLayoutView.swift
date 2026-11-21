@@ -37,9 +37,12 @@ class WebLayoutView: WebDOMView {
     /// Each child's mounted element, by number, and how it enters as it is given its first place: what its place travels by.
     private var travelers: [(mount: UInt64, enter: ((LayoutEntry) -> Void)?)] = []
 
-    /// The views of the children kept as they leave, standing out of the flow where they were drawn.
+    /// The views of the children kept as they leave, standing out of the flow where they were drawn, with their
+    /// mounts; and every view the layout presents, by mount, in the order they stand.
     /// Design: docs/design/platforms/web/layout.md#a-view-kept-as-it-leaves
     private var leaving: [WebDOMView] = []
+    private var keptMounts: [UInt64] = []
+    private var presented: [UInt64] = []
 
     /// Whether the layout keeps a child that left: a stack, a grid and a ZStack do, a room of one child does not.
     var keepsLeaving: Bool { arrangement != .single }
@@ -158,13 +161,15 @@ class WebLayoutView: WebDOMView {
     /// Design: docs/design/platforms/web/layout.md#children-in-order
     func setItems(
         _ items: [(view: WebDOMView, values: () -> LayoutValues)],
-        travelers: [(mount: UInt64, enter: ((LayoutEntry) -> Void)?)] = [], leaving kept: [WebDOMView] = []
+        travelers: [(mount: UInt64, enter: ((LayoutEntry) -> Void)?)] = [],
+        leaving kept: [(mount: UInt64, view: WebDOMView)] = [], presented: [UInt64] = []
     ) {
         // A child kept as it leaves stands out of the flow where it is drawn, before anything around it moves.
-        for view in kept where !view.isReleased && !leaving.contains(where: { $0 === view }) {
+        for (_, view) in kept where !view.isReleased && !leaving.contains(where: { $0 === view }) {
             WebRelay.standOut(view.node)
         }
-        leaving = kept.filter { !$0.isReleased }
+        let standing = kept.filter { !$0.view.isReleased }
+        (leaving, keptMounts, self.presented) = (standing.map(\.view), standing.map(\.mount), presented)
         let views = items.map(\.view)
         if views.count != children.count || !zip(views, children).allSatisfy({ $0 === $1 }) {
             for (index, view) in views.enumerated() { WebRelay.insert(view.node, into: node, at: index) }
@@ -216,16 +221,25 @@ class WebLayoutView: WebDOMView {
 
     /// Writes each child's place back to front as the layout draws them, as its z-index: children sharing room - a
     /// grid's in their order, a ZStack's in its run's - always, else a child standing out of the page's flow, a
-    /// shape, rises over the later ones; a stack's while a shared entry carries one of them in front.
+    /// shape, rises over the later ones; a stack's while a shared transition carries one of them in front, or a
+    /// view kept as it leaves stands after the one it stood after.
     /// Design: docs/design/host/layout.md#drawing-order
     func orderChildren() {
         let run = arrangement == .layers ? placement?.placements ?? [] : []
         let mounts = children.indices.map { $0 < travelers.count ? travelers[$0].mount : 0 }
-        let ordered = places.drawingOrder(of: mounts, placedBy: run)
-        let writes = arrangement == .layers || arrangement == .grid || ordered != Array(children.indices)
-        var drawnAt = Array(children.indices)
-        for (place, index) in ordered.enumerated() { drawnAt[index] = place }
-        for (index, view) in children.enumerated() { view.style("z-index", writes ? String(drawnAt[index]) : nil) }
+        let standing = leaving.isEmpty ? mounts : presented
+        var views: [UInt64: WebDOMView] = [:]
+        for (index, view) in children.enumerated() { views[mounts[index]] = view }
+        for (index, mount) in keptMounts.enumerated() where index < leaving.count { views[mount] = leaving[index] }
+        let ordered = places.drawingOrder(of: standing, kept: Set(keptMounts), placedBy: run)
+            .compactMap { views[standing[$0]] }
+        let held = children + leaving
+        let inOrder = ordered.count == held.count && zip(ordered, held).allSatisfy { $0 === $1 }
+        let writes = arrangement == .layers || arrangement == .grid || !inOrder
+        for view in held {
+            let place = ordered.firstIndex { $0 === view }
+            view.style("z-index", writes ? place.map(String.init) : nil)
+        }
     }
 
     /// What the child at `index` states of its own place, read once since the children were set.

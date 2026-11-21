@@ -542,10 +542,15 @@ once; a runtime hands `children` to its toolkit in that order and needs no
 `zIndex` of its own. A stack's children never overlap and keep the order
 written.
 
-A host draws a layout's children in the order `DrawingOrder` gives, back to
-front: a placing run's ranks by their z-index where the layout runs one, the
-tree's order otherwise, and last any child a shared entry carries in front
-([drawn in front](motion.md#drawn-in-front)). Told to draw them again
+A host draws what a layout presents in the order `DrawingOrder` gives, back
+to front: its children by a placing run's ranks where the layout runs one,
+the tree's order otherwise; each view kept as it leaves after the view it
+stood after ([a view kept as it leaves](tree.md#a-view-kept-as-it-leaves));
+and last any view a shared transition carries in front, kept or not
+([drawn in front](motion.md#drawn-in-front)). A host tells the host layer
+every view it presents by its mount, in the order they stand, and which are
+kept (`MountedElement.presentedMounts`, `TravelingPlaces.drawingOrder`), so a
+kept view stands in one place on every host. Told to draw them again
 (`NativeElement.orderChildren`), it does so at once, by its toolkit's own
 way of ordering what it draws - subviews brought to the front, a drawing
 order, a z-index, the order a panel draws in - with nothing placed again.

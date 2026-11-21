@@ -201,6 +201,13 @@
     var raisedByEntry: [RaisedChild] = []
     var entryRunsLeft = 0
 
+    /// The shared transition's way it travels, the view whose way rounds its corner, and - kept for its partner -
+    /// the numbers it stood at, with their speed, as it stopped being the application's.
+    /// Design: docs/design/host/motion.md#a-shared-transition-drawn-by-both
+    var way: SharedWay?
+    weak var roundedBy: MountedElement?
+    var standsAt: [Prop: (value: Double, velocity: Double)] = [:]
+
     /// The id a view of the element's authored identity is known by as it comes back: the one its render said it
     /// returns as, else its own - a name is the same in every life.
     let returnID: ElementID
@@ -779,8 +786,8 @@
     private func leave(_ previous: [MountedElement], presented: [MountedElement]) {
         let staying = Set(held.map(ObjectIdentifier.init))
         for child in previous where !staying.contains(ObjectIdentifier(child)) {
-            if tree?.remakes == false { tree?.shared.dropped(child) }
-            if !child.exit(from: self) { child.leave() }
+            let keyed = tree?.remakes == false && tree?.shared.dropped(child) == true
+            if !child.exit(from: self), !child.awaitsPartner(in: self, holdingAKey: keyed) { child.leave() }
         }
         orderPresented(after: presented)
     }
@@ -826,6 +833,7 @@
         guard lifecycle != .released else { return }
 
         deactivate()
+        lowerEntry()
         lifecycle = .released
         for child in held + keptExits { child.release() }
         if staysDrawn { native.releasePresentation() }
@@ -1059,15 +1067,20 @@
     /// number that is none.
     /// Design: docs/design/core/contracts.md#a-number-that-is-none
     public func value(_ property: Prop) -> HostValue? {
-        let shown: HostValue?
-        if driven[property].map({ $0.mode != .in }) == true {
-            shown = resolvedValue(property)
-        } else {
-            shown = tree?.presentedPropertyValue(mount: mount, property: property)
-                ?? exitEnds[property].map(HostValue.number) ?? resolvedValue(property)
-        }
+        let shown = wayValue(property) ?? plainValue(property)
         guard let value = GeometryArithmetic.value(shown, for: property), !value.holdsNonFiniteNumber else { return nil }
         return value
+    }
+
+    /// The value `property` presents with no way worked out over it: a bound one's while the element is the
+    /// application's - else a running animation's, where it ended or stood as it left, else the described one.
+    func plainValue(_ property: Prop) -> HostValue? {
+        if driven[property].map({ $0.mode != .in }) == true, lifecycle == .active || standsAt[property] == nil {
+            return resolvedValue(property)
+        }
+        return tree?.presentedPropertyValue(mount: mount, property: property)
+            ?? exitEnds[property].map(HostValue.number) ?? standsAt[property].map { .number($0.value) }
+            ?? resolvedValue(property)
     }
 
     /// The text value of `property`.

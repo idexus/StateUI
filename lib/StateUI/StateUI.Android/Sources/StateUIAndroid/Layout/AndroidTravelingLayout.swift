@@ -35,12 +35,18 @@ class AndroidTravelingLayout: AndroidLayoutView {
     }
 
     /// Draws the children, and hands them touches, back to front as the layout draws them - a run's ranks where
-    /// `placements` say them, a child a shared entry carries last - with nothing moved and nothing laid out again;
-    /// the views kept as they leave stand after the items', and are drawn over them.
+    /// `placements` say them, each view kept as it leaves after the one it stood after, a child a shared transition
+    /// carries last - with nothing moved and nothing laid out again; the kept views are held after the items'.
     /// Design: docs/design/host/layout.md#drawing-order
     func holdInDrawingOrder(placedBy placements: [HostPlacement]) {
-        let ordered = places.drawingOrder(of: items.map(\.mount), placedBy: placements)
-        setDrawingOrder(
-            ordered == Array(items.indices) ? nil : ordered + Array(items.count..<(items.count + leaving.count)))
+        let mounts = leaving.isEmpty ? items.map(\.mount) : presented
+        var child: [UInt64: Int] = [:]
+        for (index, item) in items.enumerated() { child[item.mount] = index }
+        for (index, mount) in keptMounts.enumerated() where index < leaving.count { child[mount] = items.count + index }
+        let ordered = places.drawingOrder(of: mounts, kept: Set(keptMounts), placedBy: placements)
+            .compactMap { child[mounts[$0]] }
+        let all = Array(0..<(items.count + leaving.count))
+        let order = ordered + all.filter { !ordered.contains($0) }
+        setDrawingOrder(order == all ? nil : order)
     }
 }

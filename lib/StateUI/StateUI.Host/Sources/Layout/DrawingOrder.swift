@@ -17,4 +17,19 @@
         } + Array(placed..<max(placed, count))
         return ranked.filter { !inFront($0) } + ranked.filter(inFront)
     }
+
+    /// A layout's views back to front, by their place in `presented` - every view in the order it stands, by
+    /// whether it is kept as it leaves: those it arranges as `of(_:placedBy:inFront:)` orders them, `placements`
+    /// placing them in their order, each kept one after the view it stood after - and last, in that order, those
+    /// `inFront` says a shared transition carries.
+    /// Design: docs/design/host/layout.md#drawing-order
+    public static func of(presented kept: [Bool], placedBy placements: [HostPlacement], inFront: (Int) -> Bool) -> [Int] {
+        let arranged = kept.indices.filter { !kept[$0] }
+        var order = of(arranged.count, placedBy: placements) { _ in false }.map { arranged[$0] }
+        for index in kept.indices where kept[index] {
+            let after = index == 0 ? nil : order.firstIndex(of: index - 1)
+            order.insert(index, at: after.map { $0 + 1 } ?? 0)
+        }
+        return order.filter { !inFront($0) } + order.filter(inFront)
+    }
 }

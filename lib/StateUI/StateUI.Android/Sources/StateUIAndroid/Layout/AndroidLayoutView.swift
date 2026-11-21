@@ -42,6 +42,11 @@ class AndroidLayoutView: AndroidView {
     private(set) var leaving: [AndroidView] = []
     private var keptChanged = false
 
+    /// The mounts of the views kept as they leave, in their order, and of every view the group presents, in the
+    /// order they stand.
+    private(set) var keptMounts: [UInt64] = []
+    private(set) var presented: [UInt64] = []
+
     init() {
         super.init { number in
             Java.new(
@@ -65,10 +70,12 @@ class AndroidLayoutView: AndroidView {
     /// Says the views of children kept as they leave, before the items are set: the group holds them on, after
     /// its items' views, and lets go of one kept no more.
     /// Design: docs/design/platforms/android/layout.md#a-view-kept-as-it-leaves
-    func keep(_ leaving: [AndroidView]) {
-        guard !Self.same(leaving, self.leaving) else { return }
+    func keep(_ leaving: [(mount: UInt64, view: AndroidView)], presented: [UInt64]) {
+        (keptMounts, self.presented) = (leaving.map(\.mount), presented)
+        let views = leaving.map(\.view)
+        guard !Self.same(views, self.leaving) else { return }
 
-        self.leaving = leaving
+        self.leaving = views
         keptChanged = true
     }
 

@@ -33,15 +33,21 @@ class WinUITravelingLayout: WinUILayoutView {
         holdInDrawingOrder(placedBy: [])
     }
 
-    /// Draws the children back to front as the layout draws them - a run's ranks where `placements` say them, a
-    /// child a shared entry carries last - by each one's z-index: the order a click reaches them in too, with
-    /// nothing moved and nothing laid out again.
+    /// Draws the children back to front as the layout draws them - a run's ranks where `placements` say them, each
+    /// view kept as it leaves after the one it stood after, a child a shared transition carries last - by each one's
+    /// z-index: the order a click reaches them in too, with nothing moved and nothing laid out again.
     /// Design: docs/design/host/layout.md#drawing-order
     func holdInDrawingOrder(placedBy placements: [HostPlacement]) {
-        let ordered = places.drawingOrder(of: items.map(\.mount), placedBy: placements)
-        let inOrder = ordered == Array(items.indices)
-        for (rank, index) in ordered.enumerated() {
-            items[index].view.setZIndex(inOrder ? 0 : Int32(rank))
+        let mounts = leaving.isEmpty ? items.map(\.mount) : presented
+        var views: [UInt64: WinUIView] = [:]
+        for item in items { views[item.mount] = item.view }
+        for (index, mount) in keptMounts.enumerated() where index < leaving.count { views[mount] = leaving[index] }
+        let ordered = places.drawingOrder(of: mounts, kept: Set(keptMounts), placedBy: placements)
+            .compactMap { views[mounts[$0]] }
+        let held = items.map(\.view) + leaving
+        let inOrder = ordered.count == held.count && zip(ordered, held).allSatisfy { $0 === $1 }
+        for (rank, view) in ordered.enumerated() {
+            view.setZIndex(inOrder ? 0 : Int32(rank))
         }
     }
 }

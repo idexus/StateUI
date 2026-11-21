@@ -19,8 +19,9 @@ A stack, a grid and a ZStack keep a child that left
 items and, apart from them, the views of those kept as they leave
 ([a view kept as it leaves](../../host/tree.md#a-view-kept-as-it-leaves));
 the layout is told the kept first (`keep(_:)`), then its items. A leaving view is
-no item's: it stays a subview at its last bounds and center, over the items'
-views, while its opacity, its move and its scale travel to its exit's
+no item's: it stays a subview at its last bounds and center, drawn after the
+view it stood after ([drawing order](../../host/layout.md#drawing-order)) -
+`keep(_:presented:)` says each by its mount - while its opacity, its move and its scale travel to its exit's
 effect and the rows around it close over its place under the layout's own
 motion. Found leaving, it takes no touch - a touch reaches what stands
 behind it - and assistive technology meets nothing of it. A view kept no

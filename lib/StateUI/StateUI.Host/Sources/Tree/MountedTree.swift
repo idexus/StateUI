@@ -393,6 +393,7 @@
         let inspecting = core.inspecting
         tally = inspecting || diagnostics.tallies ? RenderTally() : nil
         defer {
+            if previousPatchTime == nil { shared.patchApplied() }
             if let tally {
                 if inspecting, let generation = intake.generationBeingApplied {
                     core.inspected(tally, generation: generation)
@@ -460,11 +461,24 @@
     /// Design: docs/design/host/patches.md#program-write
     @discardableResult
     public func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) -> FrameImpact {
-        ProgramWrite.perform {
+        var properties = properties
+        // A view on a shared transition's way draws, with its numbers, what the way works out of them - the view
+        // it rounds too, which a kept one's leaving left out of what the tree finds by its mount.
+        var rounded: [UInt64: MountedElement] = [:]
+        for (mount, changed) in properties.sorted(by: { $0.key < $1.key }) where !changed.isDisjoint(with: SharedWay.moved) {
+            guard let way = byMount[mount]?.element?.way else { continue }
+            if way.comes != nil { properties[mount]?.insert(.opacity) }
+            if way.corner != nil, let view = way.rounded, let rounding = view.roundingProperty {
+                properties[view.mount, default: []].insert(rounding)
+                rounded[view.mount] = view
+            }
+        }
+        return ProgramWrite.perform {
             var touched = Set(properties.keys)
             for state in states.keys { touched.formUnion(presenters[state] ?? []) }
             return MountedElement.presentFrame(
-                touched.sorted().compactMap { byMount[$0]?.element }, states: states, properties: properties)
+                touched.sorted().compactMap { byMount[$0]?.element ?? rounded[$0] }, states: states,
+                properties: properties)
         }
     }
 

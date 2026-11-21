@@ -30,8 +30,9 @@ last had while its opacity, its move and its scale travel to its exit's
 effect and the rows around it close over its place. Found leaving, it takes
 no touch - one goes to whatever stands behind it - and assistive technology
 meets nothing of it. As its exit ends the tree arranges its holder again,
-and the group holds it no more. A ZStack drawing its children in an order of
-its own draws the kept after them.
+and the group holds it no more. The group draws the kept, held after
+the items', each after the view it stood after
+([drawing order](../../host/layout.md#drawing-order)).
 
 The trap is the early return of an arrangement of the same items: an exit
 ending changes no item, so a change of the kept alone holds the children

@@ -49,4 +49,16 @@ extension HostDrawingTransform {
         }
         return Rect(x: left, y: top, width: right - left, height: bottom - top)
     }
+
+    /// The rectangle this transform, of a view standing at `frame`, draws as `rect`: moved back, then scaled back
+    /// about that view's pivot. A turn is left out: a turned view is undone as if it stood straight.
+    public func place(drawnAs rect: Rect, within frame: Rect) -> Rect {
+        guard scaleX != 0, scaleY != 0 else { return rect }
+        let (pivotAcross, pivotDown) = (frame.x + frame.width * pivotX, frame.y + frame.height * pivotY)
+        let left = pivotAcross + (rect.x - translationX - pivotAcross) / scaleX
+        let right = pivotAcross + (rect.x + rect.width - translationX - pivotAcross) / scaleX
+        let top = pivotDown + (rect.y - translationY - pivotDown) / scaleY
+        let bottom = pivotDown + (rect.y + rect.height - translationY - pivotDown) / scaleY
+        return Rect(x: min(left, right), y: min(top, bottom), width: abs(right - left), height: abs(bottom - top))
+    }
 }

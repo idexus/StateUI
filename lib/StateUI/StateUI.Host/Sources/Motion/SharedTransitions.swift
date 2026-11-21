@@ -14,17 +14,38 @@
     }
 
     /// A view that left wearing a key: the patch that dropped it, where it was drawn, in its window's
-    /// coordinates, and where it stood.
+    /// coordinates, its corner as drawn there, and where it stood.
     private struct Source {
         let patch: Int
         let drawn: Rect
+        let corner: Double?
         let window: UInt64?
         let page: UInt64?
         weak var element: MountedElement?
     }
 
+    /// Two views made one: where the dropped one was drawn and the made one lands as drawn, in the scope; the
+    /// same two as the made one's own place stands, what holds it undone; the scope they are one in, the view
+    /// dropped - and the view kept for it as it left, should its holder keep one - and its corner as drawn.
+    struct Pair {
+        let from: Rect
+        let to: Rect
+        let setsOut: Rect
+        let lands: Rect
+        let scope: UInt64
+        weak var leaving: MountedElement?
+        weak var kept: MountedElement?
+        let corner: Double?
+    }
+
     private var sources: [Key: [Source]] = [:]
     private var made: [Key: [(mount: UInt64, patch: Int)]] = [:]
+
+    /// The views a patch dropped holding a key, kept for the partner it may have made, by their mount.
+    private var awaiting: [UInt64: (patch: Int, root: Weak)] = [:]
+    struct Weak {
+        weak var element: MountedElement?
+    }
 
     /// Every element the patches whose notes are kept made, by its mount: one a layout program places stands where
     /// its toolkit put it until the program has been asked.
@@ -45,6 +66,7 @@
     /// How many views dropped and made the last patch's notes hold.
     var entries: Int {
         sources.values.reduce(0) { $0 + $1.count } + made.values.reduce(0) { $0 + $1.count } + born.count
+            + awaiting.count
     }
 
     /// A patch is about to be applied: what it drops and makes is its own.
@@ -54,18 +76,71 @@
     }
 
     /// `element` is dropped by the patch being applied, before it is let go: every view wearing a key in it or
-    /// under it is noted where it is drawn.
-    func dropped(_ element: MountedElement) {
+    /// under it is noted where it is drawn, its corner as drawn. Whether one was.
+    @discardableResult
+    func dropped(_ element: MountedElement) -> Bool {
+        var noted = false
         if let key = Self.key(of: element), let numbers = element.native.frameNumbers(), numbers.count >= 8 {
-            let own = element.presentationFrame(from: numbers)
+            let own = element.drawnTransform.bounds(of: Rect(x: numbers[4], y: numbers[5], width: numbers[2], height: numbers[3]))
+            let drawn = Self.drawn(own, above: element, to: key.scope)
+            let scale = numbers[2] > 0 && numbers[3] > 0 ? (drawn.width / numbers[2] * drawn.height / numbers[3]).squareRoot() : 1
             sources[key, default: []].append(Source(
-                patch: patch,
-                drawn: Self.drawn(Rect(x: own[4], y: own[5], width: own[2], height: own[3]), above: element, to: key.scope),
+                patch: patch, drawn: drawn, corner: element.ownCorner.map { $0 * scale },
                 window: element.enclosing(type: .window)?.mount, page: element.enclosing(type: .page)?.mount,
                 element: element))
             framesLeft = PresentationChanges.layoutWindow
+            noted = true
         }
-        for child in element.children { dropped(child) }
+        for child in element.children where dropped(child) { noted = true }
+        return noted
+    }
+
+    /// `root`, dropped holding a key, is kept for the partner its patch may make.
+    func awaits(_ root: MountedElement) {
+        awaiting[root.mount] = (patch, Weak(element: root))
+        framesLeft = PresentationChanges.layoutWindow
+    }
+
+    /// The patch is applied whole: a view kept for a partner its patch made none for - one made under none of its
+    /// keys - goes at once.
+    func patchApplied() {
+        for (mount, held) in awaiting.sorted(by: { $0.key < $1.key }) where held.patch == patch {
+            guard let root = held.root.element else {
+                awaiting[mount] = nil
+                continue
+            }
+            let partnered = sources.contains { key, left in
+                left.contains { $0.patch == patch && $0.element.map { holds(root, $0) } == true }
+                    && (made[key] ?? []).contains { $0.patch == patch }
+            }
+            if !partnered { release(mount) }
+        }
+    }
+
+    /// The view kept for a partner, `mount`, goes now.
+    private func release(_ mount: UInt64) {
+        let root = awaiting.removeValue(forKey: mount)?.root.element
+        root?.endExit(.finished, arranging: true)
+    }
+
+    /// The view kept for a partner that holds `element`, or is it; nil where none does.
+    private func keptHolding(_ element: MountedElement?) -> MountedElement? {
+        var each = element
+        while let view = each {
+            if awaiting[view.mount]?.root.element === view { return view }
+            each = view.parent
+        }
+        return nil
+    }
+
+    /// Whether `root` is `element` or holds it.
+    private func holds(_ root: MountedElement, _ element: MountedElement) -> Bool {
+        var each: MountedElement? = element
+        while let view = each {
+            if view === root { return true }
+            each = view.parent
+        }
+        return false
     }
 
     /// `element` was made by the patch being applied, wearing a key.
@@ -81,13 +156,11 @@
     /// wearing its key was drawn, in its window's coordinates, with where `element` is placed there - and that
     /// view, should it still be leaving. Nil where the patch dropped none wearing the key; nil too, and said,
     /// where it dropped or made more than one, they stood in other windows or pages, or where `element` stands
-    /// is not known yet. The scope the two are one in, by its mount.
-    func source(
-        for element: MountedElement, in tree: MountedTree
-    ) -> (from: Rect, to: Rect, leaving: MountedElement?, scope: UInt64)? {
+    /// is not known yet - and a view kept for it goes then.
+    func source(for element: MountedElement, in tree: MountedTree) -> Pair? {
         guard let key = Self.key(of: element),
               let mine = made[key]?.first(where: { $0.mount == element.mount })?.patch,
-              sources[key]?.contains(where: { $0.patch == mine }) == true
+              let left = sources[key]?.filter({ $0.patch == mine }), !left.isEmpty
         else { return nil }
         defer {
             sources[key]?.removeAll { $0.patch == mine }
@@ -97,10 +170,16 @@
               let destination = placeInWindow(of: element, scope: key.scope, in: tree),
               destination.width > 0, destination.height > 0
         else {
+            for each in left { if let kept = keptHolding(each.element) { release(kept.mount) } }
             refused?(element)
             return nil
         }
-        return (source.drawn, destination, source.element, key.scope)
+        let kept = keptHolding(source.element)
+        if let kept { awaiting[kept.mount] = nil }
+        let landsDrawn = Self.drawn(element.drawnTransform.bounds(of: destination), above: element, to: key.scope)
+        return Pair(
+            from: source.drawn, to: landsDrawn, setsOut: Self.undrawn(source.drawn, above: element, to: key.scope),
+            lands: destination, scope: key.scope, leaving: source.element, kept: kept, corner: source.corner)
     }
 
     /// Whether `element` was made with a patch whose notes are kept: what came with a view setting out.
@@ -142,6 +221,7 @@
 
         framesLeft -= 1
         if framesLeft == 0 {
+            for mount in awaiting.keys.sorted() { release(mount) }
             sources.removeAll()
             made.removeAll()
             born.removeAll()
@@ -150,16 +230,32 @@
 
     /// `rect`, drawn by `element`, as every view above it up to the scope `scope` draws it too - each one's
     /// transform about its own pivot, as its toolkit stands it, no transform in that.
-    private static func drawn(_ rect: Rect, above element: MountedElement, to scope: UInt64) -> Rect {
-        var (drawn, above) = (rect, element.parent)
+    static func drawn(_ rect: Rect, above element: MountedElement, to scope: UInt64) -> Rect {
+        holders(above: element, to: scope).reduce(rect) { drawn, holder in
+            holder.transform.bounds(of: drawn, within: holder.frame)
+        }
+    }
+
+    /// The rectangle `element` would draw for every view above it up to the scope `scope` to draw it as `rect`:
+    /// the outermost one's transform undone first.
+    static func undrawn(_ rect: Rect, above element: MountedElement, to scope: UInt64) -> Rect {
+        holders(above: element, to: scope).reversed().reduce(rect) { drawn, holder in
+            holder.transform.place(drawnAs: drawn, within: holder.frame)
+        }
+    }
+
+    /// Each view above `element` up to `scope`, innermost first: how it is drawn and where its toolkit stands it.
+    private static func holders(
+        above element: MountedElement, to scope: UInt64
+    ) -> [(transform: HostDrawingTransform, frame: Rect)] {
+        var (holders, above) = ([(transform: HostDrawingTransform, frame: Rect)](), element.parent)
         while let holder = above, holder.mount != scope {
             if let frame = holder.native.frameNumbers(), frame.count >= 8 {
-                drawn = holder.drawingTransform.bounds(
-                    of: drawn, within: Rect(x: frame[4], y: frame[5], width: frame[2], height: frame[3]))
+                holders.append((holder.drawnTransform, Rect(x: frame[4], y: frame[5], width: frame[2], height: frame[3])))
             }
             above = holder.parent
         }
-        return drawn
+        return holders
     }
 
     /// The key `element` wears in the scope it stands under; nil where it wears none or stands under no scope.

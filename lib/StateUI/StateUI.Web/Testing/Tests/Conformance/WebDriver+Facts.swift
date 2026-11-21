@@ -32,7 +32,7 @@ extension WebDriver {
         let cannot = DriverCannot("read the drawing order of \(layout.type.name)")
         guard let parent = (layout.native as? WebElement)?.view else { throw cannot }
         try WebBrowser.run("window.stateuiLayout = e", on: parent.node)
-        return try layout.children.map { child in
+        return try layout.presentedChildren.map { child in
             guard let node = (child.native as? WebElement)?.view?.node else { throw cannot }
             let key = try numbers("""
                 ((n) => { const p = window.stateuiLayout; while (n && n.parentElement !== p) n = n.parentElement; \

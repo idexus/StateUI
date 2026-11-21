@@ -66,7 +66,7 @@ extension WinUIDriver {
     func drawingOrder(of layout: MountedElement) throws -> [MountedElement] {
         let cannot = DriverCannot("read the drawing order of \(layout.type.name)")
         guard let panel = (layout.native as? WinUIElement)?.view else { throw cannot }
-        return try layout.children.map { child in
+        return try layout.presentedChildren.map { child in
             guard let view = (child.native as? WinUIElement)?.view, let drawn = panel.drawnPlace(of: view) else {
                 throw cannot
             }

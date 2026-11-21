@@ -90,17 +90,24 @@ extension AppKitElement {
     }
 
     /// The views that stand in this element's: its arranged children's, and those of children kept as they leave,
-    /// each made deaf to input and out of what assistive technology meets as it is found leaving.
+    /// each made deaf to input and out of what assistive technology meets as it is found leaving - the layout told
+    /// the mounts of those.
     /// Design: docs/design/platforms/appkit/views.md#a-view-kept-as-it-leaves
     private func presentedViews() -> [NSView] {
-        element.presentedChildren.flatMap { child -> [NSView] in
+        var kept: [ObjectIdentifier: UInt64] = [:]
+        let views = element.presentedChildren.flatMap { child -> [NSView] in
             let views = child.appKit.presentableViews
             if child.lifecycle == .exiting {
                 child.appKit.applyVisibility()
-                for view in views { child.appKit.applyAccessibility(to: view) }
+                for view in views {
+                    child.appKit.applyAccessibility(to: view)
+                    kept[ObjectIdentifier(view)] = child.mount
+                }
             }
             return views
         }
+        (view as? AppKitTravelingLayout)?.keptMounts = kept
+        return views
     }
 
     /// The element's own size and first baseline in the room offered, as its layout item measures them: what a

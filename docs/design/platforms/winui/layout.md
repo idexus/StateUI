@@ -18,7 +18,9 @@ A stack, a grid and a ZStack keep a child that left
 items and, apart from them, the views of those kept as they leave
 ([a view kept as it leaves](../../host/tree.md#a-view-kept-as-it-leaves));
 the layout is told the kept first (`keep(_:)`), then its items, and its
-panel holds both - the items' views, then the kept (`holdChildren`). A kept
+panel holds both - the items' views, then the kept (`holdChildren`) - and
+draws each kept one after the view it stood after, by z-index
+([drawing order](../../host/layout.md#drawing-order)). A kept
 view is no item's: no pass measures it or places it, and it stands where it
 was last arranged while its opacity, its move and its scale travel to its
 exit's effect and the rows around it close over its place. Found leaving, it

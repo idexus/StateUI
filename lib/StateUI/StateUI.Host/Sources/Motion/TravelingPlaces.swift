@@ -74,8 +74,12 @@
             enter: enter, in: arrangement, room: room)
     }
 
-    /// The children of `mounts` back to front as the layout draws them, run by `placements` (`DrawingOrder`).
-    public func drawingOrder(of mounts: [UInt64], placedBy placements: [HostPlacement]) -> [Int] {
-        DrawingOrder.of(mounts.count, placedBy: placements) { layoutMotion?.drawsInFront(mounts[$0]) == true }
+    /// The views of `presented` - the layout's items and those kept as they leave, `kept`, by their mounts, in the
+    /// order they stand - back to front as the layout draws them, run by `placements` (`DrawingOrder`), by their
+    /// place in `presented`.
+    public func drawingOrder(of presented: [UInt64], kept: Set<UInt64> = [], placedBy placements: [HostPlacement]) -> [Int] {
+        DrawingOrder.of(presented: presented.map(kept.contains), placedBy: placements) {
+            layoutMotion?.drawsInFront(presented[$0]) == true
+        }
     }
 }

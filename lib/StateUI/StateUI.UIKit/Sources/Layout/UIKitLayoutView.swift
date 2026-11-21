@@ -24,8 +24,10 @@ class UIKitLayoutView: UIView, UIKitSteppable {
 
     private(set) var items: [UIKitLayoutItem] = []
 
-    /// The views of children kept as they leave: drawn where they stood, and no item's.
-    private var leaving: [UIView] = []
+    /// The views of children kept as they leave, by their mounts: drawn where they stood, and no item's; and every
+    /// view the layout presents, by mount, in the order they stand.
+    private var leaving: [(mount: UInt64, view: UIView)] = []
+    private var presented: [UInt64] = []
 
     /// What the layout says once it has placed its children: whoever reads a frame may have moved.
     var laidOut: (() -> Void)?
@@ -53,12 +55,13 @@ class UIKitLayoutView: UIView, UIKitSteppable {
     /// Says the views of children kept as they leave, before the items are set: one kept no more is taken out, and
     /// the kept stand where they stood - no item's, so no layout pass places them.
     /// Design: docs/design/platforms/uikit/layout.md#a-view-kept-as-it-leaves
-    func keep(_ leaving: [UIView]) {
+    func keep(_ leaving: [(mount: UInt64, view: UIView)], presented: [UInt64]) {
         for gone in self.leaving
-        where !leaving.contains(where: { $0 === gone }) && !items.contains(where: { $0.view === gone }) {
-            gone.removeFromSuperview()
+        where !leaving.contains(where: { $0.view === gone.view }) && !items.contains(where: { $0.view === gone.view }) {
+            gone.view.removeFromSuperview()
         }
         self.leaving = leaving
+        self.presented = presented
     }
 
     /// The children, in the tree's order: views that left are taken out - but those kept as they leave - and new
@@ -70,7 +73,7 @@ class UIKitLayoutView: UIView, UIKitSteppable {
         let hosts = [self, box.backdropView?.contentView]
         for gone in self.items
         where hosts.contains(where: { $0 === gone.view.superview }) && !items.contains(where: { $0.view === gone.view })
-            && !leaving.contains(where: { $0 === gone.view }) {
+            && !leaving.contains(where: { $0.view === gone.view }) {
             gone.view.removeFromSuperview()
         }
         self.items = items
@@ -106,12 +109,26 @@ class UIKitLayoutView: UIView, UIKitSteppable {
         standChildren()
     }
 
-    /// Orders the children back to front as the layout draws them: most in the tree's order, a child a shared entry
-    /// carries last. Design: docs/design/host/layout.md#drawing-order
+    /// Orders the children back to front as the layout draws them: most in the tree's order, a child a shared
+    /// transition carries last.
     func orderChildren() {
-        let ordered = places.drawingOrder(of: items.map(\.mount), placedBy: [])
-        guard ordered != Array(items.indices) else { return }
-        for index in ordered where index < items.count { childrenHost.bringSubviewToFront(items[index].view) }
+        standInDrawingOrder(placedBy: [])
+    }
+
+    /// Brings the children and the views kept as they leave to the front in the order the layout draws them, where
+    /// they stand otherwise - a run's ranks where `placements` say them, each kept view after the one it stood after.
+    /// Design: docs/design/host/layout.md#drawing-order
+    func standInDrawingOrder(placedBy placements: [HostPlacement]) {
+        let mounts = leaving.isEmpty ? items.map(\.mount) : presented
+        var views: [UInt64: UIView] = [:]
+        for item in items { views[item.mount] = item.view }
+        for kept in leaving { views[kept.mount] = kept.view }
+        let host = childrenHost
+        let ordered = places.drawingOrder(of: mounts, kept: Set(leaving.map(\.mount)), placedBy: placements)
+            .compactMap { views[mounts[$0]] }.filter { $0.superview === host }
+        let wanted = Set(ordered.map(ObjectIdentifier.init))
+        guard host.subviews.filter({ wanted.contains(ObjectIdentifier($0)) }) != ordered else { return }
+        for view in ordered { host.bringSubviewToFront(view) }
     }
 
     func forgetMeasurements() {
