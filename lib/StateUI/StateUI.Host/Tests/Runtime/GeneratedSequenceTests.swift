@@ -135,8 +135,8 @@ final class GeneratedSequenceTests: XCTestCase {
     }
 
     /// What holds after every step: every number shown is one; a view that leaves is deaf, out of its holder's
-    /// children and within the budget; with less motion nothing travels and nothing is kept leaving; and a window
-    /// closed leaves nothing moving.
+    /// children, of what assistive technology meets and of every hand, and within the budget; with less motion
+    /// nothing travels and nothing is kept leaving; and a window closed leaves nothing moving.
     private func rules(of bench: BoardBench, after did: String, closed: Bool = false) throws {
         let runtime = try XCTUnwrap(bench.runtime)
         let held = runtime.holdings
@@ -156,6 +156,8 @@ final class GeneratedSequenceTests: XCTestCase {
             XCTAssertEqual((view.native as? NoView)?.deactivated, 1, "\(did): a view that leaves is deaf, told once")
             XCTAssertFalse(holder.children.contains { $0 === view }, "\(did): and is no child of its holder")
             XCTAssertFalse(runtime.interactions.holds(view), "\(did): no hand holds it")
+            XCTAssertTrue(view.ignoresInput, "\(did): it ignores input")
+            XCTAssertEqual(view.accessibilityWords.presence, .hiddenWithContents, "\(did): and is met no more")
         }
     }
 

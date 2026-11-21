@@ -147,7 +147,7 @@ holds, how each change ended - are the same step for step.
 
 After every step the rules of a step hold: a frame writes no state; every
 number shown is one; a view that leaves is deaf, no child of its holder, in no
-hand, and within the budget; with less motion nothing travels and nothing is
+hand, out of what assistive technology meets, and within the budget; with less motion nothing travels and nothing is
 kept leaving; a window closed leaves nothing moving; a change is answered
 once. At the end everything rests, every change is answered, and the runtime
 let go keeps no half.

@@ -99,6 +99,25 @@ final class StructuralTransitionsTests: XCTestCase {
         XCTAssertEqual(bench.ended.count, 1)
     }
 
+    /// A VIEW KEPT AS IT LEAVES IGNORES INPUT AND IS MET BY NO ASSISTIVE TECHNOLOGY, with everything in it, for as
+    /// long as it is drawn - what a host reads as it finds the view leaving - while the view beside it stands as
+    /// it did.
+    func testAViewKeptAsItLeavesIgnoresInputAndIsMetNoMore() {
+        let bench = Bench()
+        bench.show([Bench.text("a"), Bench.text("b", Self.fading)], complete: true)
+        let (a, b) = (bench.root.children[0], bench.root.children[1])
+        XCTAssertFalse(b.ignoresInput)
+        XCTAssertEqual(b.accessibilityWords.presence, a.accessibilityWords.presence, "standing, as any view")
+
+        bench.show([Bench.text("a")])
+        bench.frame(at: 100)
+        XCTAssertEqual(b.lifecycle, .exiting)
+        XCTAssertTrue(b.ignoresInput, "deaf to input while it is drawn")
+        XCTAssertEqual(b.accessibilityWords.presence, .hiddenWithContents, "and met no more")
+        XCTAssertFalse(a.ignoresInput)
+        XCTAssertNotEqual(a.accessibilityWords.presence, .hiddenWithContents)
+    }
+
     /// WHERE NOTHING KEEPS IT, A CHILD LEAVES AT ONCE: a view keeping none, no transition, an exit that changes
     /// nothing, less motion, and nothing to move by.
     func testWhereNothingKeepsItAChildLeavesAtOnce() {
