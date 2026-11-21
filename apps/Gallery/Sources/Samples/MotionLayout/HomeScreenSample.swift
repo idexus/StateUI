@@ -4,8 +4,7 @@ import StateUI
 struct HomeScreenSample: SampleContent, ExampleContent {
     static let id = "homeScreen"
     static let title = "Home screen"
-    static let summary = "Boards of icons as many as the room fits - a swipe turns one; a held icon moves the others; "
-        + "a pressed one opens its app."
+    static let summary = "Boards of icons: a swipe turns one, a held icon moves the others, a pressed one opens its app."
 
     // listing: HomeScreenSample
     /// One icon: its name, which is its identity, its glyph and its color.
