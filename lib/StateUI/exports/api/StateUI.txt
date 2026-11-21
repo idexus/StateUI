@@ -682,6 +682,8 @@ swift.conformance PositionDots: StateUI.Views
 swift.conformance PositionDots: Swift.Sendable
 swift.conformance PresentationOffset: Swift.Equatable
 swift.conformance PresentationOffset: Swift.Sendable
+swift.conformance PresentationSample: Swift.Equatable
+swift.conformance PresentationSample: Swift.Sendable
 swift.conformance PresentationValues: Swift.Equatable
 swift.conformance PresentationValues: Swift.ExpressibleByArrayLiteral
 swift.conformance PresentationValues: Swift.Hashable
@@ -1998,6 +2000,7 @@ swift.method Aim.evaluateJavaScript(_:): @MainActor func evaluateJavaScript(_ sc
 swift.method Aim.focus(): @discardableResult @MainActor func focus() async throws -> Bool
 swift.method Aim.goBack(): @MainActor func goBack() async throws
 swift.method Aim.goForward(): @MainActor func goForward() async throws
+swift.method Aim.presentationSample(): @MainActor func presentationSample() async throws -> PresentationSample
 swift.method Aim.reload(): @MainActor func reload() async throws
 swift.method Aim.scroll(to:anchor:): @MainActor func scroll<ID>(to item: ID, anchor: ScrollAnchor = .nearest) async throws where Target == ItemsView<ID>, ID : Hashable
 swift.method Aim.show(_:): @MainActor func show(_ region: MapRegion) async throws
@@ -12916,6 +12919,13 @@ swift.property PresentationOffset.rotation: var rotation: Double
 swift.property PresentationOffset.scaleX: var scaleX: Double
 swift.property PresentationOffset.scaleY: var scaleY: Double
 swift.property PresentationOffset.translation: var translation: Point
+swift.property PresentationSample.frame: let frame: Rect
+swift.property PresentationSample.layoutFrame: let layoutFrame: Rect
+swift.property PresentationSample.opacity: let opacity: Double
+swift.property PresentationSample.rotation: let rotation: Double
+swift.property PresentationSample.scaleX: let scaleX: Double
+swift.property PresentationSample.scaleY: let scaleY: Double
+swift.property PresentationSample.translation: let translation: Point
 swift.property PressInput.bounds: let bounds: Rect
 swift.property PressInput.displacement: let displacement: Point
 swift.property PressInput.location: let location: Point
@@ -13123,6 +13133,7 @@ swift.struct Polygon: @MainActor struct Polygon
 swift.struct Polyline: @MainActor struct Polyline
 swift.struct PositionDots: @MainActor struct PositionDots
 swift.struct PresentationOffset: struct PresentationOffset
+swift.struct PresentationSample: struct PresentationSample
 swift.struct PresentationValues: struct PresentationValues
 swift.struct PressInput: struct PressInput
 swift.struct ProgressBar: @MainActor struct ProgressBar
@@ -13820,6 +13831,7 @@ swift.type.property ViewContract.pointerMoved: static let pointerMoved: ElementE
 swift.type.property ViewContract.pointerPressed: static let pointerPressed: ElementEvent<ViewContract, Point?>
 swift.type.property ViewContract.pointerReleased: static let pointerReleased: ElementEvent<ViewContract, Point?>
 swift.type.property ViewContract.presentationFrameChanged: static let presentationFrameChanged: ElementEvent<ViewContract, [Double]>
+swift.type.property ViewContract.presentationSample: static let presentationSample: ElementAct<ViewContract, Void, PresentationSample>
 swift.type.property ViewContract.rotationUpdated: static let rotationUpdated: ElementEvent<ViewContract, (GesturePhase, Double, Double)>
 swift.type.property ViewContract.swipeDirections: static let swipeDirections: ElementProperty<ViewContract, SwipeDirections>
 swift.type.property ViewContract.swipeThreshold: static let swipeThreshold: ElementProperty<ViewContract, Double>

@@ -62,13 +62,17 @@ extension AndroidElement: FrameReporter {
     /// stands too.
     /// Design: docs/design/platforms/android/layout.md#where-a-view-stands
     func reportFrame() {
-        guard let host, let view, readsFrame, view.isLaidOut else { return }
-        let page = element.enclosing(type: .page)?.android.view
-        element.reportFrame(
-            MountedElement.frameNumbers(
-                place: view.standingFrame, corner: windowCorner ?? view.cornerInWindow,
-                content: page?.cornerInWindow ?? host.safeAreaOrigin),
-            in: host.runtime)
+        guard let host, let view, readsFrame, let numbers = frameNumbers() else { return }
+        element.reportFrame(numbers, in: host.runtime)
         if let split = view as? AndroidSplitView { element.reportSidebarOverlays(split.overlays, in: host.runtime) }
+    }
+
+    /// Where the view stands now, as a frame report says it; nil before a layout placed it.
+    func frameNumbers() -> [Double]? {
+        guard let host, let view, view.isLaidOut else { return nil }
+        let page = element.enclosing(type: .page)?.android.view
+        return MountedElement.frameNumbers(
+            place: view.standingFrame, corner: windowCorner ?? view.cornerInWindow,
+            content: page?.cornerInWindow ?? host.safeAreaOrigin)
     }
 }

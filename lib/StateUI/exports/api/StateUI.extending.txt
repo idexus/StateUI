@@ -761,6 +761,7 @@ swift.conformance PositionDots: StateUI.PropertyContainer
 swift.conformance PositionDots: StateUI.ViewProperties
 swift.conformance PositionDots: StateUI.VisualElement
 swift.conformance PositionDots: StateUI.VisualElementProperties
+swift.conformance PresentationSample: StateUI.HostRepresentable
 swift.conformance PresentedElementContract: StateUI.Contract
 swift.conformance PressElement: StateUI.Element
 swift.conformance PressElement: StateUI.ModifiableElement
@@ -1623,6 +1624,7 @@ swift.init PickerPresentation.init(propValue:): init?(propValue: PropValue)
 swift.init PickerPresentation.init(rawValue:): init?(rawValue: Int32)
 swift.init Point.init(carried:): init?(carried: StateCarried)
 swift.init Point.init(propValue:): init?(propValue: PropValue)
+swift.init PresentationSample.init(propValue:): init?(propValue: PropValue)
 swift.init PresentationValues.init(rawValue:): init(rawValue: UInt8)
 swift.init PropValue.init(propValue:): init?(propValue: PropValue)
 swift.init Rect.init(carried:): init?(carried: StateCarried)
@@ -2471,6 +2473,7 @@ swift.property Polyline.node: @MainActor var node: Node
 swift.property Polyline.nodes: @MainActor var nodes: [Node] { get }
 swift.property PositionDots.node: @MainActor var node: Node { get set }
 swift.property PositionDots.nodes: @MainActor var nodes: [Node] { get }
+swift.property PresentationSample.propValue: var propValue: PropValue { get }
 swift.property PresentationValues.rawValue: let rawValue: UInt8
 swift.property ProgressBar.node: @MainActor var node: Node
 swift.property ProgressBar.nodes: @MainActor var nodes: [Node] { get }
@@ -2797,6 +2800,8 @@ swift.type.method Point.list(from:): static func list(from value: PropValue) -> 
 swift.type.method Point.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method Point.propValue(of:): static func propValue(of list: [Point]) -> PropValue
 swift.type.method Point.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method PresentationSample.list(from:): static func list(from value: PropValue) -> [Self]?
+swift.type.method PresentationSample.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method PropValue.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method PropValue.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method Rect.list(from:): static func list(from value: PropValue) -> [Self]?

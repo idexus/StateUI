@@ -189,6 +189,29 @@ button close a keyboard it did not open. On iOS a search field on the
 navigation bar takes the whole bar while it has focus, the back button with it;
 `hideOnScreenKeyboard()` is what gives the bar back, which is why the keyboard sample offers it.
 
+## Where a view stands, asked
+
+A view's aim answers how the view stands on the page now
+(`Aim.presentationSample()`, the act `ViewContract.presentationSample`): a
+`PresentationSample` - the rectangle its layout gives it, the one around
+what is drawn of it, and its own move, scales, turn and opacity. It crosses
+as fourteen numbers. Every host performs the act, and none decides
+anything: the host layer answers it from the frame numbers a native half
+reads off its toolkit on demand (`NativeElement.frameNumbers()`), by the
+same arithmetic the two frame events are said with
+(`MountedElement.presentationSample`,
+[two rectangles](../host/runtime.md#two-rectangles)) - so a sample read
+mid-movement is where the movement has got the view to, and what an event
+would say at that moment.
+
+A view that stands nowhere yet - in no window, or before a layout placed
+it - fails as any aim on a view not shown does, and so does one the tree
+dropped: a leaving view is asked nothing.
+
+The trap is using the reading to follow a view. It is one moment, asked
+across the boundary and answered a turn later; what must move with a view
+reads its frame or follows the state that moves it.
+
 ## A window's acts
 
 A question, a file dialog and the keyboard taken down belong to a window, so

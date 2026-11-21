@@ -111,6 +111,8 @@
             }
         case .focus, .unfocus:
             aim(call)
+        case .presentationSample:
+            sample(call)
         case .handlerFailed:
             toolkit.log("a handler failed: \(call.arguments.first?.string ?? "")")
             reply(call, [])
@@ -323,6 +325,21 @@
         }
         guard let took = toolkit.focus(element) else { return fail(call, "\(element.id) has no view") }
         reply(call, [.bool(took)])
+    }
+
+    /// Answers how the aimed view stands now; one that stands nowhere yet, or is the application's no more, fails.
+    /// Design: docs/design/core/acts.md#where-a-view-stands-asked
+    private func sample(_ call: HostActCall) {
+        guard let tree = tree() else { return fail(call, "no tree is shown") }
+        do {
+            let element = try tree.aimed(call)
+            guard let sample = element.presentationSample else {
+                return fail(call, "\(element.id) stands nowhere on a page yet")
+            }
+            reply(call, [sample.propValue])
+        } catch {
+            fail(call, error.reason)
+        }
     }
 
     private func reply(_ call: HostActCall, _ values: [HostValue]) {

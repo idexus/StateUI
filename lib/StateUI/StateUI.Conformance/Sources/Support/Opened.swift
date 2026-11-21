@@ -40,6 +40,30 @@ enum Opened {
     }
 }
 
+extension Opened {
+    /// `view`, aimed at by `reading`.
+    static func aimed<V: View>(_ view: V, by reading: PresentationAim) -> some View {
+        let aim = Aim(V.self)
+        reading.hold(aim)
+        return view.aim(aim)
+    }
+}
+
+/// How one view stands, asked by a case's button: whatever kind the view is.
+final class PresentationAim: @unchecked Sendable {
+    private var reading: (@MainActor () async throws -> PresentationSample)?
+
+    /// Reads the view `aim` aims at.
+    func hold<V>(_ aim: Aim<V>) {
+        reading = { try await aim.call(ViewContract.presentationSample) }
+    }
+
+    /// How the view stands now.
+    @MainActor func presentation() async throws -> PresentationSample? {
+        try await reading?()
+    }
+}
+
 /// The keyboard's acts on one view, which a case's buttons call: whatever kind the view is.
 final class FocusAim: @unchecked Sendable {
     private var focusing: (@MainActor () async throws -> Bool)?

@@ -180,6 +180,13 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
+    /// Asking how a view stands is a view's act: the view at 0 and nothing else.
+    func testAskingHowAViewStandsCrossesWithItsArgumentsInPlace() async throws {
+        try await check("presentationSample", [.values([.string("card")])]) {
+            _ = try await named("card", Rectangle.self).presentationSample()
+        }
+    }
+
     /// An act with no view in it, only its window: the host asks the window
     /// which of its views has the focus, because the Swift side cannot know.
     func testClosingTheKeyboardCrossesWithItsArgumentsInPlace() async throws {

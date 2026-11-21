@@ -44,6 +44,10 @@ final class NoView: NativeElement {
     /// Whether its view keeps a child that left.
     var keepsExits = false
 
+    /// Where its view stands, as a frame report's numbers; nil while it stands nowhere.
+    var frame: [Double]?
+    func frameNumbers() -> [Double]? { frame }
+
     /// How many times the element's children were arranged, and the layouts around it asked to measure again.
     var arranged = 0
     var measuredAgain = 0

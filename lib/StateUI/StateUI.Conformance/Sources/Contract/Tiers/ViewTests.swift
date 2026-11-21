@@ -19,7 +19,7 @@
     public static var cases: [ConformanceCase] {
         Specimens.wearing(ViewContract.self).flatMap { element in
             [
-                margined(element), drawn(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
+                margined(element), drawn(element), sampled(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
                 tapped(element), pressedAsAButton(element), longPressed(element), longPressedAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), thrown(element), pressTakenAway(element), takenFromTheHand(element), swiped(element), pinched(element), rotated(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element), entered(element), joined(element), left(element), returned(element),
             ]
@@ -548,6 +548,53 @@
             s.expect(
                 drawn.values.last.map(FrameReport.inWindow), corner.count == 2 ? [corner[0] - 20, corner[1] - 10] : [],
                 "its corner in the window with it")
+        }
+    }
+
+    /// A view asked how it stands answers as it is drawn: the rectangle its layout gives it and the one around
+    /// what is drawn of it - what its two frame events say - with its own move, scale and opacity.
+    @MainActor
+    static func sampled(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).itsPresentationIsReadOnDemand", proves: [
+            Covered(ViewContract.presentationSample, on: element),
+        ], needs: [
+            Covered(ViewContract.layoutFrameChanged, on: element), Covered(ViewContract.presentationFrameChanged, on: element),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+        ]) { s in
+            let aim = PresentationAim()
+            let placed = Received<[Double]>()
+            let drawn = Received<[Double]>()
+            let read = Received<PresentationSample>()
+            s.start {
+                VStack {
+                    Opened.aimed(reporting(element, placed, [
+                        Write(VisualElementContract.width, 120), Write(VisualElementContract.height, 40),
+                        Write(ViewContract.margin, Insets(start: 80, top: 40, end: 0, bottom: 0)),
+                        Write(VisualElementContract.scale, 1.5), Write(VisualElementContract.translationX, 10),
+                        Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
+                    ]), by: aim)
+                    Button("Read").onClicked(policy: .ignoreWhileRunning) {
+                        if let sample = try await aim.presentation() { read.values.append(sample) }
+                    }
+                    .id("read")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.settle {
+                drawn.values.last.map(FrameReport.place) == [60, 30, 180, 60]
+                    && placed.values.last.map(FrameReport.place) == [80, 40, 120, 40]
+            }
+
+            try s.perform(.activate, on: s.element("read"))
+            s.settle { !read.values.isEmpty }
+            let sample = read.values.last
+            let rounded = { (rect: Rect) in [rect.x, rect.y, rect.width, rect.height].map { $0.rounded() } }
+            s.expect(sample.map { rounded($0.layoutFrame) }, [80, 40, 120, 40], "where its layout puts it")
+            s.expect(sample.map { rounded($0.frame) }, [60, 30, 180, 60], "the rectangle around what is drawn of it")
+            s.expect(
+                sample.map { [$0.translation.x, $0.translation.y, $0.scaleX, $0.scaleY, $0.rotation, $0.opacity] },
+                [10, 0, 1.5, 1.5, 0, 1], "and how it is drawn")
         }
     }
 

@@ -15,10 +15,15 @@ extension WinUIElement: FrameReporter {
     /// Says where the element stands, where that changed (`MountedElement.reportFrame`) - once a layout placed it;
     /// a split view, where its sidebar stands too.
     func reportFrame() {
-        guard let host, let view, view.isLaidOut else { return }
-        let report = view.frameReport(corner: windowCorner ?? view.origin, safeArea: host.safeAreaOrigin(of: element))
+        guard let host, let view, let report = frameNumbers() else { return }
         element.reportFrame(report, in: host.runtime)
         if let split = view as? WinUISplitView { element.reportSidebarOverlays(split.overlays, in: host.runtime) }
+    }
+
+    /// Where the view stands now, as a frame report says it; nil before a layout placed it.
+    func frameNumbers() -> [Double]? {
+        guard let host, let view, view.isLaidOut else { return nil }
+        return view.frameReport(corner: windowCorner ?? view.origin, safeArea: host.safeAreaOrigin(of: element))
     }
 }
 

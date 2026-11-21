@@ -346,6 +346,7 @@ extension NodeType {
 
 @_spi(Host) public extension Act {
     static let focus = FocusElementContract.focus.token
+    static let presentationSample = ViewContract.presentationSample.token
     static let scrollTo = ItemsViewContract.scrollTo.token
     static let unfocus = FocusElementContract.unfocus.token
     static let goBack = WebViewContract.goBack.token

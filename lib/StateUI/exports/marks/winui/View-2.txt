@@ -1,152 +1,112 @@
-# revision 39.2
-Button.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
-Button.pointerMoved: ✓ hover on Button: the relay's report of the pointer handed to the host, no pointer sent
-Button.pointerPressed: ✓ hover on Button: the relay's report of the pointer handed to the host, no pointer sent
-Button.pointerReleased: ✓ hover on Button: the relay's report of the pointer handed to the host, no pointer sent
-Canvas.area: ✅
-Canvas.layoutFrameChanged: ✅
-Canvas.tapped: ✓ pressDown on Canvas: the relay's report of the press handed to the host, no pointer sent
-Canvas.transition: ✅
-Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Capsule.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Capsule.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Capsule.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Capsule.panTouchCount: ✓ pan on Capsule: the relay's report of the press dragged handed to the host, no pointer sent
-Capsule.panUpdated: ✓ pan on Capsule: the relay's report of the press dragged handed to the host, no pointer sent
-CheckBox.gridColumnSpan: ✅
-CheckBox.gridRowSpan: ✅
-CheckBox.layoutFrameChanged: ✅
-CheckBox.swipeDirections: ✓ pan on CheckBox: the relay's report of the press dragged handed to the host, no pointer sent
-CheckBox.swipeThreshold: ✓ pan on CheckBox: the relay's report of the press dragged handed to the host, no pointer sent
-CheckBox.swiped: ✓ pan on CheckBox: the relay's report of the press dragged handed to the host, no pointer sent
-ColorPicker.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
-ColorPicker.layoutBody: ✅
-ColorPicker.layoutFrameChanged: ✅
-ColorPicker.margin: ✅
-DatePicker.rotationUpdated: ✓ rotate on DatePicker: the relay's report of the manipulation handed to the host, no touch sent
-DatePicker.tapped: ✓ pressDown on DatePicker: the relay's report of the press handed to the host, no pointer sent
-Ellipse.dismissed: ✓ pressDown on Ellipse: the relay's report of the press handed to the host, no pointer sent
-Ellipse.horizontalAlignment: ✅
-Ellipse.layoutFrameChanged: ✅
-Ellipse.verticalAlignment: ✅
-Fill.dragEnded: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
-Fill.dragStarting: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
-Fill.dragText: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
-Fill.isDraggable: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
-Fill.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
-Grid.gridColumn: ✅
-Grid.gridRow: ✅
-Grid.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
-Grid.layoutFrameChanged: ✅
-Grid.transition: ✅
-HStack.droppedFileTypes: ✓ dropFiles on HStack: the relay's drop report told the driver's files, no drag WinUI began
-HStack.filesDropped: ✓ dropFiles on HStack: the relay's drop report told the driver's files, no drag WinUI began
+# revision 40.2
+Button.pinchUpdated: ✓ pinch on Button: the relay's report of the manipulation handed to the host, no touch sent
+Button.tapCount: ✓ tap on Button: the relay's report of the tap handed to the host, no pointer sent
+Button.tapped: ✓ tap on Button: the relay's report of the tap handed to the host, no pointer sent
+Canvas.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+Canvas.layoutBody: ✅
+Canvas.presentationFrameChanged: ✅
+Capsule.pinchUpdated: ✓ pinch on Capsule: the relay's report of the manipulation handed to the host, no touch sent
+Capsule.tapCount: ✓ tap on Capsule: the relay's report of the tap handed to the host, no pointer sent
+Capsule.tapped: ✓ tap on Capsule: the relay's report of the tap handed to the host, no pointer sent
+CheckBox.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+CheckBox.layoutBody: ✅
+CheckBox.presentationFrameChanged: ✅
+ColorPicker.pinchUpdated: ✓ pinch on ColorPicker: the relay's report of the manipulation handed to the host, no touch sent
+ColorPicker.tapCount: ✓ tap on ColorPicker: the relay's report of the tap handed to the host, no pointer sent
+ColorPicker.tapped: ✓ tap on ColorPicker: the relay's report of the tap handed to the host, no pointer sent
+DatePicker.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+DatePicker.layoutBody: ✅
+DatePicker.presentationFrameChanged: ✅
+Ellipse.pinchUpdated: ✓ pinch on Ellipse: the relay's report of the manipulation handed to the host, no touch sent
+Ellipse.tapCount: ✓ tap on Ellipse: the relay's report of the tap handed to the host, no pointer sent
+Ellipse.tapped: ✓ tap on Ellipse: the relay's report of the tap handed to the host, no pointer sent
+Fill.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+Fill.layoutBody: ✅
+Fill.presentationFrameChanged: ✅
+Grid.pinchUpdated: ✓ pinch on Grid: the relay's report of the manipulation handed to the host, no touch sent
+Grid.tapCount: ✓ tap on Grid: the relay's report of the tap handed to the host, no pointer sent
+Grid.tapped: ✓ tap on Grid: the relay's report of the tap handed to the host, no pointer sent
 HStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+HStack.layoutBody: ✅
+HStack.presentationFrameChanged: ✅
 Image.pinchUpdated: ✓ pinch on Image: the relay's report of the manipulation handed to the host, no touch sent
 Image.tapCount: ✓ tap on Image: the relay's report of the tap handed to the host, no pointer sent
 Image.tapped: ✓ tap on Image: the relay's report of the tap handed to the host, no pointer sent
 ItemsView.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+ItemsView.layoutBody: ✅
 ItemsView.presentationFrameChanged: ✅
-ItemsView.transition: ✅
-Line.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Line.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Line.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Line.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Line.panTouchCount: ✓ pan on Line: the relay's report of the press dragged handed to the host, no pointer sent
-Line.panUpdated: ✓ pan on Line: the relay's report of the press dragged handed to the host, no pointer sent
-Link.gridColumnSpan: ✅
-Link.gridRowSpan: ✅
-Link.layoutFrameChanged: ✅
-Link.swipeDirections: ✓ pan on Link: the relay's report of the press dragged handed to the host, no pointer sent
-Link.swipeThreshold: ✓ pan on Link: the relay's report of the press dragged handed to the host, no pointer sent
-Link.swiped: ✓ pan on Link: the relay's report of the press dragged handed to the host, no pointer sent
-Map.interaction: 🧩
-Map.layoutBody: 🧩
-Map.layoutFrameChanged: 🧩
-Map.margin: 🧩
-MotionLayout.area: ✅
+Line.pinchUpdated: ✓ pinch on Line: the relay's report of the manipulation handed to the host, no touch sent
+Line.tapCount: ✓ tap on Line: the relay's report of the tap handed to the host, no pointer sent
+Line.tapped: ✓ tap on Line: the relay's report of the tap handed to the host, no pointer sent
+Link.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+Link.layoutBody: ✅
+Link.presentationFrameChanged: ✅
+Map.pinchUpdated: 🧩
+Map.tapCount: 🧩
+Map.tapped: 🧩
 MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
-MotionLayout.layoutFrameChanged: ✅
-MotionLayout.tapped: ✓ pressDown on MotionLayout: the relay's report of the press handed to the host, no pointer sent
-MotionLayout.transition: ✅
-Path.dismissed: ✓ pressDown on Path: the relay's report of the press handed to the host, no pointer sent
-Path.horizontalAlignment: ✅
-Path.layoutFrameChanged: ✅
-Path.verticalAlignment: ✅
-Picker.dragEnded: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
-Picker.dragStarting: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
-Picker.dragText: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
-Picker.isDraggable: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
-Picker.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
-Polygon.gridColumn: ✅
-Polygon.gridRow: ✅
-Polygon.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
-Polygon.layoutFrameChanged: ✅
-Polygon.transition: ✅
-Polyline.droppedFileTypes: ✓ dropFiles on Polyline: the relay's drop report told the driver's files, no drag WinUI began
-Polyline.filesDropped: ✓ dropFiles on Polyline: the relay's drop report told the driver's files, no drag WinUI began
+MotionLayout.layoutBody: ✅
+MotionLayout.presentationFrameChanged: ✅
+Path.pinchUpdated: ✓ pinch on Path: the relay's report of the manipulation handed to the host, no touch sent
+Path.tapCount: ✓ tap on Path: the relay's report of the tap handed to the host, no pointer sent
+Path.tapped: ✓ tap on Path: the relay's report of the tap handed to the host, no pointer sent
+Picker.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+Picker.layoutBody: ✅
+Picker.presentationFrameChanged: ✅
+Polygon.pinchUpdated: ✓ pinch on Polygon: the relay's report of the manipulation handed to the host, no touch sent
+Polygon.tapCount: ✓ tap on Polygon: the relay's report of the tap handed to the host, no pointer sent
+Polygon.tapped: ✓ tap on Polygon: the relay's report of the tap handed to the host, no pointer sent
 Polyline.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+Polyline.layoutBody: ✅
+Polyline.presentationFrameChanged: ✅
 ProgressBar.pinchUpdated: ✓ pinch on ProgressBar: the relay's report of the manipulation handed to the host, no touch sent
 ProgressBar.tapCount: ✓ tap on ProgressBar: the relay's report of the tap handed to the host, no pointer sent
 ProgressBar.tapped: ✓ tap on ProgressBar: the relay's report of the tap handed to the host, no pointer sent
 Rectangle.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+Rectangle.layoutBody: ✅
 Rectangle.presentationFrameChanged: ✅
-Rectangle.transition: ✅
-ScrollView.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
-ScrollView.pointerMoved: ✓ hover on ScrollView: the relay's report of the pointer handed to the host, no pointer sent
-ScrollView.pointerPressed: ✓ hover on ScrollView: the relay's report of the pointer handed to the host, no pointer sent
-ScrollView.pointerReleased: ✓ hover on ScrollView: the relay's report of the pointer handed to the host, no pointer sent
-SearchField.area: ✅
-SearchField.layoutFrameChanged: ✅
-SearchField.tapped: ✓ pressDown on SearchField: the relay's report of the press handed to the host, no pointer sent
-SearchField.transition: ✅
-Separator.rotationUpdated: ✓ rotate on Separator: the relay's report of the manipulation handed to the host, no touch sent
-Separator.tapped: ✓ pressDown on Separator: the relay's report of the press handed to the host, no pointer sent
-Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Slider.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Slider.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Slider.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Slider.panTouchCount: ✓ pan on Slider: the relay's report of the press dragged handed to the host, no pointer sent
-Slider.panUpdated: ✓ pan on Slider: the relay's report of the press dragged handed to the host, no pointer sent
-Space.gridColumnSpan: ✅
-Space.gridRowSpan: ✅
-Space.layoutFrameChanged: ✅
-Space.swipeDirections: ✓ pan on Space: the relay's report of the press dragged handed to the host, no pointer sent
-Space.swipeThreshold: ✓ pan on Space: the relay's report of the press dragged handed to the host, no pointer sent
-Space.swiped: ✓ pan on Space: the relay's report of the press dragged handed to the host, no pointer sent
+ScrollView.pinchUpdated: ✓ pinch on ScrollView: the relay's report of the manipulation handed to the host, no touch sent
+ScrollView.tapCount: ✓ tap on ScrollView: the relay's report of the tap handed to the host, no pointer sent
+ScrollView.tapped: ✓ tap on ScrollView: the relay's report of the tap handed to the host, no pointer sent
+SearchField.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+SearchField.layoutBody: ✅
+SearchField.presentationFrameChanged: ✅
+Separator.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+Separator.layoutBody: ✅
+Separator.presentationFrameChanged: ✅
+Slider.pinchUpdated: ✓ pinch on Slider: the relay's report of the manipulation handed to the host, no touch sent
+Slider.tapCount: ✓ tap on Slider: the relay's report of the tap handed to the host, no pointer sent
+Slider.tapped: ✓ tap on Slider: the relay's report of the tap handed to the host, no pointer sent
+Space.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+Space.layoutBody: ✅
+Space.presentationFrameChanged: ✅
 Spinner.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+Spinner.layoutBody: ✅
 Spinner.presentationFrameChanged: ✅
-Spinner.transition: ✅
-Stepper.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
-Stepper.layoutBody: ✅
-Stepper.layoutFrameChanged: ✅
-Stepper.margin: ✅
-Switch.rotationUpdated: ✓ rotate on Switch: the relay's report of the manipulation handed to the host, no touch sent
-Switch.tapped: ✓ pressDown on Switch: the relay's report of the press handed to the host, no pointer sent
-Text.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
-Text.pointerMoved: ✓ hover on Text: the relay's report of the pointer handed to the host, no pointer sent
-Text.pointerPressed: ✓ hover on Text: the relay's report of the pointer handed to the host, no pointer sent
-Text.pointerReleased: ✓ hover on Text: the relay's report of the pointer handed to the host, no pointer sent
-TextEditor.dismissed: ✓ pressDown on TextEditor: the relay's report of the press handed to the host, no pointer sent
-TextEditor.horizontalAlignment: ✅
-TextEditor.layoutFrameChanged: ✅
-TextEditor.verticalAlignment: ✅
-TextField.dragEnded: ✓ dragAndDrop on TextField: the relay's drag reports told by the driver, no drag WinUI began
-TextField.dragStarting: ✓ dragAndDrop on TextField: the relay's drag reports told by the driver, no drag WinUI began
-TextField.dragText: ✓ dragAndDrop on TextField: the relay's drag reports told by the driver, no drag WinUI began
-TextField.isDraggable: ✓ dragAndDrop on TextField: the relay's drag reports told by the driver, no drag WinUI began
-TextField.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
-TimePicker.gridColumn: ✅
-TimePicker.gridRow: ✅
-TimePicker.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
-TimePicker.layoutFrameChanged: ✅
-TimePicker.transition: ✅
-VStack.droppedFileTypes: ✓ dropFiles on VStack: the relay's drop report told the driver's files, no drag WinUI began
-VStack.filesDropped: ✓ dropFiles on VStack: the relay's drop report told the driver's files, no drag WinUI began
+Stepper.pinchUpdated: ✓ pinch on Stepper: the relay's report of the manipulation handed to the host, no touch sent
+Stepper.tapCount: ✓ tap on Stepper: the relay's report of the tap handed to the host, no pointer sent
+Stepper.tapped: ✓ tap on Stepper: the relay's report of the tap handed to the host, no pointer sent
+Switch.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+Switch.layoutBody: ✅
+Switch.presentationFrameChanged: ✅
+Text.pinchUpdated: ✓ pinch on Text: the relay's report of the manipulation handed to the host, no touch sent
+Text.tapCount: ✓ tap on Text: the relay's report of the tap handed to the host, no pointer sent
+Text.tapped: ✓ tap on Text: the relay's report of the tap handed to the host, no pointer sent
+TextEditor.pinchUpdated: ✓ pinch on TextEditor: the relay's report of the manipulation handed to the host, no touch sent
+TextEditor.tapCount: ✓ tap on TextEditor: the relay's report of the tap handed to the host, no pointer sent
+TextEditor.tapped: ✓ tap on TextEditor: the relay's report of the tap handed to the host, no pointer sent
+TextField.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+TextField.layoutBody: ✅
+TextField.presentationFrameChanged: ✅
+TimePicker.pinchUpdated: ✓ pinch on TimePicker: the relay's report of the manipulation handed to the host, no touch sent
+TimePicker.tapCount: ✓ tap on TimePicker: the relay's report of the tap handed to the host, no pointer sent
+TimePicker.tapped: ✓ tap on TimePicker: the relay's report of the tap handed to the host, no pointer sent
 VStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+VStack.layoutBody: ✅
+VStack.presentationFrameChanged: ✅
 WebView.pinchUpdated: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.tapCount: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.tapped: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 ZStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+ZStack.layoutBody: ✅
 ZStack.presentationFrameChanged: ✅
-ZStack.transition: ✅

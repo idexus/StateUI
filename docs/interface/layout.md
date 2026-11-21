@@ -517,6 +517,40 @@ The presentation's rectangle is the view's own: a transform on a layout
 above it is not in it, nor a tilt (`.rotationX`, `.rotationY`). Reading a
 frame, at either stage, changes nothing about how anything moves.
 
+A view can also be asked once, through its aim, how it stands now:
+
+```swift
+struct Card: View {
+    @Aim(Rectangle.self) private var card
+    @State private var lifted = false
+    @State private var said = ""
+
+    var body: some View {
+        VStack {
+            Rectangle()
+                .width(120)
+                .height(80)
+                .scale(lifted ? 1.2 : 1)
+                .aim(card)
+            Button("Lift").onClicked { lifted.toggle() }
+            Button("Where is it?").onClicked(policy: .ignoreWhileRunning) {
+                let sample = try await card.presentationSample()
+                said = "drawn \(Int(sample.frame.width)) wide, at \(sample.scaleX) times its size"
+            }
+            Text(said)
+        }
+    }
+}
+```
+
+`presentationSample()` answers a `PresentationSample`: `layoutFrame` and
+`frame`, the two rectangles above in what holds the view, and
+`translation`, `scaleX`, `scaleY`, `rotation` and `opacity` as the view is
+drawn at that moment - pressed while the card grows, it says the size the
+movement has reached. It is one reading: what must follow a view as it
+moves reads its frame or the state that moves it. A view not yet laid out,
+or no longer shown, throws as any aim on a view not shown does.
+
 The frame feed is useful when an engine or authored layout needs the native
 rectangle without making a body read it:
 

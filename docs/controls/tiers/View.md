@@ -53,6 +53,7 @@ How each of them realizes these members is on its own page.
 | `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |
 | `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |
 | `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |
+| `presentationSample` | act | `() -> PresentationSample` | stateUI |
 | `onRotationUpdated` (`rotationUpdated`) | event | `(GesturePhase, Double, Double)` | native |
 | `swipeDirections` | property | `SwipeDirections` | structure |
 | `swipeThreshold` | property | `Double` | structure |

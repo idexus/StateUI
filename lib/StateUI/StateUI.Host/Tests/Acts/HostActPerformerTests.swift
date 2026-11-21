@@ -367,6 +367,35 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertNotNil(answers.failures[4])
     }
 
+    /// Where a view stands is answered as it is drawn: the rectangle its layout gives it, the one around what is
+    /// drawn of it under its own move and scale, and its numbers; a view that stands nowhere yet, and one that
+    /// left, fail.
+    func testWhereAViewStandsIsAnsweredAsItIsDrawn() throws {
+        let runtime = HostRuntime.still()
+        var root = HostPatch(id: .manual("root"), type: .vStack)
+        var panel = HostPatch(id: .manual("panel"), type: .rectangle)
+        panel.properties = [.translationX: .number(10), .scale: .number(2), .opacity: .number(0.5)]
+        root.children = .arranged([panel, HostPatch(id: .manual("unplaced"), type: .text)])
+        runtime.tree.apply(root, complete: true)
+        let placed = runtime.tree.root!.children[0]
+        (placed.native as? NoView)?.frame = [20, 30, 100, 40, 20, 30, 20, 30]
+        let (toolkit, answers) = (Toolkit(), Answers())
+        let acts = performer(toolkit, answers, tree: runtime.tree)
+
+        acts.perform(HostActCall(act: .presentationSample, arguments: [.string("panel")], completion: 1))
+        acts.perform(HostActCall(act: .presentationSample, arguments: [.string("unplaced")], completion: 2))
+
+        let sample = try XCTUnwrap(answers.replies[1]?.first.flatMap(PresentationSample.init(propValue:)))
+        XCTAssertEqual(sample.layoutFrame, Rect(x: 20, y: 30, width: 100, height: 40), "where its layout puts it")
+        XCTAssertEqual(sample.frame, Rect(x: -20, y: 10, width: 200, height: 80), "twice as large about its middle, ten across")
+        XCTAssertEqual(sample.translation, Point(x: 10, y: 0))
+        XCTAssertEqual([sample.scaleX, sample.scaleY, sample.rotation, sample.opacity], [2, 2, 0, 0.5])
+        XCTAssertEqual(answers.failures[2], "manual(\"unplaced\") stands nowhere on a page yet")
+
+        placed.deactivate()
+        XCTAssertNil(placed.presentationSample, "a view that left is asked nothing")
+    }
+
     /// A value is kept where the toolkit keeps it; a control's own act and the application's are theirs; an act
     /// nobody performs fails by name and the host's.
     func testWhatNoToolkitPerformsFailsByName() {

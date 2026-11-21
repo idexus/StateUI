@@ -80,6 +80,11 @@
     /// Design: docs/design/host/tree.md#leaving
     func deactivate()
 
+    /// Where the view stands now, as a frame report says it - its place in what holds it, its corner in its window
+    /// and from the window's content; nil in no window, or before a layout placed it.
+    /// Design: docs/design/host/runtime.md#where-a-view-stands
+    func frameNumbers() -> [Double]?
+
     /// Whether the element's view keeps a child that left - drawn where it stood, out of its layout - until that
     /// child's presentation is released.
     /// Design: docs/design/host/tree.md#a-view-kept-as-it-leaves
@@ -104,6 +109,9 @@
 
     /// A view keeps no child that left: what it drops is gone at once.
     public var keepsExits: Bool { false }
+
+    /// A native half with no view on a page stands nowhere.
+    public func frameNumbers() -> [Double]? { nil }
 }
 
 /// The runtime's mounted tree: its root, its elements' numbers, and the animations its patches start.

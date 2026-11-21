@@ -3963,6 +3963,11 @@ enum Listings {
         @State private var larger = false
         @State private var far = false
 
+        // THE SAME VIEW, ASKED ONCE through its aim: both rectangles, and how
+        // it is drawn at that moment.
+        @Aim(Rectangle.self) private var card
+        @State private var asked = "asked · -"
+
         var body: some View {
             VStack {
                 VStack {
@@ -3978,6 +3983,7 @@ enum Listings {
                         // puts it, and the rectangle around what is drawn of it.
                         .frame(into: $placed)
                         .frame(into: $drawn, stage: .presentation)
+                        .aim(card)
                 }
                 // Slow enough to read the numbers on the way.
                 .motion(.eased(.milliseconds(1200)))
@@ -3988,6 +3994,15 @@ enum Listings {
                 Text("layout · \(Self.words(placed))")
 
                 Text("drawn · \(Self.words(drawn))")
+
+                // ONE READING, where the two above follow: pressed while the
+                // card moves, it says where the movement has got it to.
+                Button("Ask once").onClicked(policy: .ignoreWhileRunning) {
+                    let sample = try await card.presentationSample()
+                    asked = "asked · \(Self.words(sample.frame)) at \(Int((sample.scaleX * 100).rounded()))%"
+                }
+
+                Text(asked)
             }
         }
 

@@ -89,6 +89,10 @@ public enum ViewContract: Tier {
     /// child (`LayoutContract.layoutBodies`).
     public static let layoutBody = ElementProperty<Self, LayoutBody>("layoutBody", layer: .stateUI, travels: false)
 
+    /// How the view stands on the page now: its layout's rectangle, the drawn one, and how it is drawn.
+    public static let presentationSample = ElementAct<Self, Void, PresentationSample>(
+        "presentationSample", layer: .stateUI)
+
     /// How the view comes and goes as the tree gains and drops it: the effect its entry comes from and the one
     /// its exit goes to.
     public static let transition = ElementProperty<Self, Transition>("transition", layer: .stateUI, travels: false)
@@ -150,5 +154,5 @@ public enum ViewContract: Tier {
         "verticalAlignment", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [allowsDrop, area, dragEntered, dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, dismissed, filesDropped, layoutFrameChanged, presentationFrameChanged, gridColumn, gridColumnSpan, gridRow, gridRowSpan, longPressed, longPressDuration, horizontalAlignment, interaction, isDraggable, margin, panTouchCount, panUpdated, layoutBody, pinchUpdated, pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirections, swipeThreshold, swiped, tapCount, tapped, transition, verticalAlignment]
+    public static let members: [any ContractMember] = [allowsDrop, area, dragEntered, dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, dismissed, filesDropped, layoutFrameChanged, presentationFrameChanged, gridColumn, gridColumnSpan, gridRow, gridRowSpan, longPressed, longPressDuration, horizontalAlignment, interaction, isDraggable, margin, panTouchCount, panUpdated, layoutBody, pinchUpdated, pointerMoved, pointerPressed, pointerReleased, presentationSample, rotationUpdated, swipeDirections, swipeThreshold, swiped, tapCount, tapped, transition, verticalAlignment]
 }

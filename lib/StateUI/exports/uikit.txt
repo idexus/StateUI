@@ -475,6 +475,7 @@ ZStack
   openFiles()
   persistSceneValue()
   persistValue()
+  presentationSample()
   prompt()
   readClipboard()
   readFile()

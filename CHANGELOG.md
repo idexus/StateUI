@@ -219,6 +219,13 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 
 ### New
 
+- **A view's aim says how it stands now.** `Aim.presentationSample()`, on the aim of any view, answers a
+  `PresentationSample`: `layoutFrame`, where its layout puts it; `frame`, the rectangle around what is drawn of
+  it; and `translation`, `scaleX`, `scaleY`, `rotation` and `opacity` as it is drawn at that moment -
+  mid-movement, where the movement has got it to. One reading, following nothing; a view not yet laid out or no
+  longer shown throws. For a host: `NativeElement.frameNumbers()` hands the numbers a frame report says, on
+  demand, and the host layer answers the act (`ViewContract.presentationSample`).
+
 - **A view says how it comes and goes.** `.transition(_:)`, on any view, names the effect the view comes from as
   the tree gains it and the one it goes to as the tree drops it: a `TransitionEffect` - `.opacity`,
   `.translation(x:y:)`, `.scale(_:)`, `.outside(_:)` out of its room, combined in the order written - in a

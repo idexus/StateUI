@@ -220,6 +220,9 @@ final class ContractTests: XCTestCase {
             SelectionMode.multiple, ScrollAnchor.center, ScrollEdge.hard, ToolbarEdge.bottom,
             LayoutBody.followsLayout(response: .milliseconds(420), damping: 0.6),
             Transition(enter: .opacity.combined(with: .translation(y: 12)), exit: .scale(0.8)).initialAppearance(true),
+            PresentationSample(
+                layoutFrame: Rect(x: 80, y: 40, width: 120, height: 40), frame: Rect(x: 60, y: 30, width: 180, height: 60),
+                translation: Point(x: 10, y: 0), scaleX: 1.5, scaleY: 1.5, rotation: 0, opacity: 0.5),
             ItemsEntries(header: "h", sections: [ItemsEntries.Section("0", footer: "f", items: ["1", "2"])]),
             [0, 7, 255] as [UInt8], FileType("Page", extensions: ["html", "htm"]),
             [FileType("Text", extensions: ["txt"]), FileType("Page", extensions: ["html"])] as [FileType],

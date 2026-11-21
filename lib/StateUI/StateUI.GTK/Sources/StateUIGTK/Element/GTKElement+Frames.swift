@@ -12,10 +12,15 @@ extension GTKElement: FrameReporter {
         view != nil && element.readsOwnFrame
     }
 
+    /// Where the view stands now, as a frame report says it; nil while it stands nowhere yet.
+    func frameNumbers() -> [Double]? {
+        view?.frameReport(corner: windowCorner)
+    }
+
     /// Says where the element stands, where that changed (`MountedElement.reportFrame`); nothing while it stands
     /// nowhere yet - a split view, where its sidebar stands too.
     func reportFrame() {
-        guard let host, let numbers = view?.frameReport(corner: windowCorner) else { return }
+        guard let host, let numbers = frameNumbers() else { return }
         element.reportFrame(numbers, in: host.runtime)
         if let split = view as? GTKSplitView { element.reportSidebarOverlays(split.isCollapsed, in: host.runtime) }
     }

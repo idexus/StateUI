@@ -32,13 +32,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (89)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>47 ✅ · 3 ☑️ · 36 ✓ · 3 –</td><td><code>NSSwitch</code> beside an <code>NSTextField</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>43 ✅ · 3 ☑️ · 38 ✓ · 5 –</td><td><code>UISwitch</code> beside a <code>UILabel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>65 ✅ · 6 ☑️ · 12 ✓ · 4 –</td><td><code>Switch</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>53 ✅ · 3 ☑️ · 27 ✓ · 6 –</td><td><code>ToggleSwitch</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 3 ☑️ · 25 ✓ · 8 –</td><td><code>GtkSwitch</code> beside a <code>GtkLabel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>62 ✅ · 3 ☑️ · 21 ✓ · 3 –</td><td>checkbox <code>&lt;input&gt;</code> with <code>role=switch</code> in a <code>&lt;label&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (90)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>48 ✅ · 3 ☑️ · 36 ✓ · 3 –</td><td><code>NSSwitch</code> beside an <code>NSTextField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>44 ✅ · 3 ☑️ · 38 ✓ · 5 –</td><td><code>UISwitch</code> beside a <code>UILabel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>66 ✅ · 6 ☑️ · 12 ✓ · 4 –</td><td><code>Switch</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>54 ✅ · 3 ☑️ · 27 ✓ · 6 –</td><td><code>ToggleSwitch</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>54 ✅ · 3 ☑️ · 25 ✓ · 8 –</td><td><code>GtkSwitch</code> beside a <code>GtkLabel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>63 ✅ · 3 ☑️ · 21 ✓ · 3 –</td><td>checkbox <code>&lt;input&gt;</code> with <code>role=switch</code> in a <code>&lt;label&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/SwitchContract.swift`.
@@ -173,6 +173,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: hover on Switch: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Switch: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: hover on Switch: the relay's report of the pointer handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPointerReleased</code> (<code>pointerReleased</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: hover on Switch: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Switch: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: hover on Switch: the relay's report of the pointer handed to the host, no pointer sent</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>presentationSample</code></td><td>act</td><td><code>() -&gt; PresentationSample</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onRotationUpdated</code> (<code>rotationUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: rotate on Switch: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: rotate on Switch: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: rotate on Switch: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: rotate on Switch: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeDirections</code></td><td>property</td><td><code>SwipeDirections</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>

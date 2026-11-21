@@ -142,6 +142,23 @@ extension MountedElement {
         return (frame, true)
     }
 
+    /// How the element stands now, for whoever asks: where its layout puts it, the rectangle around what is drawn
+    /// of it and how it is drawn, a motion's sample where one runs; nil while it is the application's no more, its
+    /// view stands in no window, or no layout placed it yet.
+    /// Design: docs/design/core/acts.md#where-a-view-stands-asked
+    public var presentationSample: PresentationSample? {
+        guard lifecycle == .active, let numbers = native.frameNumbers(), numbers.count >= 8 else { return nil }
+
+        let placed = layoutFrame(from: numbers).frame
+        let drawn = presentationFrame(from: numbers)
+        let transform = drawingTransform
+        return PresentationSample(
+            layoutFrame: Rect(x: placed[0], y: placed[1], width: placed[2], height: placed[3]),
+            frame: Rect(x: drawn[0], y: drawn[1], width: drawn[2], height: drawn[3]),
+            translation: Point(x: transform.translationX, y: transform.translationY), scaleX: transform.scaleX,
+            scaleY: transform.scaleY, rotation: transform.rotation, opacity: number(.opacity) ?? 1)
+    }
+
     /// The presentation stage's report from the host's: the rectangle around the element as it is drawn where it
     /// stands now, under its own transform - its move, its turn and its scales about its pivot.
     func presentationFrame(from numbers: [Double]) -> [Double] {

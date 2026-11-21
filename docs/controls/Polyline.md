@@ -31,13 +31,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (90)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>50 ✅ · 3 ☑️ · 36 ✓ · 1 –</td><td>custom <code>NSView</code> drawing <code>NSBezierPath</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>49 ✅ · 4 ☑️ · 36 ✓ · 1 –</td><td>custom <code>UIView</code> masked by a <code>CAShapeLayer</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>71 ✅ · 6 ☑️ · 10 ✓ · 2 –</td><td>custom <code>View</code> drawing <code>Path</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>51 ✅ · 3 ☑️ · 29 ✓ · 7 –</td><td><code>Shapes.Path</code> in a custom <code>Grid</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>56 ✅ · 5 ☑️ · 22 ✓ · 7 –</td><td><code>GskPath</code> in a snapshot</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>62 ✅ · 4 ☑️ · 21 ✓ · 3 –</td><td>inline SVG <code>&lt;path&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (91)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>51 ✅ · 3 ☑️ · 36 ✓ · 1 –</td><td>custom <code>NSView</code> drawing <code>NSBezierPath</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>50 ✅ · 4 ☑️ · 36 ✓ · 1 –</td><td>custom <code>UIView</code> masked by a <code>CAShapeLayer</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>72 ✅ · 6 ☑️ · 10 ✓ · 2 –</td><td>custom <code>View</code> drawing <code>Path</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>52 ✅ · 3 ☑️ · 29 ✓ · 7 –</td><td><code>Shapes.Path</code> in a custom <code>Grid</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>57 ✅ · 5 ☑️ · 22 ✓ · 7 –</td><td><code>GskPath</code> in a snapshot</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>63 ✅ · 4 ☑️ · 21 ✓ · 3 –</td><td>inline SVG <code>&lt;path&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Shapes/PolylineContract.swift`.
@@ -173,6 +173,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Polyline: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: hover on Polyline: the relay's report of the pointer handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPointerReleased</code> (<code>pointerReleased</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Polyline: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: hover on Polyline: the relay's report of the pointer handed to the host, no pointer sent</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>presentationSample</code></td><td>act</td><td><code>() -&gt; PresentationSample</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onRotationUpdated</code> (<code>rotationUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: rotate on Polyline: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: rotate on Polyline: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: rotate on Polyline: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: rotate on Polyline: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeDirections</code></td><td>property</td><td><code>SwipeDirections</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>

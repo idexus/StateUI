@@ -21,15 +21,20 @@ extension WebElement: FrameReporter {
     /// Says nothing while the browser lays the view out nowhere - on a covered page, a tab not chosen - so the frame
     /// it said last stands; a split view says where its sidebar stands too.
     func reportFrame() {
-        guard let view, let host, WebRelay.isLaidOut(view.node) else { return }
+        guard let view, let host, let numbers = frameNumbers() else { return }
+        element.reportFrame(numbers, in: host.runtime)
+        if let split = view as? WebSplitView { element.reportSidebarOverlays(split.overlays, in: host.runtime) }
+    }
+
+    /// Where the view stands now, as a frame report says it; nil while the browser lays it out nowhere.
+    func frameNumbers() -> [Double]? {
+        guard let view, let host, WebRelay.isLaidOut(view.node) else { return nil }
         let laid = WebRelay.box(of: view.node)
         let box = view.frame(laidOut: laid) ?? laid
         let content = host.contentBox
-        let numbers = MountedElement.frameNumbers(
+        return MountedElement.frameNumbers(
             place: placeStanding ?? placeAsDrawn(box), corner: windowCorner ?? Point(x: box.x, y: box.y),
             content: Point(x: content.x, y: content.y))
-        element.reportFrame(numbers, in: host.runtime)
-        if let split = view as? WebSplitView { element.reportSidebarOverlays(split.overlays, in: host.runtime) }
     }
 
     /// Where the top left corner of the view's laid-out rectangle stands on the page, no transform in it.

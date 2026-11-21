@@ -33,13 +33,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (96)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>54 ✅ · 4 ☑️ · 36 ✓ · 1 –</td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>56 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>77 ✅ · 6 ☑️ · 10 ✓ · 1 –</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>59 ✅ · 3 ☑️ · 28 ✓ · 6 –</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>62 ✅ · 5 ☑️ · 23 ✓ · 6 –</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>69 ✅ · 3 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;span&gt;</code>; <code>&lt;span&gt;</code> runs</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (97)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>55 ✅ · 4 ☑️ · 36 ✓ · 1 –</td><td><code>NSTextField</code> label; <code>NSAttributedString</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>57 ✅ · 2 ☑️ · 36 ✓ · 1 –</td><td><code>UILabel</code>; <code>NSAttributedString</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>78 ✅ · 6 ☑️ · 10 ✓ · 1 –</td><td><code>TextView</code>; <code>SpannableStringBuilder</code> spans</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>60 ✅ · 3 ☑️ · 28 ✓ · 6 –</td><td><code>TextBlock</code>; <code>Run</code> inlines</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>63 ✅ · 5 ☑️ · 23 ✓ · 6 –</td><td><code>GtkLabel</code>; <code>PangoAttrList</code> runs</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>70 ✅ · 3 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;span&gt;</code>; <code>&lt;span&gt;</code> runs</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextContract.swift`.
@@ -180,6 +180,7 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">AppKit: only through the host's own: hover on Text: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Text: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: hover on Text: the relay's report of the pointer handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onPointerReleased</code> (<code>pointerReleased</code>)</td><td>event</td><td><code>Point?</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: hover on Text: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: hover on Text: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: hover on Text: the relay's report of the pointer handed to the host, no pointer sent</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>presentationSample</code></td><td>act</td><td><code>() -&gt; PresentationSample</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onRotationUpdated</code> (<code>rotationUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: rotate on Text: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: rotate on Text: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: rotate on Text: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: rotate on Text: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeDirections</code></td><td>property</td><td><code>SwipeDirections</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
