@@ -455,6 +455,50 @@ final class AppKitLayoutMotionTests: XCTestCase {
         }
     }
 
+    /// A view leaving out of its room, in a stack narrower than the scroller showing it, goes wholly past the
+    /// scroller's edge - the stack draws beyond its own room - as AppKit lays both out.
+    @MainActor
+    func testAViewLeavingOutOfItsRoomGoesPastTheScrollerShowingIt() throws {
+        let renderer = testRenderer(
+            resourceDirectory: nil, presentsWindows: false, clock: { 0 }, reducesMotion: { false })
+        defer { renderer.finish() }
+        let law = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
+        func scroller(_ notes: [String]) -> HostPatch {
+            var stack = HostPatch(id: .manual("stack"), type: .vStack)
+            stack.properties[VisualElementContract.width.token] = .number(200)
+            stack.motion = law
+            stack.children = .arranged(notes.map { name in
+                var note = HostPatch(id: .manual(name), type: .rectangle)
+                note.properties[VisualElementContract.width.token] = .number(100)
+                note.properties[VisualElementContract.height.token] = .number(40)
+                note.properties[.transition] = Transition(enter: .identity, exit: .outside(.right)).propValue
+                note.motion = law
+                return note
+            })
+            var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
+            scroll.children = .arranged([stack])
+            return scroll
+        }
+
+        renderer.applyForTesting(scroller(["note"]))
+        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("scroll")))
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 300, height: 200), styleMask: .borderless, backing: .buffered,
+            defer: false)
+        window.contentView?.addSubview(native)
+        native.frame = NSRect(x: 0, y: 0, width: 300, height: 200)
+        native.layoutSubtreeIfNeeded()
+        let view = try XCTUnwrap(renderer.viewForTesting(id: .manual("note")))
+        let across = view.convert(view.bounds, to: native).minX
+        let stack = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")))
+        XCTAssertLessThan(stack.frame.width, 300, "the stack is narrower than its scroller")
+        let note = try XCTUnwrap(renderer.runtime.tree.root?.first(id: .manual("note")))
+
+        renderer.applyForTesting(scroller([]))
+        XCTAssertEqual(note.lifecycle, .exiting)
+        XCTAssertEqual(note.exitEnds[.translationX] ?? .nan, 300 - across, accuracy: 0.5, "past the scroller's edge")
+    }
+
     /// Where the user asks for less movement, every child arrives and none
     /// fades in.
     @MainActor

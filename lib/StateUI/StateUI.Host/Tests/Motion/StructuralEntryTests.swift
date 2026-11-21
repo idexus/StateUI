@@ -209,6 +209,22 @@ final class StructuralEntryTests: XCTestCase {
         let clipped = try scrolled(.symmetric(.outside(.right)), clips: true)
         clipped.label.enter(Joining(), as: .joining(under: .none))
         XCTAssertEqual(shown(.translationX, of: clipped.label, in: clipped.runtime), 280, "past its stack's: 300 - 20")
+
+        func reads(_ bench: (runtime: HostRuntime, label: MountedElement, stack: MountedElement, tree: HostPatch)) -> [Int?] {
+            [(bench.stack.native as? NoView)?.frameReads, (bench.runtime.tree.root?.native as? NoView)?.frameReads]
+        }
+        let faded = try scrolled(.symmetric(.opacity), clips: false)
+        faded.label.enter(Joining(), as: .joining(under: .none))
+        XCTAssertEqual(reads(faded), [0, 0], "entering with no way out: no frame is read")
+
+        var leaving = try scrolled(.symmetric(.opacity), clips: false)
+        (leaving.stack.native as? NoView)?.keepsExits = true
+        var emptied = HostPatch(id: .manual("stack"), type: .vStack)
+        emptied.children = .arranged([])
+        leaving.tree.children = .arranged([emptied])
+        leaving.runtime.tree.apply(leaving.tree, complete: false)
+        XCTAssertEqual(leaving.label.lifecycle, .exiting)
+        XCTAssertEqual(reads(leaving), [0, 0], "leaving with no way out: none")
     }
 
     /// AN EXIT OUT OF ITS ROOM GOES WHOLLY OUT OF SIGHT, by the same rule: the stack draws beyond its room, so the
