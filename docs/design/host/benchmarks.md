@@ -88,9 +88,13 @@ what stood on the group's page before the visit:
 ```text
   elements   the core's rendered elements alive     HostTally.alive
   runs       runs under way or waiting               HostTally.runs
+  movements  movements awaited                       MotionRun.open
   halves     native halves made and not let go       the walk's
-  channels   the host layer's state channels         StateChannels
+  held       what the runtime holds                  HostRuntime.holdings
 ```
+
+The group's page is read at rest, its frame clock free, so a sample that
+leaves the clock held fails the walk as one that leaves an element does.
 
 Its presenter shows the windows by the host layer's own presentation, so a
 page hears its phases as on a host, and answers every act as a host answers
@@ -98,3 +102,34 @@ what it cannot perform - with a failure - since a run awaiting an act no one
 answers stays under way. A tap that opened no page fails the walk too, so a
 count cannot match by visiting nothing. A host's own suite proves its toolkit
 lets go of every view; the walk proves the gallery's pages, states and runs.
+
+## What a runtime holds
+
+A runtime answers for everything it keeps for what it shows and moves
+(`HostRuntime.holdings`), a count an owner:
+
+```text
+  tree        elements mounted, the tree's indexes     MountedTree
+  leaving     views kept as they leave                 KeptExits
+  animations  animations under way                     Animator
+  motions     described properties moving,             DescribedMotion,
+              places a layout's motion seats           LayoutMotion
+  channels    state channels, what stands beside them  StateChannels
+  changes     presentation changes open or waiting,    PresentationChanges,
+              views a shared transition noted          SharedTransitions
+  hands       numbers a hand holds, wheels open,       InteractionSessions,
+              sidebars sliding                         HandPace, SidebarSlide
+  followers   scrollers and frame reporters served     FrameFollowers
+  clock       whether the frame clock is held          FrameClock
+```
+
+A view that came, moved and went leaves each count where it stood. The host
+layer's `RuntimeHoldingsTests` runs a thousand rounds of one board over the
+core and the host layer - a view leaving by its exit under a presentation
+change as a carried state sets out, written again half way, leaving again and
+landing, its window closed under it every fiftieth round - and after each
+compares the counts, the core's elements, runs and movements awaited, and the
+native halves alive with what stood after the first. Every change is
+answered, and a runtime let go keeps no half. A table an owner gains joins
+that owner's count, so the rounds and the leak walk name the owner the day it
+forgets to let go.

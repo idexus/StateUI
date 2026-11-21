@@ -105,6 +105,9 @@
     /// Whether any animation is under way.
     public var isMoving: Bool { !animations.isEmpty }
 
+    /// How many animations are under way.
+    var entries: Int { animations.count }
+
     /// The animation under way for `target`.
     public func animation(for target: AnimationTarget) -> Animation? { animations[target] }
 

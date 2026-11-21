@@ -38,6 +38,9 @@
     /// Shared transitions of a tree.
     public init() {}
 
+    /// How many views dropped and made the last patch's notes hold.
+    var entries: Int { sources.values.reduce(0) { $0 + $1.count } + made.values.reduce(0) { $0 + $1.count } }
+
     /// A patch is about to be applied: what it drops and makes is its own.
     func patchBegins() {
         patch += 1

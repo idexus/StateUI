@@ -53,6 +53,9 @@
     /// Whether any transition is under way.
     public var isActive: Bool { !transitions.isEmpty }
 
+    /// How many transitions are under way, and their values not yet taken.
+    var entries: Int { transitions.count + outputs.count }
+
     /// The value a transition under way draws for `key`.
     public func presentedValue(for key: DescribedKey) -> HostValue? {
         transitions[key]?.presented

@@ -14,9 +14,10 @@ import XCTest
 @MainActor
 final class LeakWalkTests: XCTestCase {
     /// EVERY SAMPLE, VISITED AND LEFT, LEAVES NOTHING ALIVE AND HANDS THE LIBRARY NOTHING IT CANNOT USE: the rendered
-    /// elements, the runs, the native halves and the state channels stand where they stood on the group's page before
-    /// the visit, and the library says nothing during it (`Complaints`) - a sample's code is what an application
-    /// writes. Each complaint is said once a process, so it is caught on the visit that first says it.
+    /// elements, the runs, the movements awaited, the native halves and everything the runtime holds stand where
+    /// they stood on the group's page before the visit, and the library says nothing during it (`Complaints`) - a
+    /// sample's code is what an application writes. Each complaint is said once a process, so it is caught on the
+    /// visit that first says it.
     func testEverySampleVisitedLeavesNothingAliveAndIsSaidNothingOf() async throws {
         let walk = Walk()
         var visited = 0
@@ -26,8 +27,13 @@ final class LeakWalkTests: XCTestCase {
 
         for group in Catalog(nav: Navigation(), style: SessionStyle(), bar: WindowBarState(), log: WindowLog()).groups {
             try walk.tap(handle("menu", group.title))
-            await walk.settle()
+            // The group's page at rest: what launched the gallery moves for longer than a second.
+            for _ in 0..<5 {
+                await walk.settle()
+                if !walk.alive.held.holdsClock { break }
+            }
             let base = walk.alive
+            XCTAssertFalse(base.held.holdsClock, "\(group.route) never came to rest")
 
             for sample in group.samples {
                 let said = Said.shared.everySaid.count
@@ -51,14 +57,18 @@ final class LeakWalkTests: XCTestCase {
     }
 }
 
-/// What stands alive: the core's rendered elements and runs, the native halves, the state channels.
+/// What stands alive: the core's rendered elements, runs and movements awaited, the native halves, and what the
+/// runtime holds.
 private struct Alive: Equatable, CustomStringConvertible {
     let elements: Int
     let runs: Int
+    let movements: Int
     let halves: Int
-    let channels: Int
+    let held: RuntimeHoldings
 
-    var description: String { "elements \(elements), runs \(runs), halves \(halves), channels \(channels)" }
+    var description: String {
+        "elements \(elements), runs \(runs), movements \(movements), halves \(halves), \(held)"
+    }
 }
 
 /// The gallery running over the core and the host layer on a clock wound by hand, its windows shown by the host
@@ -82,7 +92,9 @@ private final class Walk: HostPresenter {
 
     var alive: Alive {
         let tally = HostBoundary.tally
-        return Alive(elements: tally.alive, runs: tally.runs, halves: halves, channels: runtime.stateChannels.count)
+        return Alive(
+            elements: tally.alive, runs: tally.runs, movements: MotionRun.open, halves: halves,
+            held: runtime.holdings)
     }
 
     /// The user taps the view the gallery names `identifier`.

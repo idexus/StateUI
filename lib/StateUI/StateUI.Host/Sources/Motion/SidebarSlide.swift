@@ -19,6 +19,9 @@
     private var standing: [UInt64: Double] = [:]
     private var lastFrame: [UInt64: Double] = [:]
 
+    /// How many entries the slides' tables hold.
+    var entries: Int { followers.count + standing.count + lastFrame.count }
+
     /// Called when a slide starts, so the frame clock is held while it runs.
     public var onStart: () -> Void = {}
 

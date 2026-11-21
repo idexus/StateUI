@@ -78,6 +78,9 @@ extension PlacedView {
     private let reducesMotion: () -> Bool
     private var seats: [UInt64: Seat] = [:]
 
+    /// How many views have a seat.
+    var entries: Int { seats.count }
+
     /// The application's motion, which a layout that says nothing of its own animates under.
     public var applicationMotion: Motion = .none
 

@@ -28,6 +28,9 @@
     private var reporters: [UInt64: HeldReporter] = [:]
     private var moved = false
 
+    /// How many scrollers and reporters the frames serve.
+    var entries: Int { scrollers.count + reporters.count }
+
     private struct HeldScroller {
         weak var scroller: (any FramedScroller)?
     }

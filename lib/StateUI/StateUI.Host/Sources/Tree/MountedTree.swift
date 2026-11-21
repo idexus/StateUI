@@ -293,6 +293,12 @@
 
     /// The sheets the views declare, by mount: a window's presentation looks among them.
     private var sheets: [UInt64: Held] = [:]
+
+    /// How many entries the tree's own indexes hold.
+    var entries: Int {
+        byMount.count + presenters.values.reduce(0) { $0 + $1.count } + layouts.count + movingLayouts.count
+            + movedLocally.count + waitingPopovers.count + sheets.count
+    }
     private var patchTime: Double?
     private(set) var languageDirection: LayoutDirection?
     private var patchReducesMotion: Bool?

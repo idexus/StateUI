@@ -61,6 +61,9 @@
     /// How many states have a channel.
     public var count: Int { channels.count }
 
+    /// How many entries the channels' tables hold.
+    var entries: Int { channels.count + wearers.count + letGo.count + outputs.count + completions.count }
+
     /// Told a state's run as it is born - no outcome - and as it ends: what watches the movements a change started.
     var watching: ((Int32, Int, HostMotionOutcome?) -> Void)?
 

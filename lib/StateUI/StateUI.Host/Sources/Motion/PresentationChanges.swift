@@ -91,6 +91,9 @@
     /// How many changes wait for a movement to end, or for their layout window.
     public var waitingCount: Int { waiting.count }
 
+    /// How many entries the changes' tables hold.
+    var entries: Int { opened.count + waiting.count + arranged.count + exits.count + recent.count }
+
     /// Whether a change waits for a layout pass: the frames go on for it.
     public var wantsFrames: Bool { waiting.contains { $0.framesLeft > 0 } }
 

@@ -35,6 +35,9 @@ import StateUIFoundation
     private var held: [Lane: Hold] = [:]
     private var lost: [UInt64: Set<Stream>] = [:]
 
+    /// How many numbers a hand holds, and gestures that lost theirs.
+    var entries: Int { held.count + lost.count }
+
     /// Sessions writing `channels`, on the clock `now`.
     public init(channels: StateChannels, now: @escaping () -> Double, reducesMotion: @escaping () -> Bool) {
         self.channels = channels

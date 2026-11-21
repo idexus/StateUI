@@ -11,6 +11,9 @@
     /// The elements whose wheel is open or whose hand's reports wait, by their mount.
     private var open: [UInt64: WeakElement] = [:]
 
+    /// How many elements wait for a frame.
+    var entries: Int { open.count }
+
     /// What a wheel opening asks of the clock: frames, until it is let go.
     var onOpen: (() -> Void)?
 
