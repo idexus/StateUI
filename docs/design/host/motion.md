@@ -435,21 +435,20 @@ Where the made view stands is worked out from what the tree knows as its
 layout places it: the place its layout gave it, and each place a layout gave
 what holds it, up to its scope or to the first view no layout's motion
 placed, whose corner the toolkit says - and a view a layout program places
-is one: its toolkit first stands it across the layout's room, by the
-layout's motion, and the program moves it from there by itself. Where that is not known yet,
-nothing is guessed - and a view a layout program places, made with the
-patch - a motion layout's new item, in its holder - is not known yet.
+is one: its toolkit stands it where the program put it. Where that is not
+known yet, nothing is guessed.
 
 The trap is the first place of a view made with its motion layout. The
-toolkit lays the new layout out before its program is asked, in the
-display's next frame, and stands each holder across the whole room
-meanwhile: the view's first place - where its entry is decided - is that
-room, not the item's. Read from the toolkit, the view would set out toward
-the room and be drawn squashed into it until the program moved its holder.
-So it is no partner: it enters by its own transition, and a waiting change
-hears `.unsupported` - an item joining a layout that stands too. A view made
-inside an item that stands - a swap in the item - stands where its toolkit
-draws the item, and travels.
+toolkit lays the new layout out before the display's frame asks its
+program, and would stand each holder across the whole room: the view would
+set out toward that room and be drawn squashed into it until the program
+moved its holder. So the pass that lays the layout out asks its program
+first ([placed from the first pass](layout.md#placed-from-the-first-pass)),
+and the view's first place is the item's: the card coming back from its
+detail travels into the deck as the detail grew out of it. Only a program
+that shows no place - a room of nothing - leaves a view made with it
+unknown: it is no partner, enters by its own transition, and a waiting
+change hears `.unsupported`.
 
 The entry is the road every entry takes
 ([a view that enters](#a-view-that-enters)) - numbers set out from and
@@ -479,7 +478,10 @@ so the holder is decided first, by what is known before the view is placed
 - the one partner, drawn, in one window and page, no place unknown on the
 way to the scope - the same rule that view's own entry asks first
 (`partner(of:key:patch:)`). A view refused all the same - its place found
-empty - leaves its holder unfaded, never faded over a view setting out.
+empty - leaves its holder unfaded, never faded over a view setting out. A
+motion layout made with the view is placed before its own pass asks its
+program, so nothing in it is known to set out yet: it fades in as it joins,
+and the view kept for the partner draws the way over it meanwhile.
 
 ## A shared transition drawn by both
 

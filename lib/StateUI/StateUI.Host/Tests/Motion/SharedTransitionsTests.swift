@@ -81,6 +81,26 @@ private struct FadingDeckApplication: Application {
     var body: some Scene { WindowGroup { FadingDeck() } }
 }
 
+/// The cards of the deck below.
+@MainActor private let growingDeckCards = State(wrappedValue: [1])
+
+/// A deck a motion layout places a hundred points apart, as many cards as it is given.
+private struct GrowingDeck: View {
+    var body: some View {
+        VStack {
+            MotionLayout(growingDeckCards.wrappedValue, parameters: State(wrappedValue: 0.0).projectedValue) { card in
+                Text("card \(card)")
+            } placements: { context, _ in
+                (0..<growingDeckCards.wrappedValue.count).map { Placement(Rect(x: Double($0) * 100, y: 0, width: 80, height: 80)) }
+            }
+        }
+    }
+}
+
+private struct GrowingDeckApplication: Application {
+    var body: some Scene { WindowGroup { GrowingDeck() } }
+}
+
 /// A shared transition on the host's side: one view dropped and one made in a patch under one key of one scope are
 /// one - the made one enters from where the dropped one was drawn - and anything else is each view's own.
 /// Design: docs/design/host/motion.md#a-shared-transition
@@ -605,11 +625,14 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(cards.placement, stood, "its run stands")
     }
 
-    /// A VIEW MADE WITH A LAYOUT ITS PROGRAM PLACES SETS OUT TOWARD NO PLACE THE TREE DOES NOT KNOW: as the layout's
-    /// toolkit lays its views out before the program has shown any - the holder across the layout's room - the
-    /// card coming back from its detail draws no way, and a change waiting for it hears `.unsupported`. The layout,
-    /// holding no view that sets out, fades in as it joins.
-    func testAViewMadeWithALayoutItsProgramPlacesSetsOutTowardNoUnknownPlace() throws {
+    /// The board showing its detail at (30, 50) in the window, two hundred by a hundred, told to show its deck again:
+    /// the deck made, the toolkit's pass placing it at (10, 20), three hundred by `height`, before its program was
+    /// asked - it fades in, as nothing in it is known to set out yet - and laying it out, asking its program's
+    /// places in that room as every host does.
+    private func boardBack(height: Double) throws -> (
+        runtime: HostRuntime, change: PresentationChange, card: MountedElement, holder: MountedElement,
+        deck: MountedElement, run: HostPlacementRun?
+    ) {
         detailShown.wrappedValue = true
         CardBoardApplication.register()
         let (runtime, find) = try joint()
@@ -622,25 +645,82 @@ final class SharedTransitionsTests: XCTestCase {
         runtime.pump.turn()
         let card = try XCTUnwrap(find("card 5"))
         let holder = try XCTUnwrap(card.parent)
-        (holder.native as? NoView)?.frame = [0, 0, 300, 200, 10, 20, 10, 20]
         let deck = try XCTUnwrap(holder.parent)
+        (deck.native as? NoView)?.frame = [0, 0, 300, height, 10, 20, 10, 20]
         runtime.layoutMotion.place(
-            Placed(), mount: deck.mount, at: Rect(x: 0, y: 0, width: 300, height: 200), stated: [], words: .none,
-            natural: { LayoutSize(width: 300, height: 200) },
+            Placed(), mount: deck.mount, at: Rect(x: 0, y: 0, width: 300, height: height), stated: [], words: .none,
+            natural: { LayoutSize(width: 300, height: height) },
             enter: { entry in deck.enter(Shown(), as: entry) },
             in: Arrangement(law: .eased(.milliseconds(200), curve: .linear), lanes: .all, joins: true), room: nil)
         XCTAssertEqual(
             runtime.tree.presentedPropertyValue(mount: deck.mount, property: .opacity)?.number ?? .nan, 0, accuracy: 0.001,
-            "nothing in it sets out: it fades in")
+            "nothing in it known to set out before it is laid out: it fades in")
+        return (runtime, change, card, holder, deck, deck.placementInRoom(LayoutSize(width: 300, height: height)))
+    }
+
+    /// The card `card` given its first place in its holder, `size` large, as its holder's pass lays it out.
+    private func cardPlaced(_ card: MountedElement, size: LayoutSize, in runtime: HostRuntime) {
         runtime.layoutMotion.place(
-            Placed(), mount: card.mount, at: Rect(x: 0, y: 0, width: 300, height: 200), stated: [], words: .none,
-            natural: { LayoutSize(width: 300, height: 200) },
-            enter: { entry in card.enter(Shown(), as: entry) },
+            Placed(), mount: card.mount, at: Rect(x: 0, y: 0, width: size.width, height: size.height), stated: [],
+            words: .none, natural: { size }, enter: { entry in card.enter(Shown(), as: entry) },
             in: Arrangement(law: .eased(.milliseconds(200), curve: .linear), lanes: .all, joins: true), room: nil)
+    }
+
+    /// A VIEW MADE WITH A LAYOUT ITS PROGRAM PLACES SETS OUT TOWARD THE PLACE THE PROGRAM GIVES IT: the layout's
+    /// first pass asks its program, so the card coming back from its detail is first placed in the holder the
+    /// program put at (40, 40) of the deck - (50, 60) in the window, forty square - and travels there from where
+    /// the detail was drawn; the change waiting for it settles.
+    func testAViewMadeWithALayoutSetsOutTowardThePlaceItsProgramGives() throws {
+        let (runtime, change, card, holder, deck, run) = try boardBack(height: 200)
+        XCTAssertEqual(run?.placements.map(\.bounds), [
+            Rect(x: 40, y: 40, width: 40, height: 40), Rect(x: 90, y: 40, width: 40, height: 40),
+        ], "asked in the pass that lays the deck out")
+        XCTAssertTrue(deck.hasPlaced(holder))
+        (holder.native as? NoView)?.frame = [40, 40, 40, 40, 50, 60, 50, 60]
+        cardPlaced(card, size: LayoutSize(width: 40, height: 40), in: runtime)
+
+        let drawn = { (property: Prop) in runtime.tree.presentedPropertyValue(mount: card.mount, property: property)?.number }
+        XCTAssertEqual(drawn(.scaleX) ?? .nan, 5, accuracy: 0.001, "200 of 40: it sets out as large as the detail")
+        XCTAssertEqual(drawn(.scaleY) ?? .nan, 2.5, accuracy: 0.001, "100 of 40")
+        XCTAssertEqual(drawn(.translationX) ?? .nan, 60, accuracy: 0.001, "the detail's middle, 130, against 70")
+        XCTAssertEqual(drawn(.translationY) ?? .nan, 20, accuracy: 0.001, "100 against 80")
+        frames(runtime, from: 16, to: 400)
+        XCTAssertEqual(change.answered.settled, .settled)
+    }
+
+    /// A VIEW MADE WITH A LAYOUT WHOSE PROGRAM SHOWS NO PLACE SETS OUT TOWARD NO PLACE THE TREE DOES NOT KNOW: laid
+    /// out in a room of no height, the program places nothing, the toolkit stands the holder across the room, and
+    /// the card coming back draws no way - a change waiting for it hears `.unsupported`.
+    func testAViewMadeWithALayoutWhoseProgramShowsNoPlaceSetsOutTowardNone() throws {
+        let (runtime, change, card, holder, deck, run) = try boardBack(height: 0)
+        XCTAssertEqual(run?.placements ?? [], [], "a room of nothing places nothing")
+        XCTAssertFalse(deck.hasPlaced(holder))
+        (holder.native as? NoView)?.frame = [0, 0, 300, 0, 10, 20, 10, 20]
+        cardPlaced(card, size: LayoutSize(width: 300, height: 0), in: runtime)
 
         XCTAssertNil(runtime.tree.presentedPropertyValue(mount: card.mount, property: .scaleY), "no way to a place unknown")
         frames(runtime, from: 16, to: 400)
         XCTAssertEqual(change.answered.settled, .interrupted([.unsupported]))
+    }
+
+    /// A LAYOUT GIVEN ANOTHER CHILD STANDS IT WHERE ITS PROGRAM PUTS IT IN ITS NEXT PASS: the run the pass stands
+    /// the children by places every child the layout holds, the new one too.
+    func testALayoutGivenAnotherChildStandsItWhereItsProgramPutsIt() throws {
+        growingDeckCards.wrappedValue = [1]
+        GrowingDeckApplication.register()
+        let (runtime, find) = try joint()
+        let first = try XCTUnwrap(find("card 1"))
+        let deck = try XCTUnwrap(first.parent?.parent)
+        deck.reportFrame([0, 0, 300, 200, 10, 20, 10, 20], in: runtime)
+        frames(runtime, from: 16, to: 64)
+        let room = LayoutSize(width: 300, height: 200)
+        XCTAssertEqual(deck.placementInRoom(room)?.placements.count, 1)
+
+        growingDeckCards.wrappedValue = [1, 2]
+        runtime.pump.turn()
+        let second = try XCTUnwrap(find("card 2")?.parent)
+        XCTAssertEqual(deck.placementInRoom(room)?.placements.map(\.bounds.x), [0, 100])
+        XCTAssertTrue(deck.hasPlaced(second))
     }
 
     /// A VIEW SWAPPED INSIDE AN ITEM A PROGRAM PLACES SETS OUT FROM ITS PARTNER: the item stands where the program

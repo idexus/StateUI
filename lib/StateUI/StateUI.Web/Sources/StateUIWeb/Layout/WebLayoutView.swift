@@ -62,6 +62,11 @@ class WebLayoutView: WebDOMView {
     /// A ZStack's placing run; nil while each child stands in its own area.
     private var placement: HostPlacementRun?
 
+    /// The run a motion layout's program stands its children by in a room, asked as the browser first lays it out
+    /// (`MountedElement.placementInRoom`).
+    /// Design: docs/design/host/layout.md#placed-from-the-first-pass
+    var placementInRoom: (@MainActor (LayoutSize) -> HostPlacementRun?)?
+
     /// The ways the layout scrolls its child, which there is no larger than its room.
     var scrolls = (across: false, down: false) {
         didSet { if scrolls != oldValue { placeAll() } }
@@ -193,7 +198,7 @@ class WebLayoutView: WebDOMView {
     var travels: Bool {
         switch arrangement {
         case .stack, .grid: true
-        case .layers: placement == nil
+        case .layers: placement?.placements.isEmpty ?? true
         case .single: false
         }
     }

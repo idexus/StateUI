@@ -452,11 +452,11 @@ is in front there: a picture closing onto its thumbnail is drawn over the
 other thumbnails all the way.
 
 One view leaving and one entering under a key, in one window and on one
-page, are tied. Anything else - two views of one key, a partner in another
-window or on another page, a view entering with the `MotionLayout` that
-places it, whose place its arithmetic has not said yet - is not: each view
-then goes by its own `.transition(_:)`. A view swapped inside an item that
-stands is tied.
+page, are tied - a view entering with the `MotionLayout` that places it too:
+the card coming back from its detail travels into its deck. Anything else -
+two views of one key, a partner in another window or on another page, a
+view whose `MotionLayout` is laid out in a room of nothing, which places
+nothing - is not: each view then goes by its own `.transition(_:)`.
 
 ## A change and what it started
 

@@ -50,6 +50,31 @@ extension MountedElement {
         return channels.standing(state).map { $0.value == $0.destination } ?? true
     }
 
+    /// The run the element's view stands its children by as its toolkit lays it out in a room: the run it shows,
+    /// else - laid out before its program was asked in the display's frame, or holding a child a patch gave it since -
+    /// its program asked now, so that every child's first place is the program's. Nil where it runs no program.
+    /// Design: docs/design/host/layout.md#placed-from-the-first-pass
+    public var placementInRoom: @MainActor (_ room: LayoutSize) -> HostPlacementRun? {
+        { [weak self] room in
+            guard let self else { return nil }
+            guard lifecycle == .active, let program = layoutProgram, let tree, room.width > 0, room.height > 0,
+                  !children.isEmpty, programPlaces.isEmpty || programPlacedChildren != children.map(\.mount)
+            else { return placement }
+
+            laidOutRoom = (room.width, room.height)
+            program.layOut(room.width, room.height)
+            tree.takePlaces(of: self)
+            return placement
+        }
+    }
+
+    /// Whether the program has shown a place for `child`, one of the element's children, since it holds it.
+    func hasPlaced(_ child: MountedElement) -> Bool {
+        guard let index = children.firstIndex(where: { $0 === child }) else { return false }
+        return programPlacedChildren.indices.contains(index) && programPlacedChildren[index] == child.mount
+            && programPlaces.indices.contains(index)
+    }
+
     /// What the program answers this frame, asked where the parameters stand. Nil where the program answers at no
     /// parameters, they have no channel yet, or no room was laid out.
     /// Design: docs/design/host/layout.md#asked-in-the-hosts-frame

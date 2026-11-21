@@ -272,7 +272,8 @@
 
     /// Where `element` is placed, in its window's coordinates: the place its layout gave it, and each place a
     /// layout gave what holds it, up to its scope or to the first view no layout's motion placed - whose corner
-    /// the toolkit says. Nil where a place is not known yet - one a layout program places, made with this patch.
+    /// the toolkit says. Nil where a place is not known yet - one a layout program places, made with this patch,
+    /// that the program has shown none.
     /// Design: docs/design/host/motion.md#a-shared-transition
     private func placeInWindow(of element: MountedElement, scope: UInt64, in tree: MountedTree) -> Rect? {
         guard case .at(let own) = place(of: element, in: tree) else { return nil }
@@ -310,16 +311,17 @@
     }
 
     /// Where `element` stands in what holds it: where a layout program places it, nowhere known if this patch made
-    /// it - its toolkit stands it across the layout's room until the program is asked - else where its toolkit
-    /// draws it, which the program moved since; else the place a layout's motion gave it.
+    /// it and the program has shown it no place - its toolkit stands it across the layout's room until the program
+    /// is asked - else where its toolkit draws it, where the program put it; else the place a layout's motion gave it.
     private func place(of element: MountedElement, in tree: MountedTree) -> Place {
         if element.parent?.layoutProgram != nil { return standsUnknown(element) ? .unknown : .toolkits }
         return tree.layoutMotion.placed(element.mount).map { .at($0.place) } ?? .toolkits
     }
 
-    /// Whether `element` was made with the notes kept and a layout program places it: its toolkit holds it where
-    /// the program has not been asked yet.
+    /// Whether `element` was made with the notes kept and a layout program places it that has shown no place for
+    /// it yet: its toolkit holds it where the program has not been asked.
     private func standsUnknown(_ element: MountedElement) -> Bool {
-        born.contains(element.mount) && element.parent?.layoutProgram != nil
+        guard born.contains(element.mount), let layout = element.parent, layout.layoutProgram != nil else { return false }
+        return !layout.hasPlaced(element)
     }
 }

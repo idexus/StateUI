@@ -418,6 +418,32 @@ child on its way is shown between two places, so every frame would be a
 change; the measure is place against place, and where a child is shown is
 the body's alone.
 
+## Placed from the first pass
+
+A program is asked in the display's frame, and a toolkit lays a layout out
+before it: a layout a patch made, or one a patch gave another child, is laid
+out once before the frame asks. So its view stands its children by the run
+the host layer gives it in the room of that pass
+(`MountedElement.placementInRoom`):
+
+```text
+  the run shown places every child it holds   that run
+  else, in a room of some size                its program asked now, in that room
+                                              (`MountedTree.takePlaces`): the room said, the
+                                              places taken, a child on its way stepped in the
+                                              display's frames
+  kept as it leaves                           the places it last showed
+```
+
+Every child's first place - where its entry is decided - is then the
+program's. The host takes the run in that pass without asking for another:
+it stands the children by it and draws them in its order at once.
+
+The trap is a room of nothing. A program shows no place in it, so the
+children stand as a stack stands them, across the room, until the program
+is asked in a room of some size - and a view made with the layout is no
+partner of a [shared transition](motion.md#a-shared-transition).
+
 ## A view its toolkit sized anew
 
 A view may come to measure otherwise with nothing the tree changed: a

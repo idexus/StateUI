@@ -204,6 +204,14 @@
         return moved ? mount : nil
     }
 
+    /// `element`, laid out by its toolkit, takes its program's places now, in that layout pass - the children on
+    /// their way from them stepped in the display's frames.
+    /// Design: docs/design/host/layout.md#placed-from-the-first-pass
+    func takePlaces(of element: MountedElement) {
+        _ = element.takeProgramPlaces(at: now(), reducesMotion: reducesMotion())
+        if element.programBodiesMove { movingLayouts.insert(element.mount) }
+    }
+
     /// The layouts whose parameters one of `states` moved this frame, asked where they stand now: those whose
     /// children stand somewhere new, by mount, in order.
     /// Design: docs/design/host/layout.md#asked-in-the-hosts-frame

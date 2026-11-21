@@ -16,6 +16,7 @@ final class UIKitZStackView: UIKitLayoutView {
         didSet {
             guard placement != oldValue else { return }
             orderChildren()
+            guard !takingRun else { return }
             // A run moving on stands its children at once in the room it last stood them in: nothing around is measured.
             if let run = placement, !run.placements.isEmpty, oldValue?.placements.isEmpty == false,
                let room = runRoom {
@@ -29,6 +30,12 @@ final class UIKitZStackView: UIKitLayoutView {
 
     /// The room the run last stood its children in, where a run moving on stands them again.
     private var runRoom: Rect?
+
+    /// The run a motion layout's program stands its children by in a room, asked in the pass that lays out a child
+    /// it has shown no place for (`MountedElement.placementInRoom`).
+    /// Design: docs/design/host/layout.md#placed-from-the-first-pass
+    var placementInRoom: (@MainActor (LayoutSize) -> HostPlacementRun?)?
+    private var takingRun = false
 
     /// The room inside the ZStack's own edge.
     var padding = Insets(0) {
@@ -56,6 +63,11 @@ final class UIKitZStackView: UIKitLayoutView {
 
     override func arrange(in bounds: Rect) {
         defer { onLaidOut?() }
+        if let asked = placementInRoom?(LayoutSize(width: bounds.width, height: bounds.height)), asked != placement {
+            takingRun = true
+            placement = asked
+            takingRun = false
+        }
         if let run = placement, !run.placements.isEmpty {
             runRoom = bounds
             return apply(run, in: bounds)

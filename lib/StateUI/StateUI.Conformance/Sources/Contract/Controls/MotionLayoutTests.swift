@@ -4,7 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `MotionLayoutContract` on a host: each view stands where the arithmetic puts it, the arithmetic is handed the room
+/// `MotionLayoutContract` on a host: each view stands where the arithmetic puts it - one made with the layout sets out
+/// from its shared partner onto that place - the arithmetic is handed the room
 /// the layout was given and handed it again when it changes, measures its views as they stand by themselves and again
 /// when one is sized anew, the layout takes no size from its views but the one it measures, the phase the
 /// program sends travels there and is awaited - each axis of it on its own - a view under a press goes to the hand
@@ -46,6 +47,59 @@
                 s.expect(first.values.last.map(FrameReport.size), [20, 10], "the first at the size its placement gives")
                 s.expect(second.values.last.map(FrameReport.size), [20, 20], "the second at its own")
                 s.expect(apart(), [30, 10], "and where the second's placement stands it from the first")
+            },
+            ConformanceCase("aViewMadeWithItSetsOutFromItsPartnerOntoItsPlace", proves: [
+                Covered(MotionLayoutContract.self), Covered(MotionLayoutContract.layout),
+            ], needs: [
+                Covered(ViewContract.sharedTransition, on: RectangleContract.self),
+                Covered(ViewContract.presentationFrameChanged, on: RectangleContract.self),
+                Covered(LayoutContract.transitionScope, on: "VStack"),
+                Covered(ClickElementContract.clicked, on: ButtonContract.self),
+            ]) { s in
+                let clock = TestClock()
+                let opened = State(wrappedValue: true)
+                let drawn = Received<[Double]>()
+                let way = Motion.eased(.milliseconds(400), curve: .linear)
+                s.start(clock: clock) {
+                    VStack {
+                        Button("Back").onClicked { opened.wrappedValue = false }.id("back")
+                        VStack {
+                            if opened.wrappedValue {
+                                Rectangle().fill(.red).sharedTransition(1).width(100).height(60).motion(way)
+                            } else {
+                                MotionLayout([1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { card in
+                                    Rectangle()
+                                        .fill(.blue)
+                                        .sharedTransition(card)
+                                        .motion(way)
+                                        .onEvent(ViewContract.presentationFrameChanged) {
+                                            if card == 1 { drawn.values.append($0) }
+                                        }
+                                } placements: { _, _ in
+                                    [Placement(Rect(x: 10, y: 10, width: 40, height: 40)),
+                                     Placement(Rect(x: 60, y: 10, width: 40, height: 40))]
+                                }
+                                .width(120).height(80)
+                            }
+                        }
+                        .transitionScope("deck")
+                        .horizontalAlignment(.start)
+                        .verticalAlignment(.start)
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+                s.frames(of: clock, until: 200)
+
+                // The layout is laid out before the display's frame asks its program: its first pass asks it.
+                try s.perform(.activate, on: s.element("back"))
+                s.settle { !drawn.values.isEmpty }
+                let first = drawn.values.first.map(FrameReport.size) ?? []
+                s.expect(first.map { $0.rounded() }, [100, 60], "it sets out as large as its partner was drawn")
+
+                s.frames(of: clock, until: 1_400)
+                s.settle { drawn.values.last.map(FrameReport.size) == [40, 40] }
+                s.expect(drawn.values.last.map(FrameReport.size), [40, 40], "and lands on the place its arithmetic gives it")
             },
             ConformanceCase("itsArithmeticIsHandedItsRoomAgainWhenItChanges", proves: [
                 Covered(MotionLayoutContract.self), Covered(MotionLayoutContract.layout),

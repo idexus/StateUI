@@ -62,6 +62,7 @@ extension AppKitElement {
             layers.motionLayout = type == .motionLayout
             layers.programSize = element.programSize
             if type == .motionLayout {
+                layers.placementInRoom = element.placementInRoom
                 layers.onLaidOut = { [weak self] in
                     guard let self, let host else { return }
                     element.viewsSizedAnew(in: host.runtime)

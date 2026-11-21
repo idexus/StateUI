@@ -72,6 +72,18 @@ final class WebPlacements {
     }
 
     private func place(_ layouts: [WebLayoutView]) {
+        // A motion layout takes its program's run in the room the browser gave it before any child's place is read:
+        // each child's first place is the program's. Design: docs/design/host/layout.md#placed-from-the-first-pass
+        let asking = layouts.filter { $0.placementInRoom != nil }
+        for (layout, room) in zip(asking, WebRelay.places(asking.map { ($0.node, $0.node) })) {
+            guard let room, let run = layout.placementInRoom?(LayoutSize(width: room.width, height: room.height)),
+                  !run.placements.isEmpty
+            else { continue }
+            layout.setPlacement(run)
+        }
+        let layouts = layouts.filter(\.travels)
+        guard !layouts.isEmpty else { return }
+
         var pairs: [(layout: Int32, child: Int32)] = []
         for layout in layouts {
             pairs.append((layout.node, layout.node))

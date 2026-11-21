@@ -86,8 +86,10 @@
     var laidOutRoom: (width: Double, height: Double)?
     var laidOutCorner: Point?
 
-    /// Where the layout program last put the children, as the element presents them.
+    /// Where the layout program last put the children, as the element presents them, and the children it was asked
+    /// for, by their mounts.
     private(set) var programPlaces: [HostPlacement] = []
+    private(set) var programPlacedChildren: [UInt64] = []
 
     /// How the layout program's children are measured: the child the arithmetic names by its place among the views
     /// as written, measured by its native half - nought for a place no child stands at.
@@ -248,6 +250,7 @@
         // the layout says none.
         let bodies = value(LayoutContract.layoutBodies.token).flatMap(LayoutBody.init(propValue:)) ?? .onChange()
         childrenMovedLocally = false
+        programPlacedChildren = children.map(\.mount)
         let answer = askProgram(program) ?? program.answered()
         let placed = programPresentation.take(
             answer, change: programAsking.change, layoutBodies: bodies, locals: children.map(\.placedLocal),
@@ -533,6 +536,7 @@
             if let before = layoutProgram { tree.layoutLeft(before.slot) }
             layoutProgram = nil
             programPlaces = []
+            programPlacedChildren = []
             programPresentation = ProgramPresentation()
         case nil:
             break

@@ -12,8 +12,14 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
     AppKitMeasurementCaching {
     let measurements = MeasurementCache()
     var placement: HostPlacementRun? {
-        didSet { needsLayout = true }
+        didSet { if !takingRun { needsLayout = true } }
     }
+
+    /// The run a motion layout's program stands its children by in a room, asked in the pass that lays out a child
+    /// it has shown no place for (`MountedElement.placementInRoom`).
+    /// Design: docs/design/host/layout.md#placed-from-the-first-pass
+    var placementInRoom: (@MainActor (LayoutSize) -> HostPlacementRun?)?
+    private var takingRun = false
 
     /// The room inside the ZStack's own edge.
     var padding = Insets(0) {
@@ -76,6 +82,11 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
         super.layout()
         defer { onLaidOut?() }
 
+        if let asked = placementInRoom?(LayoutSize(bounds.size)), asked != placement {
+            takingRun = true
+            placement = asked
+            takingRun = false
+        }
         if let run = placement, !run.placements.isEmpty {
             apply(run)
             return

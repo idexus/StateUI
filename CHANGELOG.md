@@ -229,8 +229,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   enters in the same change, the entering one sets out from where the leaving one is drawn and grows onto its
   own place, under its own `.motion(_:)`; going back during the movement goes on from where it has got to.
   The two stay two views. Where no single partner is found - none, two of one key, another window or page, a
-  view entering with the `MotionLayout` that places it before its arithmetic said where - each goes by its own
-  `.transition(_:)`; a view swapped inside an item that stands is tied. Both take any `Hashable`, and a host compares no value: the core
+  view entering with a `MotionLayout` laid out in a room of nothing, which places nothing - each goes by its own
+  `.transition(_:)`; a view entering with the `MotionLayout` that places it - a card coming back from its detail
+  into its deck - is tied, as is a view swapped inside an item that stands. Both take any `Hashable`, and a host compares no value: the core
   hands it numbers. On its way the entering view is drawn in front of what it passes over - every sibling in a
   stack, what stood before it in a layout that layers its children - until it lands. Where the layout that held
   the leaving view keeps a view that leaves - a stack, a grid, a ZStack - the two are drawn as one: the leaving
@@ -247,6 +248,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   stood after (`DrawingOrder.of(presented:placedBy:inFront:)`) - one place on every host, where each drew it its
   own way before; a host's layout is told its kept views with their mounts. A driver's `drawingOrder(of:)` reads
   the views a layout presents, the kept ones among them.
+- **For a host: a motion layout's first pass asks its program.** A host's motion layout view stands its children
+  by `MountedElement.placementInRoom` in the room of the pass that lays it out - the run shown where it places
+  every child the layout holds, else its program asked then - and takes that run without asking for another
+  pass: each child's first place is its program's, never across the layout's room.
 
 - **A change says how what it started ended.** `Aim.presentationChange { ... }`, on the aim of any view, runs
   the writes at once and answers a `PresentationChange`: `applied()` waits until the host took them, and

@@ -68,6 +68,9 @@ extension WebElement {
         if !own.isDisjoint(with: MountedElement.transformProperties) { view.setTransform(element.drawingTransform) }
         if element.changesAccessibility(changed) { view.setAccessibility(element.accessibilityWords) }
         if let layers = view as? WebLayoutView, layers.arrangement == .layers {
+            if layers.placementInRoom == nil, element.type == .motionLayout {
+                layers.placementInRoom = element.placementInRoom
+            }
             layers.setPlacement(element.placement)
             writeProgramSize()
         }

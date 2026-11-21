@@ -466,6 +466,48 @@ final class AppKitLayoutMotionTests: XCTestCase {
         XCTAssertEqual(drawn, [thumbnails, picture], "the picture in front")
     }
 
+    /// A CARD COMING BACK FROM ITS DETAIL INTO THE DECK A MOTION LAYOUT PLACES SETS OUT FROM THE DETAIL: the deck's
+    /// first pass asks its program, so the card is first placed in its holder - sixty by eighty - never across the
+    /// deck's room, and is drawn as large as the detail as it sets out.
+    @MainActor
+    func testACardComingBackIntoItsDeckSetsOutFromItsDetail() throws {
+        let opened = State(wrappedValue: true)
+        let way = Motion.eased(.milliseconds(600), curve: .linear)
+        let renderer = AppKitRenderer.running {
+            VStack {
+                if opened.wrappedValue {
+                    Rectangle().sharedTransition(5).height(200).motion(way)
+                } else {
+                    MotionLayout([5, 6], parameters: State(wrappedValue: 0.0).projectedValue) { card in
+                        Rectangle().sharedTransition(card).motion(way)
+                    } placements: { _, _ in
+                        [Placement(Rect(x: 40, y: 40, width: 60, height: 80)),
+                         Placement(Rect(x: 110, y: 40, width: 60, height: 80), transform: .scale(0.8))]
+                    }
+                    .height(200)
+                }
+            }
+            .transitionScope("board")
+        }
+        defer { renderer.finish() }
+        let content = try XCTUnwrap(renderer.windowsForTesting.first?.window?.contentView)
+        content.layoutSubtreeIfNeeded()
+        for _ in 0..<3 { renderer.runtime.displayCycle.frame(now: 0) }
+        let detail = try XCTUnwrap(renderer.runtime.tree.root?.first(type: .rectangle))
+        let width = try XCTUnwrap((detail.native as? AppKitElement)?.view).frame.width
+
+        opened.wrappedValue = false
+        renderer.runtime.pump.turn()
+        content.layoutSubtreeIfNeeded()
+        let deck = try XCTUnwrap(renderer.runtime.tree.root?.first(type: .motionLayout))
+        let card = try XCTUnwrap(deck.children.first?.children.first)
+        let view = try XCTUnwrap((card.native as? AppKitElement)?.view)
+        XCTAssertEqual(view.frame.size, NSSize(width: 60, height: 80), "first placed in its holder")
+        let layer = try XCTUnwrap(view.layer)
+        XCTAssertEqual(layer.transform.m22, 200.0 / 80, accuracy: 0.01, "as tall as the detail as it sets out")
+        XCTAssertEqual(layer.transform.m11, width / 60, accuracy: 0.01, "as wide as the detail as it sets out")
+    }
+
     /// A view leaving out of its room, in a stack narrower than the scroller showing it, goes wholly past the
     /// scroller's edge - the stack draws beyond its own room - as AppKit lays both out.
     @MainActor
