@@ -146,6 +146,42 @@ final class UIKitImageViewTests: XCTestCase {
     func testTheRenderersPicturesHearMemoryRunShort() {
         XCTAssertTrue(UIKitRenderer.pictures.hearsMemoryPressure)
     }
+
+    /// A PICTURE THAT ARRIVES IS PLACED AGAIN BY THE LAYOUT MEASURING IT, with no patch behind it: told to its view
+    /// as a late file is, it stands the words after it right of its width.
+    /// Design: docs/design/host/layout.md#a-view-its-toolkit-sized-anew
+    @MainActor
+    func testAPictureThatArrivesIsPlacedAgainByTheLayoutMeasuringIt() throws {
+        let host = UIKitRenderer.running {
+            MotionLayout([0, 1], parameters: State(wrappedValue: 0.0).projectedValue) { index in
+                if index == 0 { Image("nowhere.png") } else { Text("after") }
+            } placements: { context, _ in
+                var across = 0.0
+                return context.subviews.map { view in
+                    let size = view.sizeThatFits()
+                    defer { across += size.width }
+                    return Placement(Rect(x: across, y: 0, width: size.width, height: size.height))
+                }
+            }
+        }
+        defer { host.finish() }
+        let picture = try XCTUnwrap(host.views(UIKitImageView.self).first)
+        let layout = try XCTUnwrap(host.runtime.tree.root?.first(type: .motionLayout))
+        // Where the layout's program puts the words: after the picture, as wide as it measured.
+        let words = { layout.placement?.placements.last?.bounds.x ?? -1 }
+        host.settle {
+            host.frame()
+            return words() == 0
+        }
+        XCTAssertEqual(words(), 0, "no picture yet: the words stand where the row begins")
+
+        picture.apply(source: "test_wide.png", aspect: .fit)
+        host.settle {
+            host.frame()
+            return words() > 0
+        }
+        XCTAssertEqual(words(), 40, accuracy: 0.5, "placed by the size the picture arrived at")
+    }
 }
 
 /// An application whose first window shows a run of SVGs and opens a second window showing them again.

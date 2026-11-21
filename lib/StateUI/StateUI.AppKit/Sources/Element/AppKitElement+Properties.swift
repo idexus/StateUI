@@ -61,6 +61,12 @@ extension AppKitElement {
             let layers = AppKitZStackView()
             layers.motionLayout = type == .motionLayout
             layers.programSize = element.programSize
+            if type == .motionLayout {
+                layers.onLaidOut = { [weak self] in
+                    guard let self, let host else { return }
+                    element.viewsSizedAnew(in: host.runtime)
+                }
+            }
             return layers
 
 

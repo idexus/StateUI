@@ -80,7 +80,13 @@ final class WebImageView: WebDOMView {
     private func sizeAsLoaded() {
         let width = WebRelay.number(of: node, "naturalWidth"), height = WebRelay.number(of: node, "naturalHeight")
         style("contain-intrinsic-size", "\(WebCSS.pixels(width) ?? "0px") \(WebCSS.pixels(height) ?? "0px")")
+        onSized?()
     }
+
+    /// Told the picture arrived and the view measures by it: where a motion layout's program measured the view, it
+    /// measures its views again.
+    /// Design: docs/design/host/layout.md#a-view-its-toolkit-sized-anew
+    var onSized: (@MainActor () -> Void)?
 
     /// Shows the next file the name may stand for: a PNG not found gives way to its SVG.
     private func tryNext() {

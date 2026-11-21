@@ -16,7 +16,47 @@ final class AndroidImageViewTests: XCTestCase {
             ("testAPictureNoViewShowsIsLetGo", testAPictureNoViewShowsIsLetGo),
             ("testEveryIconIsADrawableOfTheApplications", testEveryIconIsADrawableOfTheApplications),
             ("testAnIconIsDrawnInTheWordsColor", testAnIconIsDrawnInTheWordsColor),
+            ("testAPictureThatArrivesIsPlacedAgainByTheLayoutMeasuringIt", testAPictureThatArrivesIsPlacedAgainByTheLayoutMeasuringIt),
         ]
+    }
+
+    /// A PICTURE THAT ARRIVES IS PLACED AGAIN BY THE LAYOUT MEASURING IT, with no patch behind it: told to its view
+    /// as a late file is, it stands the words after it right of its width.
+    /// Design: docs/design/host/layout.md#a-view-its-toolkit-sized-anew
+    func testAPictureThatArrivesIsPlacedAgainByTheLayoutMeasuringIt() throws {
+        try onMainActor {
+            let host = AndroidRenderer.running {
+                MotionLayout([0, 1], parameters: State(wrappedValue: 0.0).projectedValue) { index in
+                    if index == 0 { Image("nowhere.png") } else { Text("after") }
+                } placements: { context, _ in
+                    var across = 0.0
+                    return context.subviews.map { view in
+                        let size = view.sizeThatFits()
+                        defer { across += size.width }
+                        return Placement(Rect(x: across, y: 0, width: size.width, height: size.height))
+                    }
+                }
+            }
+            defer { host.finish() }
+            let picture = try XCTUnwrap(host.views(AndroidImageView.self).first)
+            let layout = try XCTUnwrap(host.runtime.tree.root?.first(type: .motionLayout))
+            // Where the layout's program puts the words: after the picture, as wide as it measured.
+            let words = { layout.placement?.placements.last?.bounds.x ?? -1 }
+            host.settle {
+                host.layOut()
+                host.frame()
+                return words() == 0
+            }
+            XCTAssertEqual(words(), 0, "no picture yet: the words stand where the row begins")
+
+            picture.apply(picture: HostPicture("test_wide.png", dark: false), aspect: .fit)
+            host.settle {
+                host.layOut()
+                host.frame()
+                return words() > 0
+            }
+            XCTAssertEqual(words(), 40, accuracy: 0.5, "placed by the size the picture arrived at")
+        }
     }
 
     /// The color `test_wide.svg` is drawn in.

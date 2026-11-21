@@ -38,6 +38,11 @@ final class AndroidZStackView: AndroidTravelingLayout {
     /// The size a motion layout's program says for it in a width offered; nil where it says none.
     var programSize: (@MainActor (Double?) -> LayoutSize?)?
 
+    /// Told the toolkit laid the layout out: where a view in it was sized anew, a motion layout's program measures
+    /// its views again.
+    /// Design: docs/design/host/layout.md#a-view-its-toolkit-sized-anew
+    var onLaidOut: (@MainActor () -> Void)?
+
     @discardableResult
     override func setItems(_ items: [AndroidLayoutItem]) -> Bool {
         defer { holdInDrawingOrder() }
@@ -49,6 +54,7 @@ final class AndroidZStackView: AndroidTravelingLayout {
     }
 
     override func arrange(in bounds: Rect) {
+        defer { onLaidOut?() }
         if let run = placement, !run.placements.isEmpty {
             runRoom = bounds
             return apply(run, in: bounds)

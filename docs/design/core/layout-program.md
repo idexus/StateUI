@@ -171,7 +171,8 @@ views: the host asks it while it measures the layout, at the parameters as
 they stand, and what the views answered is remembered until the next
 working-out or the host's next word.
 
-The trap is a view whose size changes with nothing the tree changed - a
-picture that arrives. The toolkit measures it again by itself and tells no
-one, so the layout places it by its new size at its next working-out, not
-before.
+A view whose size changes with nothing the tree changed - a picture that
+arrives - is the host's to say: its toolkit lays the layout out again, the
+host layer finds a view answering another size than it answered the
+arithmetic, and says its measure again
+([a view its toolkit sized anew](../host/layout.md#a-view-its-toolkit-sized-anew)).

@@ -73,9 +73,18 @@ extension UIKitElement {
                 }
             }
             if !own.isDisjoint(with: MountedElement.transformProperties) { drawing?.own = element.drawingTransform }
+            if let picture = view as? UIKitImageView, picture.onSized == nil {
+                picture.onSized = { [weak self] in self?.invalidateMeasurements() }
+            }
             if let layers = view as? UIKitZStackView {
                 layers.placement = element.placement
                 layers.programSize = element.programSize
+                if layers.onLaidOut == nil, element.type == .motionLayout {
+                    layers.onLaidOut = { [weak self] in
+                        guard let self, let host else { return }
+                        element.viewsSizedAnew(in: host.runtime)
+                    }
+                }
             }
         }
 

@@ -418,6 +418,36 @@ child on its way is shown between two places, so every frame would be a
 change; the measure is place against place, and where a child is shown is
 the body's alone.
 
+## A view its toolkit sized anew
+
+A view may come to measure otherwise with nothing the tree changed: a
+picture arrives, and its toolkit sizes it by itself. A layout its toolkit
+places hears of it in the toolkit's own pass; a layout a program places
+would stand its views by the sizes they answered before. So an element
+remembers what each view last answered its program - by the view's place,
+in the room it was offered - and a host says when its toolkit laid the
+layout's view out, or sized a view under it anew
+(`MountedElement.viewsSizedAnew(in:)`): the nearest program from that
+element up measures its views again in the display's next frame, where a
+remembered view now answers another size.
+
+```text
+  every view answers as it did     nothing: no measure said, no arithmetic, no frame
+  one answers another size         the measure is said again; the program is asked after the next cycle
+  a layout that measured nothing   remembers nothing, and is never asked
+```
+
+The comparison is what lets a host say it from every pass. A program asked
+again places its views, the toolkit lays the layout out for that, and the
+host says so once more - where every view answers as it just did, and the
+round ends. A native host says it at the end of the pass of the view a
+motion layout stands on; the Web, whose browser runs no pass a host hears,
+says it where a picture tells it has loaded.
+
+The trap is remembering the size instead of asking: a view asked in
+another room answers another size with nothing changed, so each answer is
+kept with the room it was offered, and asked again in that room.
+
 ## Bodies
 
 A layout program answers where each child goes

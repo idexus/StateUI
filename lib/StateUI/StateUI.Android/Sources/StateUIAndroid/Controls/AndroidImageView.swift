@@ -28,6 +28,9 @@ final class AndroidImageView: AndroidView {
         Java.call(reference, JavaAPI.setCropToPadding, .bool(true))
     }
 
+    /// Told the picture is another, which may be another size: the layouts around the view measure it again.
+    var onSized: (@MainActor () -> Void)?
+
     /// Shows `picture`, filling its room as `aspect` says; it is read once the view's size is known.
     func apply(picture: HostPicture?, aspect: ContentMode) {
         if picture != self.picture {
@@ -35,6 +38,7 @@ final class AndroidImageView: AndroidView {
             self.picture = picture
             pictureSize = picture.flatMap(AndroidPictures.size(of:)) ?? (0, 0)
             Java.call(reference, JavaAPI.setImageBitmap, .object(nil))
+            onSized?()
         }
         if aspect != self.aspect {
             self.aspect = aspect

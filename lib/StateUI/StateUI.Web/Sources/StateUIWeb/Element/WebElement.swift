@@ -96,6 +96,12 @@ final class WebElement: NativeElement {
         offerButtonMenu()
         configurePopover()
         followFrame()
+        if let picture = view as? WebImageView, picture.onSized == nil {
+            picture.onSized = { [weak self] in
+                guard let self, let host else { return }
+                element.viewsSizedAnew(in: host.runtime)
+            }
+        }
     }
 
     func presentFrame(_ changed: Set<Prop>) {

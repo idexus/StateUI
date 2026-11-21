@@ -88,9 +88,18 @@ extension AndroidElement {
                     return element.hear(heard, in: host.runtime)
                 }
             }
+            if let picture = view as? AndroidImageView, picture.onSized == nil {
+                picture.onSized = { [weak self] in self?.invalidateMeasurements() }
+            }
             if let layers = view as? AndroidZStackView {
                 layers.placement = element.placement
                 layers.programSize = element.programSize
+                if layers.onLaidOut == nil, element.type == .motionLayout {
+                    layers.onLaidOut = { [weak self] in
+                        guard let self, let host else { return }
+                        element.viewsSizedAnew(in: host.runtime)
+                    }
+                }
             }
         }
 

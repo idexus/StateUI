@@ -95,12 +95,18 @@
         guard let self, let child = children.first(where: { self.writingOrder[$0.id] == place }) else {
             return HostChildMeasured(size: .zero, firstBaseline: nil)
         }
-        return child.native.measured(width: width, height: height)
+        let answered = child.native.measured(width: width, height: height)
+        programMeasured[place] = (width, height, answered)
+        return answered
     }
+
+    /// What each child last answered the layout program, by its place, in the room it was offered.
+    private var programMeasured: [Int: (width: Double?, height: Double?, answered: HostChildMeasured)] = [:]
 
     /// Tells the layout program how its children are measured - and, told again, that one may measure otherwise.
     /// Design: docs/design/host/layout.md#a-layout-program
     func saysItsMeasure() {
+        programMeasured.removeAll(keepingCapacity: true)
         layoutProgram?.measuredBy(childMeasure)
     }
 
@@ -110,6 +116,27 @@
         while let element = each {
             if element.layoutProgram != nil { return element.saysItsMeasure() }
             each = element.parent
+        }
+    }
+
+    /// The element's toolkit laid its view out again, or sized it anew, with nothing the tree changed - a picture
+    /// that arrived: the nearest layout program from this element up measures its views again in the display's
+    /// next frame, where one it measured now measures otherwise - and hears nothing where each answers as it did.
+    /// Design: docs/design/host/layout.md#a-view-its-toolkit-sized-anew
+    public func viewsSizedAnew(in runtime: HostRuntime) {
+        var each: MountedElement? = self
+        while let element = each, element.layoutProgram == nil { each = element.parent }
+        guard let layout = each, layout.lifecycle == .active, layout.measuresOtherwise else { return }
+
+        layout.saysItsMeasure()
+        runtime.displayCycle.hold()
+    }
+
+    /// Whether a child the layout program measured answers another size now, in the room it was offered then.
+    private var measuresOtherwise: Bool {
+        programMeasured.contains { place, last in
+            guard let child = children.first(where: { writingOrder[$0.id] == place }) else { return false }
+            return child.native.measured(width: last.width, height: last.height) != last.answered
         }
     }
 

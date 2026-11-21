@@ -52,6 +52,57 @@ final class ProgramMeasureTests: XCTestCase {
         ])
     }
 
+    /// A VIEW ITS TOOLKIT SIZED ANEW, WITH NOTHING THE TREE CHANGED, IS PLACED AGAIN ONCE ITS HOST SAYS SO: a
+    /// picture that arrives stands the views after it where they stood until its host says a view was sized
+    /// anew - on the view or on the layout - and the next frame places them by the new size; said where every
+    /// view answers as it did, it runs no arithmetic and asks for no frame.
+    @MainActor
+    func testAViewItsToolkitSizedAnewIsPlacedAgainOnceTheHostSaysSo() throws {
+        let bench = MeasuringBench(RowPage())
+        let layout = try bench.laidOut(300, 100)
+        let first = try XCTUnwrap(layout.children.first?.native as? WordsView)
+        let runs = rowRuns
+
+        layout.viewsSizedAnew(in: bench.runtime)
+        XCTAssertFalse(bench.runtime.clock.held, "every view answers as it did: nothing is owed")
+        bench.settle()
+        XCTAssertEqual(rowRuns, runs, "and the arithmetic is not run")
+
+        first.arrived = 30
+        bench.settle()
+        XCTAssertEqual(layout.placement?.placements.map(\.bounds.x), [0, 18, 56], "nobody told the layout")
+
+        first.element.viewsSizedAnew(in: bench.runtime)
+        bench.settle()
+        XCTAssertEqual(layout.placement?.placements.map(\.bounds), [
+            Rect(x: 0, y: 0, width: 40, height: 20), Rect(x: 48, y: 0, width: 30, height: 20), Rect(x: 86, y: 0, width: 20, height: 20),
+        ])
+        XCTAssertFalse(bench.runtime.clock.held, "placed, and at rest")
+
+        let placed = rowRuns
+        layout.viewsSizedAnew(in: bench.runtime)
+        bench.settle()
+        XCTAssertEqual(rowRuns, placed, "told again with nothing new, it is not worked out again")
+    }
+
+    /// A LAYOUT THAT MEASURES NOTHING IS NOT WORKED OUT FOR A VIEW SIZED ANEW, nor one that runs no program told
+    /// anything: no frame is asked for either.
+    @MainActor
+    func testAViewSizedAnewAsksNothingOfALayoutThatMeasuresNothing() throws {
+        let bench = MeasuringBench(RowPage(measures: false))
+        let layout = try bench.laidOut(300, 100)
+        let runs = rowRuns
+
+        try XCTUnwrap(layout.children.first?.native as? WordsView).arrived = 30
+        layout.viewsSizedAnew(in: bench.runtime)
+        XCTAssertFalse(bench.runtime.clock.held, "its arithmetic read no size: nothing is owed")
+        try XCTUnwrap(bench.runtime.tree.root).viewsSizedAnew(in: bench.runtime)
+        bench.settle()
+
+        XCTAssertEqual(rowRuns, runs)
+        XCTAssertEqual(WordsView.asked, 0)
+    }
+
     /// A LAYOUT THAT MEASURES NOTHING STANDS AS IT STOOD when a view of it changes: no cycle is asked for it.
     @MainActor
     func testALayoutMeasuringNothingIsNotWorkedOutAgainForAView() throws {
@@ -247,6 +298,9 @@ private final class WordsView: NativeElement {
     unowned let element: MountedElement
     var measuredAgain = 0
 
+    /// How much wider the view measures than its words: a picture that arrived, which no patch says.
+    var arrived = 0.0
+
     init(_ element: MountedElement) {
         self.element = element
     }
@@ -254,7 +308,7 @@ private final class WordsView: NativeElement {
     func measured(width: Double?, height: Double?) -> HostChildMeasured {
         Self.asked += 1
         let words = element.type == .text ? element : element.first(type: .text)
-        let natural = Double(words?.value(.text)?.string?.count ?? 0) * 10
+        let natural = Double(words?.value(.text)?.string?.count ?? 0) * 10 + arrived
         guard let width, width > 0, width < natural else {
             return HostChildMeasured(size: LayoutSize(width: natural, height: 20), firstBaseline: 15)
         }

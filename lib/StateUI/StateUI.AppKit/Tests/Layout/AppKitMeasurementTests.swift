@@ -389,6 +389,51 @@ final class AppKitMeasurementTests: XCTestCase {
         }
     }
 
+    /// A VIEW APPKIT SIZED ANEW, WITH NOTHING THE TREE CHANGED, IS PLACED AGAIN BY THE LAYOUT MEASURING IT: a
+    /// picture that arrives - told to its view as a late file is - stands the words after it right of its width,
+    /// with no patch behind it.
+    /// Design: docs/design/host/layout.md#a-view-its-toolkit-sized-anew
+    @MainActor
+    func testAPictureThatArrivesIsPlacedAgainByTheLayoutMeasuringIt() throws {
+        let renderer = AppKitRenderer.running {
+            MotionLayout([0, 1], parameters: State(wrappedValue: 0.0).projectedValue) { index in
+                if index == 0 { Image("arrives-late") } else { Text("after") }
+            } placements: { context, _ in
+                var across = 0.0
+                return context.subviews.map { view in
+                    let size = view.sizeThatFits()
+                    defer { across += size.width }
+                    return Placement(Rect(x: across, y: 0, width: size.width, height: size.height))
+                }
+            }
+        }
+        defer { renderer.finish() }
+        let picture = try XCTUnwrap(renderer.nativeViews(AppKitImageView.self).first)
+        let layout = try XCTUnwrap(renderer.runtime.tree.root?.first(type: .motionLayout))
+        // Where the layout's program puts the words: after the picture, as wide as it measured.
+        let words = { layout.placement?.placements.last?.bounds.x ?? 0 }
+        func settle(until done: () -> Bool) {
+            for _ in 0..<150 {
+                guard !done() else { break }
+                RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.01))
+                renderer.runtime.pump.turn()
+                renderer.displayFrameForTesting()
+                renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
+            }
+        }
+        var turns = 0
+        settle {
+            turns += 1
+            return turns > 5
+        }
+        XCTAssertEqual(words(), 0, "no picture yet: the words stand where the row begins")
+
+        picture.apply(image: NSImage(size: NSSize(width: 64, height: 16)), aspect: .fit, animationPlaying: false)
+        settle { words() > 0 }
+
+        XCTAssertEqual(words(), 64, accuracy: 0.5, "placed by the size the picture arrived at")
+    }
+
     /// Every StateUI container measures itself. One a parent measured through
     /// AppKit's fitting built a constraint engine for every question: the
     /// grids of the Gallery's scroll sample, asked again on each scroll report,

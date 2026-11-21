@@ -29,6 +29,10 @@ final class UIKitImageView: UIImageView, UIKitSteppable {
         fatalError("UIKitImageView is made in code")
     }
 
+    /// Told the picture is another - another appearance's too - which may be another size: the layouts around the
+    /// view measure it again.
+    var onSized: (@MainActor () -> Void)?
+
     /// The picture and how it fills the room it stands in.
     func apply(source: ImageSource?, aspect: StateUI.ContentMode) {
         self.source = source
@@ -53,6 +57,7 @@ final class UIKitImageView: UIImageView, UIKitSteppable {
         // An icon is drawn in the color of the words around it, not the accent.
         if case .icon = picture { tintColor = .label } else { tintColor = nil }
         invalidateIntrinsicContentSize()
+        onSized?()
     }
 }
 #endif

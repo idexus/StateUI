@@ -39,6 +39,11 @@ final class GTKZStackView: GTKTravelingLayout {
     /// The size a motion layout's program says for it in a width offered; nil where it says none.
     var programSize: (@MainActor (Double?) -> LayoutSize?)?
 
+    /// Told the toolkit laid the layout out: where a view in it was sized anew, a motion layout's program measures
+    /// its views again.
+    /// Design: docs/design/host/layout.md#a-view-its-toolkit-sized-anew
+    var onLaidOut: (@MainActor () -> Void)?
+
     /// The children back to front as the run ranks them, or in their order without one: GTK draws a panel's
     /// children in that order and a click reaches the last first.
     override func heldViews() -> [GTKView] {
@@ -50,6 +55,7 @@ final class GTKZStackView: GTKTravelingLayout {
     }
 
     override func arrange(in bounds: Rect) {
+        defer { onLaidOut?() }
         if let run = placement, !run.placements.isEmpty {
             runRoom = bounds
             return apply(run, in: bounds)

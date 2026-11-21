@@ -114,4 +114,34 @@ final class WebFrameReportTests: XCTestCase {
 
         XCTAssertEqual(frames.values.last.map(FrameReport.place).map { Array($0.prefix(2)) }, [20, 12], "\(frames.values)")
     }
+
+    /// A PICTURE THAT ARRIVES IS PLACED AGAIN BY THE LAYOUT MEASURING IT, with no patch behind it: its file read by
+    /// the browser after the layout measured its view, it stands the words after it right of its width.
+    /// Design: docs/design/host/layout.md#a-view-its-toolkit-sized-anew
+    func testAPictureThatArrivesIsPlacedAgainByTheLayoutMeasuringIt() throws {
+        let host = WebRenderer.running {
+            MotionLayout([0, 1], parameters: State(wrappedValue: 0.0).projectedValue) { index in
+                if index == 0 { Image("nowhere.png") } else { Text("after") }
+            } placements: { context, _ in
+                var across = 0.0
+                return context.subviews.map { view in
+                    let size = view.sizeThatFits()
+                    defer { across += size.width }
+                    return Placement(Rect(x: across, y: 0, width: size.width, height: size.height))
+                }
+            }
+        }
+        defer { host.finish() }
+        let picture = try XCTUnwrap(host.views(WebImageView.self).first)
+        let layout = try XCTUnwrap(host.runtime.tree.root?.first(type: .motionLayout))
+        // Where the layout's program puts the words: after the picture, as wide as it measured.
+        let words = { layout.placement?.placements.last?.bounds.x ?? -1 }
+        host.settle { words() == 0 }
+        XCTAssertEqual(words(), 0, "no picture yet: the words stand where the row begins")
+
+        let drawing = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='20'/%3E"
+        picture.attribute("src", drawing)
+        host.settle { words() > 0 }
+        XCTAssertEqual(words(), 40, accuracy: 0.5, "placed by the size the picture arrived at")
+    }
 }
