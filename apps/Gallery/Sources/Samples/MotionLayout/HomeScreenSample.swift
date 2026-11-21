@@ -115,6 +115,10 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     @State(motion: Self.late) private var appShown = 1.0
     @State private var appRoom = Rect.zero
     @State private var iconPlace = Rect.zero
+
+    /// The corner of the app's surface on its own scale: whatever the surface
+    /// is scaled to, it is drawn rounded as far as it has got from its icon.
+    @State(motion: .none) private var surfaceRounding = 110.0
     // listing: end
 
     // The boards are turned by the hand of their own, so the example is not
@@ -281,12 +285,14 @@ struct HomeScreenSample: SampleContent, ExampleContent {
     /// bar at its foot, or pressed there, it closes onto the icon.
     private func app(_ icon: HomeIcon) -> some View {
         ZStack {
-            // THE SURFACE, tied to the icon's square by the icon's name.
+            // THE SURFACE, tied to the icon's square by the icon's name,
+            // rounded on its way as it is drawn - as it grows, frame by frame.
             Rectangle()
                 .fill(icon.color)
-                .cornerRadius(24)
+                .cornerRadius($surfaceRounding)
                 .sharedTransition(icon.name)
                 .motion(Self.opening)
+                .onEvent(ViewContract.presentationFrameChanged) { frame in rounded(wide: frame[2], tall: frame[3]) }
 
             // THE WORDS come in slowly, then all at once: unseen while the
             // surface is still small.
@@ -348,6 +354,11 @@ struct HomeScreenSample: SampleContent, ExampleContent {
         .onEvent(ViewContract.layoutFrameChanged) { frame in
             appRoom = Rect(x: frame[4], y: frame[5], width: frame[2], height: frame[3])
         }
+        // ROUNDED AS IT IS PULLED AND AS IT CLOSES, wherever its size stands.
+        .engine(following: $appWide.journey) { _ in
+            guard let wide = $appWide.journey.sample?.value, let tall = $appTall.journey.sample?.value else { return }
+            rounded(wide: wide * appRoom.width, tall: tall * appRoom.height)
+        }
         .gridRow(0)
         .accessibilityIdentifier("home.app")
     }
@@ -394,6 +405,18 @@ struct HomeScreenSample: SampleContent, ExampleContent {
         closing = false
         for state in [$appX, $appY] { state.journey.snap(to: 0) }
         for state in [$appWide, $appTall, $appShown] { state.journey.snap(to: 1) }
+    }
+
+    /// The surface drawn `wide` by `tall` points is rounded as the app is (24
+    /// points) at its whole size, as its icon is at the icon's, and in between
+    /// as far as it has got: on its own scale, that over how far it is scaled.
+    private func rounded(wide: Double, tall: Double) {
+        guard appRoom.width > 0, appRoom.height > 0 else { return }
+        let enlarged = Self.enlarged(room, fit)
+        let (icon, corner) = (60 * enlarged, 14 * enlarged)
+        let way = min(max((wide - icon) / max(appRoom.width - icon, 1), 0), 1)
+        let scale = (wide / appRoom.width * tall / appRoom.height).squareRoot()
+        surfaceRounding = (corner + (24 - corner) * way) / max(scale, 0.01)
     }
 
     /// Where the open app's icon is drawn in the window: its place in its tile,

@@ -56,7 +56,7 @@ GridSample.swift 9c95bd0181e0d392
 HTTPRequestSample.swift bf26141a6d52f7d9
 HandMovesStateSample.swift 7b5ef0a4304c1b44
 HandOnViewSample.swift b267b589aefde162
-HomeScreenSample.swift c223951edc55f020
+HomeScreenSample.swift fc7be64fd1ad9cce
 HostTimeSample.swift 45f0551e77c396a8
 IconButtonSample.swift a4ebe7201bac278c
 IconSample.swift 086e9eaca0e7c97a
