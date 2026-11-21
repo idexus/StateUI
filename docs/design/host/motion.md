@@ -129,8 +129,9 @@ host layer keeps one group for each (`PresentationChanges`, the tree's
 
 A member is a described motion - a property the patch moved under the
 view's motion, an entry's numbers and a kept exit's among them - or a place
-on its way (`LayoutMotion`), or a run of a state's channel. Each tells its
-birth and its end (`born`, `ended`), which is all a group hears. A kept exit's numbers are born as the
+on its way (`LayoutMotion`), a run of a state's channel, or the rest of a
+layout whose program that state runs. Each tells its birth and its end
+(`born`, `ended`), which is all a group hears. A kept exit's numbers are born as the
 patch drops the view, so the view that left is waited for until its exit
 lands ([a view kept as it leaves](tree.md#a-view-kept-as-it-leaves)); how
 the exit ended is said before the element is released (`exitEnds`), so its
@@ -155,6 +156,15 @@ the change. So the channels tell every run's birth and end
 born since the render before, and one born later - a channel the render
 itself attached - is taken within the group's window. A state shown by no
 view under the aimed one is no part of the change, whoever wrote it.
+
+A state that runs a layout's program moves more than itself: the views the
+program places may travel on after the state arrived
+([bodies](layout.md#bodies)). So a group that takes a run of such a state
+takes the rest of every such layout under its view too, and that member
+ends as the layout comes to rest ([at rest](layout.md#at-rest)) - or with
+the run, where the run did not arrive. The layout's own `settled` event is
+told by the same rest and by nothing of a change: it is the layout's, heard
+whether or not anybody made a change, and once however many did.
 
 What is born as a later patch is applied joins that patch's groups alone:
 the movement a later write starts in place of a member is that write's own,

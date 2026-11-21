@@ -213,6 +213,7 @@
         var rested: [(handler: Int32, parameters: [Double])] = []
         for mount in layouts.values.sorted() {
             guard let element = byMount[mount]?.element, let samples = element.cameToRest() else { continue }
+            changes.rested(mount)
             if let handler = element.handler(.settled) { rested.append((handler, samples)) }
         }
         return rested
@@ -343,6 +344,7 @@
         stateChannels.watching = { [weak self] state, run, ended in
             if let ended { self?.changes.runEnded(state, run, as: ended) } else { self?.changes.runBorn(state, run) }
         }
+        changes.layouts = { [weak self] state, root in self?.layouts(runBy: state, under: root) ?? [] }
         // The first take starts the recording, so the log holds every pass from here on.
         if diagnostics.inspects { _ = core.takeInspectionLog() }
     }
@@ -458,6 +460,21 @@
 
     /// `element` presents `states` now rather than `before`, the states its bound properties take a frame's values
     /// from.
+    /// The layouts at `root` or under it whose program `state` runs, by mount, in order.
+    func layouts(runBy state: Int32, under root: UInt64) -> [UInt64] {
+        layouts.values.sorted().filter { mount in
+            guard let element = byMount[mount]?.element, element.layoutProgram?.place != nil,
+                  element.driven[.parameters]?.state == state
+            else { return false }
+            var each: MountedElement? = element
+            while let next = each {
+                if next.mount == root { return true }
+                each = next.parent
+            }
+            return false
+        }
+    }
+
     /// Whether an element standing at `mount` or under it shows `state`.
     func shows(_ state: Int32, under mount: UInt64) -> Bool {
         for presenter in (presenters[state] ?? []).sorted() {
@@ -487,6 +504,7 @@
         sheets[element.mount] = nil
         presents(element, [], before: states)
         left(element.mount)
+        changes.left(element.mount)
         layoutMotion.remove(mount: element.mount)
         if !kept { released(element) }
     }

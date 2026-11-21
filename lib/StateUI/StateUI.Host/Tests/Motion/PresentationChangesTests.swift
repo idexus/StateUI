@@ -400,6 +400,39 @@ final class PresentationChangesTests: XCTestCase {
         XCTAssertEqual(still.answered.settled, .settled, "there already: nothing set out")
     }
 
+    /// A CHANGE THAT SENDS A LAYOUT'S PARAMETERS WAITS FOR THE LAYOUT'S REST: its views travel on after the
+    /// parameters arrived, and the change is settled as the layout says it rests - once.
+    func testAChangeWaitsForTheRestOfALayoutItsWritesMoved() async throws {
+        let bench = LayoutBench()
+        let phase = State(wrappedValue: 0.0, motion: .eased(.milliseconds(200)))
+        let aim = Aim(VStack.self)
+        var rested = 0
+        bench.laid {
+            VStack {
+                MotionLayout([0, 1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+                    (0..<2).map { Placement(Rect(x: (Double($0) - at) * 100, y: 0, width: 10, height: 10)) }
+                }
+                // A body that lags behind a place the parameters move, and settles onto it after they arrived.
+                .layoutBodies(.followsLayout(response: .milliseconds(900)))
+                .onSettled { _ in rested += 1 }
+            }
+            .aim(aim)
+            .node
+        }
+
+        let change = try aim.presentationChange { phase.wrappedValue = 2 }
+        bench.frames(20)
+        await bench.settle()
+        XCTAssertEqual(bench.journey?.value, [2], "the parameters arrived")
+        XCTAssertEqual(rested, 0, "its views are still on their way")
+        XCTAssertNil(change.answered.settled)
+
+        bench.frames(240)
+        await bench.settle()
+        XCTAssertEqual(rested, 1)
+        XCTAssertEqual(change.answered.settled, .settled)
+    }
+
     /// A CHANGE THAT STARTED NOTHING IS SETTLED AT ONCE, AND ONE AIMED AT NOTHING SHOWN IS NOT PRESENTED.
     func testAChangeThatStartedNothingIsSettledAtOnce() {
         let bench = Bench()

@@ -226,8 +226,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   `.unsupported` for an exit not drawn where the view stood, `.limited` for one cut short), or
   `.notPresented` where nothing shows the view. It watches the properties the writes move under a view's own
   `.motion(_:)`, the places a layout carries its views to, the entry of a view the writes bring, the exit of
-  one they drop, and the states the writes send somewhere that the view shows; a movement started later is
-  no part of it, and it stops nothing. For a host: nothing to write - a render carries the
+  one they drop, and the states the writes send somewhere that the view shows - a motion layout such a state
+  runs, until it rests; a movement started later is no part of it, and it stops nothing. For a host: nothing to write - a render carries the
   change beside its patch (`HostRender.changes`) and the host layer answers it.
 
 - **A view's aim says how it stands now.** `Aim.presentationSample()`, on the aim of any view, answers a

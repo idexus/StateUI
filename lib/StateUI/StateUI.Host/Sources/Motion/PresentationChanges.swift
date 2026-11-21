@@ -22,11 +22,13 @@
         case limited
     }
 
-    /// A movement a change watches: a property on its way, an element's place, or a run of a state's channel.
+    /// A movement a change watches: a property on its way, an element's place, a run of a state's channel, or
+    /// the rest of a layout whose program that state runs.
     enum Member: Hashable {
         case described(DescribedKey)
         case placed(UInt64)
         case run(state: Int32, number: Int)
+        case rest(UInt64)
     }
 
     private final class Group {
@@ -47,6 +49,9 @@
         /// Whether nothing is left for the group's window to wait for.
         var awaitsNothing: Bool { touched.isEmpty && states.isEmpty }
 
+        /// The layouts whose rest the group waits for, each with the state running its program.
+        var rests: [UInt64: Int32] = [:]
+
         init(_ change: HostPresentationChange, root: UInt64) {
             self.change = change
             self.root = root
@@ -58,6 +63,9 @@
     static let layoutWindow = 2
 
     private let core: CoreLink
+
+    /// The layouts under the element `mount` whose program the state runs, by mount: the tree's to say.
+    var layouts: (Int32, UInt64) -> [UInt64] = { _, _ in [] }
 
     /// The groups whose render is being applied: what is born now joins them.
     private var opened: [Group] = []
@@ -99,7 +107,7 @@
             for state in change.states where tree.shows(state, under: element.mount) {
                 let runs = recent[state] ?? []
                 if runs.isEmpty { group.states.insert(state) }
-                for number in runs { group.members.insert(.run(state: state, number: number)) }
+                for number in runs { take(number, of: state, into: group) }
             }
             opened.append(group)
         }
@@ -108,9 +116,22 @@
     /// A run of `state` was born: a change that waits for one takes it.
     func runBorn(_ state: Int32, _ number: Int) {
         recent[state, default: []].insert(number)
-        for group in opened + waiting where group.states.remove(state) != nil {
-            group.members.insert(.run(state: state, number: number))
+        for group in opened + waiting where group.states.remove(state) != nil { take(number, of: state, into: group) }
+    }
+
+    /// `group` waits for the run `number` of `state`, and for the rest of every layout under its view that the
+    /// state runs: the views such a layout places may travel on after the state arrived.
+    private func take(_ number: Int, of state: Int32, into group: Group) {
+        group.members.insert(.run(state: state, number: number))
+        for layout in layouts(state, group.root) {
+            group.members.insert(.rest(layout))
+            group.rests[layout] = state
         }
+    }
+
+    /// The layout `mount` came to rest.
+    func rested(_ mount: UInt64) {
+        ended(.rest(mount), as: .rested)
     }
 
     /// The run `number` of `state` ended as `outcome`.
@@ -122,6 +143,15 @@
         case .superseded: .superseded
         case .stopped: .stopped
         case .detached: .detached
+        }
+        // A run that did not arrive takes the rest it would have led to with it.
+        if end != .rested {
+            for group in opened + waiting {
+                for layout in group.rests.keys.sorted() where group.rests[layout] == state {
+                    group.rests[layout] = nil
+                    if group.members.remove(.rest(layout)) != nil { group.members.insert(.run(state: state, number: number)) }
+                }
+            }
         }
         ended(.run(state: state, number: number), as: end)
     }
@@ -190,6 +220,13 @@
 
     func released(_ mount: UInt64) {
         exits[mount] = nil
+    }
+
+    /// The element `mount` is the tree's no more: a layout's rest that was waited for will not come.
+    func left(_ mount: UInt64) {
+        guard (opened + waiting).contains(where: { $0.members.contains(.rest(mount)) }) else { return }
+
+        ended(.rest(mount), as: .detached)
     }
 
     /// `element` left by an exit nothing draws - `reason` says why: every change whose patch is being applied over
