@@ -72,7 +72,7 @@ struct MetadataCommand {
 
     /// The text of the file at `path`, or nil where there is none.
     static func text(at path: String) -> String? {
-        guard let file = fopen(path, "rb") else { return nil }
+        guard let file = opened(path) else { return nil }
         defer { fclose(file) }
         var bytes: [UInt8] = []
         var buffer = [UInt8](repeating: 0, count: 1 << 16)
@@ -82,5 +82,15 @@ struct MetadataCommand {
             bytes += buffer[0..<count]
         }
         return String(decoding: bytes, as: UTF8.self)
+    }
+
+    /// The file at `path` opened to read its bytes, by the call each platform's C library offers for it.
+    private static func opened(_ path: String) -> UnsafeMutablePointer<FILE>? {
+        #if os(Windows)
+        var file: UnsafeMutablePointer<FILE>?
+        return fopen_s(&file, path, "rb") == 0 ? file : nil
+        #else
+        return fopen(path, "rb")
+        #endif
     }
 }
