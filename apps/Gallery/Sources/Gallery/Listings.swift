@@ -2523,6 +2523,7 @@ enum Listings {
 
                 Text(card.name)
                     .fontWeight(.semibold)
+                    .horizontalAlignment(.center)
             }
         }
 
@@ -2603,6 +2604,8 @@ enum Listings {
                         .fill(card.color)
                     Text(card.name)
                         .fontWeight(.semibold)
+                        .horizontalAlignment(.center)
+                        .verticalAlignment(.center)
                 }
                 // TIED TO ITS DETAIL by its name: opened, the detail grows from it.
                 // Back, the card comes with its deck, which its arithmetic has not

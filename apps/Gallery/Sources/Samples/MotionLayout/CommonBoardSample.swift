@@ -196,6 +196,7 @@ struct CommonBoardSample: SampleContent, ExampleContent {
             Text(card.name)
                 .fontSize(20)
                 .fontWeight(.semibold)
+                .horizontalAlignment(.center)
         }
         .spacing(10)
     }
@@ -280,6 +281,8 @@ struct CommonBoardSample: SampleContent, ExampleContent {
                     .fontSize(17)
                     .fontWeight(.semibold)
                     .textColor(.white)
+                    .horizontalAlignment(.center)
+                    .verticalAlignment(.center)
             }
             // TIED TO ITS DETAIL by its name: opened, the detail grows from it.
             // Back, the card comes with its deck, which its arithmetic has not
