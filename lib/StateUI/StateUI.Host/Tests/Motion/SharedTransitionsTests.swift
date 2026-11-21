@@ -388,6 +388,10 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(layout.programPlace(at: 0)?.bounds, Rect(x: 40, y: 40, width: 100, height: 60))
         (holder.native as? NoView)?.frame = [40, 40, 100, 60, 50, 60, 50, 60]
         (small.native as? NoView)?.frame = [0, 0, 40, 30, 50, 60, 50, 60]
+        // The toolkit arranged the holder across the layout's room first; the program moved it since.
+        runtime.layoutMotion.place(
+            Placed(), mount: holder.mount, at: Rect(x: 0, y: 0, width: 300, height: 200), stated: [], words: .none,
+            natural: { LayoutSize(width: 300, height: 200) }, enter: nil, in: Arrangement(joins: false), room: nil)
 
         itemDetailed.wrappedValue = true
         runtime.pump.turn()

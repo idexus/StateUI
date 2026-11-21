@@ -431,7 +431,9 @@ made by an earlier patch is no partner of one a later patch drops.
 Where the made view stands is worked out from what the tree knows as its
 layout places it: the place its layout gave it, and each place a layout gave
 what holds it, up to its scope or to the first view no layout's motion
-placed, whose corner the toolkit says. Where that is not known yet,
+placed, whose corner the toolkit says - and a view a layout program places
+is one: its toolkit first stands it across the layout's room, by the
+layout's motion, and the program moves it from there by itself. Where that is not known yet,
 nothing is guessed - and a view a layout program places, made with the
 patch - a motion layout's new item, in its holder - is not known yet.
 

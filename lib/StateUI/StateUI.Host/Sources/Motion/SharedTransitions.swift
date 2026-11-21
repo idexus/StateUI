@@ -193,11 +193,11 @@
         case toolkits
     }
 
-    /// Where `element` stands in what holds it: nowhere known where a layout program places it and this patch
-    /// made it - its toolkit stands it across the layout's room until the program is asked - else the place a
-    /// layout's motion gave it.
+    /// Where `element` stands in what holds it: where a layout program places it, nowhere known if this patch made
+    /// it - its toolkit stands it across the layout's room until the program is asked - else where its toolkit
+    /// draws it, which the program moved since; else the place a layout's motion gave it.
     private func place(of element: MountedElement, in tree: MountedTree) -> Place {
-        if standsUnknown(element) { return .unknown }
+        if element.parent?.layoutProgram != nil { return standsUnknown(element) ? .unknown : .toolkits }
         return tree.layoutMotion.placed(element.mount).map { .at($0.place) } ?? .toolkits
     }
 
