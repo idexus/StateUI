@@ -85,9 +85,6 @@
     /// Design: docs/design/host/tree.md#a-view-kept-as-it-leaves
     var keepsExits: Bool { get }
 
-    /// The element's presentation ends: its view leaves what held it.
-    func releasePresentation()
-
     /// The tab the user chose on a tabbed view, which the tree may not say yet; nil where none.
     var chosenTab: Int? { get }
 
@@ -107,9 +104,6 @@
 
     /// A view keeps no child that left: what it drops is gone at once.
     public var keepsExits: Bool { false }
-
-    /// What held the view dropped it as its element left.
-    public func releasePresentation() {}
 }
 
 /// The runtime's mounted tree: its root, its elements' numbers, and the animations its patches start.

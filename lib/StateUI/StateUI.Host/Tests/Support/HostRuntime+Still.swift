@@ -41,10 +41,8 @@ final class NoView: NativeElement {
     var deactivated = 0
     func deactivate() { deactivated += 1 }
 
-    /// Whether its view keeps a child that left, and how many times its own presentation was released.
+    /// Whether its view keeps a child that left.
     var keepsExits = false
-    var released = 0
-    func releasePresentation() { released += 1 }
 
     /// How many times the element's children were arranged, and the layouts around it asked to measure again.
     var arranged = 0

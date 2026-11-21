@@ -13,6 +13,10 @@
     /// view - a sheet holding one stands at its platform's standard size (`SheetSize`).
     public static let roomTakingTypes: Set<NodeType> = [.itemsView, .motionLayout, .map, .webView]
 
+    /// What runs an engine of its own - a web view's, a map's - which would run on for as long as its view is
+    /// drawn: a leaving subtree holding one is not kept.
+    public static let engineTypes: Set<NodeType> = [.map, .webView]
+
     /// The entries that have no view of their own: structure, and the parts of another's view.
     public static let viewlessTypes: Set<NodeType> = [
         .application, .scene, .window, .anchor, .sheet, .titleView, .bottomBar, .toolbarGroup, .toolbarButton,

@@ -18,12 +18,18 @@ extension MountedElement {
         held.reduce(1) { $0 + $1.mountCount }
     }
 
+    /// Whether an engine of its own runs in this subtree: a web view's, a map's (`NodeType.engineTypes`).
+    var holdsAnEngine: Bool {
+        NodeType.engineTypes.contains(type) || held.contains(where: \.holdsAnEngine)
+    }
+
     /// Begins the element's exit from `parent`: kept where it declares a transition whose exit changes something,
     /// `parent`'s view keeps a view that left, its own motion - else the application's - animates, no message
-    /// makes the tree again, and the window's budget holds. False where it is to leave at once.
+    /// makes the tree again, no engine runs under it, and the window's budget holds. False where it is to leave
+    /// at once.
     func exit(from parent: MountedElement) -> Bool {
         guard lifecycle == .active, let tree, !tree.remakes, parent.native.keepsExits,
-              let effect = transition?.host.exit, !effect.isIdentity,
+              let effect = transition?.host.exit, !effect.isIdentity, !holdsAnEngine,
               let law = tree.layoutMotion.law(of: motion), tree.exits.admit(self, at: tree.time)
         else { return false }
 
@@ -55,8 +61,8 @@ extension MountedElement {
         if exitsRunning <= 0, !isAbsorbed { endExit(.finished) }
     }
 
-    /// The exit ends as `result`, once: the element's presentation is released, what kept it forgets it and
-    /// arranges its views without it.
+    /// The exit ends as `result`, once: the element is released, what kept it forgets it and arranges its views
+    /// without it - the arrangement that takes its view out.
     func endExit(_ result: PresentationOperation.Result) {
         guard lifecycle == .exiting, let parent, parent.keptExits.contains(where: { $0 === self }) else { return }
 

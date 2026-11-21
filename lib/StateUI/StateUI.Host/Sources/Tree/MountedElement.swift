@@ -776,7 +776,6 @@
         presentedOrder = nil
         tree?.released(self)
         tree?.exits.ended(self, as: .cancelled)
-        native.releasePresentation()
     }
 
     /// Marks the subtree exiting, before any of it is detached: nothing a detaching tells finds part of it active.

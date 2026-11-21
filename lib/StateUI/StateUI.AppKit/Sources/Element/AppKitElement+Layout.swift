@@ -93,7 +93,7 @@ extension AppKitElement {
             let views = child.appKit.presentableViews
             if child.lifecycle == .exiting {
                 child.appKit.applyVisibility()
-                for view in views { view.setAccessibilityHidden(true) }
+                for view in views { child.appKit.applyAccessibility(to: view) }
             }
             return views
         }

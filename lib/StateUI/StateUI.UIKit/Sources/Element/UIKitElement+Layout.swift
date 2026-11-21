@@ -32,7 +32,7 @@ extension UIKitElement {
         element.presentedChildren.filter { $0.lifecycle == .exiting }.compactMap { child -> UIView? in
             guard let view = child.uiKit.view else { return nil }
             view.isUserInteractionEnabled = !child.ignoresInput
-            view.accessibilityElementsHidden = true
+            child.uiKit.applyAccessibility()
             return view
         }
     }

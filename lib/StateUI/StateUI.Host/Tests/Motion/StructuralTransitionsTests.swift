@@ -66,7 +66,8 @@ final class StructuralTransitionsTests: XCTestCase {
     private func view(_ element: MountedElement) -> NoView { element.native as! NoView }
 
     /// A CHILD THAT EXITS IS THE APPLICATION'S NO MORE AT ONCE, AND DRAWN UNTIL ITS EXIT LANDS: out of its parent's
-    /// children, among its presented ones, its numbers on their way to the effect - then released, once.
+    /// children, among its presented ones, its numbers on their way to the effect - then released, and its holder
+    /// arranged without it.
     func testAChildThatExitsIsKeptUntilItsExitLands() {
         let bench = Bench()
         bench.show([Bench.text("a"), Bench.text("b", Self.fading)], complete: true)
@@ -76,7 +77,6 @@ final class StructuralTransitionsTests: XCTestCase {
         bench.show([Bench.text("a")])
         XCTAssertEqual(b.lifecycle, .exiting)
         XCTAssertEqual(view(b).deactivated, 1, "deaf and detached at once")
-        XCTAssertEqual(view(b).released, 0, "its view stands")
         XCTAssertTrue(bench.root.children.elementsEqual([a], by: ===), "measured and laid out without it")
         XCTAssertTrue(bench.root.presentedChildren.elementsEqual([a, b], by: ===), "drawn where it stood")
         XCTAssertEqual(bench.runtime.tree.exits.count, 1)
@@ -88,14 +88,15 @@ final class StructuralTransitionsTests: XCTestCase {
 
         bench.frame(at: 200)
         XCTAssertEqual(b.lifecycle, .released)
-        XCTAssertEqual(view(b).released, 1, "released once")
         XCTAssertTrue(bench.root.presentedChildren.elementsEqual([a], by: ===))
         XCTAssertEqual(bench.runtime.tree.exits.count, 0)
         XCTAssertEqual(bench.ended.map(\.result), [.finished])
         XCTAssertGreaterThan(view(bench.root).arranged, arranged, "what kept it arranges its views without it")
+        let once = view(bench.root).arranged
 
         bench.frame(at: 400)
-        XCTAssertEqual(view(b).released, 1, "and never again")
+        XCTAssertEqual(view(bench.root).arranged, once, "and never again for it")
+        XCTAssertEqual(bench.ended.count, 1)
     }
 
     /// WHERE NOTHING KEEPS IT, A CHILD LEAVES AT ONCE: a view keeping none, no transition, an exit that changes
@@ -116,10 +117,27 @@ final class StructuralTransitionsTests: XCTestCase {
             bench.show([Bench.text("a")])
 
             XCTAssertEqual(b.lifecycle, .released, name)
-            XCTAssertEqual(view(b).released, 1, name)
             XCTAssertEqual(bench.runtime.tree.exits.count, 0, name)
             XCTAssertEqual(bench.root.presentedChildren.count, 1, name)
             XCTAssertTrue(bench.ended.isEmpty, "\(name): no exit was kept, so none ended")
+        }
+    }
+
+    /// A SUBTREE AN ENGINE RUNS IN IS NOT KEPT: a web view's process or a map's would run on while it is drawn.
+    func testASubtreeAnEngineRunsInIsNotKept() {
+        for engine in [NodeType.webView, .map] {
+            let bench = Bench()
+            var card = HostPatch(id: .manual("card"), type: .vStack)
+            card.properties = [.transition: Self.fading.propValue]
+            card.children = .arranged([Bench.text("words"), HostPatch(id: .manual("engine"), type: engine)])
+            bench.show([Bench.text("a"), card], complete: true)
+            let leaving = bench.root.children[1]
+
+            bench.show([Bench.text("a")])
+
+            XCTAssertEqual(leaving.lifecycle, .released, "\(engine.name)")
+            XCTAssertEqual(bench.runtime.tree.exits.count, 0, "\(engine.name)")
+            XCTAssertTrue(bench.ended.isEmpty, "\(engine.name)")
         }
     }
 
@@ -209,7 +227,6 @@ final class StructuralTransitionsTests: XCTestCase {
         XCTAssertEqual(inner.lifecycle, .exiting)
         gone.show([])
         XCTAssertEqual(inner.lifecycle, .released, "its holder went at once, and took it")
-        XCTAssertEqual(view(inner).released, 1)
         XCTAssertEqual(gone.ended.map(\.result), [.cancelled])
 
         let kept = Bench(motion: .eased(.milliseconds(400), curve: .linear))
@@ -225,12 +242,10 @@ final class StructuralTransitionsTests: XCTestCase {
 
         kept.frame(at: 400)
         XCTAssertEqual(inner.lifecycle, .exiting, "its own motion's end releases nothing")
-        XCTAssertEqual(view(inner).released, 0)
 
         kept.frame(at: 600)
         XCTAssertEqual(holder.lifecycle, .released)
         XCTAssertEqual(inner.lifecycle, .released, "released with its holder")
-        XCTAssertEqual(view(inner).released, 1)
         XCTAssertEqual(kept.ended.map(\.result), [.cancelled, .finished])
     }
 

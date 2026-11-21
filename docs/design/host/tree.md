@@ -163,6 +163,7 @@ Whether a child is kept is decided once, as it is dropped
   what holds it keeps a view that left      NativeElement.keepsExits
   its own motion, else the application's, animates - and the user asked for no less
   the message makes nothing again           MountedTree.remakes
+  no engine of its own runs under it        NodeType.engineTypes: a web view, a map
   the window's budget holds                 KeptExits
 ```
 
@@ -175,9 +176,9 @@ and nothing else of the tree finds it. Each number its exit touches -
 opacity, the move across and down, scale - sets out from where it is drawn
 now, a motion on its way going on from there, and travels to what the
 effect says by the road a property's own animation takes. As the last
-lands its exit ends: what kept it forgets it, its presentation is released
-(`NativeElement.releasePresentation`), and what kept it arranges its views
-without it.
+lands its exit ends: what kept it forgets it, the element is released, and
+what kept it arranges its views without it - the arrangement that takes its
+view out, so a host has nothing more to be told.
 
 An exit ends once, as one of (`PresentationOperation.Result`):
 
@@ -198,6 +199,10 @@ two thousand and forty-eight mounted elements under them, two seconds a
 view. Past it the oldest end as limited until it holds, a view past its
 time ends on the frame that finds it so, and a subtree larger than the
 whole budget is not kept at all.
+
+A web view or a map is never kept, nor what holds one: its engine - a
+process, a network - would run on for as long as its view is drawn, with
+the application that started it gone from it.
 
 The trap is keeping the view and letting its element go. A native half
 reads its element for as long as it draws; the tree keeps the whole mounted
