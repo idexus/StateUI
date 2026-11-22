@@ -403,28 +403,41 @@ shows, and the move takes the view past that.
 
 ## A shared transition
 
-A view made wearing a key enters from where the one view its patch dropped
-wearing that key was drawn ([the declaration](../views/transitions.md#a-shared-transition)).
-The host layer keeps the notes of one patch (`SharedTransitions`, the tree's
-`shared`), and no host adds to it:
+A view made wearing a key takes over from the one view its patch dropped
+wearing that key: it enters where that one was drawn, as fast as it was moving,
+its corner as it was drawn ([the declaration](../views/transitions.md#a-shared-transition)).
+The host layer keeps what each key's view was drawn as, by its key - the notes
+of one patch (`SharedTransitions`, the tree's `shared`) - and no host adds to it:
 
 ```text
-  a patch drops a child     every view wearing a key in it or under it is noted, with the
-                            rectangle it is DRAWN in - its own transform in it, the one its
-                            layout's program places it with, and every one above it up to the
-                            scope - in its window, and the corner it is drawn with
+  a patch drops a child     every view wearing a key in it or under it is noted under its key
+                            (`Presence`): the rectangle it is DRAWN in - its own transform in it,
+                            the one its layout's program places it with, and every one above it
+                            up to the scope - in its window, how fast that rectangle moves and
+                            grows (`drawnSpeed`), and the corner it is drawn with
   a patch makes a view      wearing a key: noted
   its first place           one view dropped and one made under the key, in that patch, one window
                             and one page, and both rectangles known:
                               it is drawn moved by the difference of their middles and scaled by
                               the ratio of their sizes, each way apart, and brought onto what it
-                              declares under its own motion, else the application's
+                              declares under its own motion, else the application's, its numbers
+                              setting out at the speed the dropped one was drawn at (`ownSpeed`)
                               the dropped one, kept for it, goes along (drawn by both, below);
                               one still leaving by its own exit ends at once
                             anything else: it enters as any view does, and a change that waits
                             for the patch hears `.unsupported`
   two frames later          the notes are let go
 ```
+
+Each key is its own: a patch dropping a row of tiles and making a grid of
+them, a key on each, pairs every tile with its own, and each goes its own way.
+
+The trap is a speed read off one number. A view is drawn moving by its own
+numbers' runs and by those of every view holding it - a list thrown across
+carries its thumbnail - so the speed is carried up through each transform to
+the scope, and read back down into the numbers of the view taking it over,
+with all above it standing still. A return during a movement so turns from
+where the view is, as fast as it was going.
 
 A key is the scope's element and the key's number: the scope is the nearest
 layout above the view that says `transitionScope`, found by walking up, so
@@ -495,30 +508,41 @@ a shared transition are drawn as one on the way, the same on every host
                           more the application's, each number it and each keyed view in it is drawn
                           with held where it stands, with its speed, a state's too
   the patch is applied    a kept view its patch made no partner for goes at once
-  the partner's first     its keyed view goes along (`goAlong`): from where it is drawn, at the speed
-  place                   it had, onto where the partner lands, under the partner's motion; the rest
-                          of the kept view stands where it is drawn; released as the keyed view lands
-  every frame             how far the way has got, read off the number of the view traveling it that
-                          moves most - a scale, else a move; from it each one's opacity, and each
-                          rounded one's corner
+  a partner's first       the keyed view it pairs with goes along (`goAlong`): from where it is
+  place                   drawn, at the speed it was drawn at, onto where the partner lands, under
+                          the partner's motion - each keyed view of the kept view its own way; the
+                          kept view stands where it is drawn, what else it holds fades out there
+  every frame             how far each way has got, read off the number of the view traveling it
+                          that moves most - a scale, else a move; from it the opacity of the one
+                          in front, and each rounded one's corner
+  the partner leaves      the keyed view going along with it is drawn no more, and goes as its runs
+                          land: the key's view is the one leaving now
+  the last lands          the kept view is released
   no partner in two       the kept view goes
   frames
 ```
 
-The trap is what the kept view holds besides its key. Taken along with the
+The trap is what the kept view holds besides its keys. Taken along with a
 keyed view, a caption under a picture would be drawn under the picture's two
 scales - stretched - and carried over whatever stands on the way. So only the
-keyed view travels, found by its mount again while it does, and what else the
-kept view holds stands where it is drawn, fading out with it. A view meant to
-travel whole - an app with its words - wears the key itself.
+keyed views travel, found by their mounts again while they do, and what else
+the kept view holds stands where it is drawn and fades out there under the
+partner's motion. A view meant to travel whole - an app with its words -
+wears the key itself.
+
+The trap is letting go while the patch is applied. A view going along whose
+partner the patch drops is not released then: what kept it would arrange its
+views, the toolkit would lay out and place the views the patch makes before
+the patch has noted the views it drops, and they would set out from nothing.
 
 The two cross over near the smaller: a view growing out of a small one
 comes in over the way's first part (0 to 0.45), one shrinking onto a small
-one over its last (0.55 to 1), two of one size in its middle (0.25 to 0.75),
-each by a smoothstep, and the one leaving goes out as it comes in
-(`SharedWay.crossing(from:to:)`). An app closing onto its icon is the app
-nearly all the way and the icon only as it lands; an icon opening is the app
-nearly at once.
+one goes out over its last (0.55 to 1), two of one size in its middle (0.25
+to 0.75), each by a smoothstep (`SharedWay.crossing(from:to:)`). Only the one
+drawn in front - the larger - crosses; the one behind stands whole under it,
+so the two never let through what stands under them. An app closing onto its
+icon is the app nearly all the way and the icon only as it lands; an icon
+opening is the app nearly at once.
 
 A view rounded by one corner - a rectangle's, a layout's rounded outline -
 carries it: from the corner the leaving one is drawn with to the one the
@@ -541,10 +565,11 @@ The trap is the speed. A view the hand pulls is moved by its states'
 channels: what it is drawn with is a state's lane, not the tree's animation.
 Kept, it is no state's any more, so its numbers are read off the channels
 before it is deactivated - where each run is and how fast
-(`StateChannels.standing(of:now:)`). The kept view then stands, its own
-motion cut short, and the speed it drew its keyed view at is carried into
-that view's own numbers (`standStill(carrying:)`), which set out at it: a
-throw goes on as thrown.
+(`StateChannels.standing(of:now:)`), and the speed each keyed view is drawn
+at is noted under its key as it is dropped. The kept view then stands, its own
+runs cut short, and both views of a key set out at that speed in their own
+numbers - the two drawn as one from the first frame: a throw goes on as
+thrown.
 
 ## Drawn in front
 

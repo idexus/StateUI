@@ -7,7 +7,7 @@ struct TransitionSample: SampleContent, ExampleContent {
     static let summary = "Add a note, then remove one: each comes from, and goes to, where its transition says."
 
     var examples: [Example] {
-        [Example(self), Example(SharedPictures())]
+        [Example(self), Example(SharedPictures()), Example(SharedTiles())]
     }
 
     // listing: TransitionSample
@@ -202,6 +202,77 @@ struct SharedPictures: ExampleContent {
         Text("Press a thumbnail: its picture grows from it. Press the picture: the thumbnail comes back "
             + "from it - press it before the picture has finished growing, and it sets out from where "
             + "the picture has got to.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
+    }
+}
+
+/// Tiles tied by their keys, standing as a row or as a grid: each goes from where it is drawn in the one onto its
+/// place in the other.
+struct SharedTiles: ExampleContent {
+    // listing: SharedTiles
+    static let tints: [Color] = [
+        Color(hex: 0x7C3AED), Color(hex: 0x2563EB), Color(hex: 0x0D9488),
+        Color(hex: 0xD97706), Color(hex: 0xDB2777), Color(hex: 0x16A34A),
+    ]
+
+    @State private var asGrid = false
+
+    var body: some View {
+        VStack {
+            SwitchRow("As a grid", $asGrid)
+                .accessibilityIdentifier("shared.tiles.grid")
+
+            VStack {
+                if asGrid {
+                    // THE GRID: the same keys, larger, three to a row.
+                    Grid {
+                        ForEach(Array(Self.tints.indices)) { tile in
+                            Self.tile(tile, corner: 12)
+                                .gridRow(tile / 3)
+                                .gridColumn(tile % 3)
+                        }
+                    }
+                    .rows(.fixed(84, count: 2))
+                    .columns(.fill(count: 3))
+                    .rowSpacing(8)
+                    .columnSpacing(8)
+                } else {
+                    // THE ROW: each tile small and round.
+                    HStack {
+                        ForEach(Array(Self.tints.indices)) { tile in
+                            Self.tile(tile, corner: 20)
+                                .width(40)
+                                .height(40)
+                        }
+                    }
+                    .spacing(8)
+                }
+            }
+            // THE SCOPE: a tile and the one of its key in the other
+            // arrangement are one to the eye in it.
+            .transitionScope("tiles")
+            .height(200)
+        }
+        .spacing(12)
+    }
+
+    /// One tile: its color, its corner, and its key - its number. The tile
+    /// made takes over where the one of its key was drawn, how fast it was
+    /// moving and its corner, and goes on from there onto its own place.
+    static func tile(_ index: Int, corner: Double) -> some View {
+        Rectangle()
+            .fill(tints[index])
+            .cornerRadius(corner)
+            .sharedTransition(index)
+            .motion(.spring(response: .milliseconds(480), damping: 0.78))
+    }
+    // listing: end
+
+    var notes: (any View)? {
+        Text("Switch between the row and the grid: each tile goes from where it is onto its place in the other, "
+            + "its corner with it. Switch back before the tiles have landed: they turn from where they are, "
+            + "as fast as they were going.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

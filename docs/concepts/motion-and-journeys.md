@@ -440,10 +440,11 @@ the leaving view keeps a view that leaves - a stack, a grid, a ZStack - the
 two are drawn as one on the way: the leaving one goes along onto where the
 entering one lands, at the speed it had, so a view the hand throws goes on
 as thrown; they cross over near the smaller of the two, and a rounded corner
-goes from the one's to the other's. What goes along is the view wearing the
-key, with what it holds; anything else that left with it - a caption under a
-picture - stands where it is drawn and fades out as the two cross, so a view
-meant to travel whole, an app with its words, wears the key itself.
+goes from the one's to the other's; only the one in front, the larger, fades,
+so the two never let through what lies under them. What goes along is the
+view wearing the key, with what it holds; anything else that left with it - a
+caption under a picture - stands where it is drawn and fades out there, so a
+view meant to travel whole, an app with its words, wears the key itself.
 Elsewhere the leaving one goes at once.
 Going back during the movement sets out from where the picture is drawn at
 that moment. On its
@@ -454,6 +455,54 @@ picture's own caption stays over it. The leaving one, going along, is drawn
 in front so too, and where one layout holds them both, the larger of the two
 is in front there: a picture closing onto its thumbnail is drawn over the
 other thumbnails all the way.
+
+A key ties one view before a change to one after it, and one change carries
+as many keys as it holds. A row of tiles laid out again as a grid, each tile
+wearing its own key, sends every tile from where it stands in the row onto
+its cell. The view made takes over from the one of its key - where it was
+drawn, how fast it was moving, its corner - so switching back during the
+movement turns each tile from where it is, as fast as it was going:
+
+```swift
+struct Tiles: View {
+    @State private var asGrid = false
+
+    var body: some View {
+        VStack {
+            Switch($asGrid)
+            VStack {
+                if asGrid {
+                    Grid {
+                        ForEach([0, 1, 2, 3, 4, 5]) { tile in
+                            Rectangle()
+                                .fill(.indigo)
+                                .cornerRadius(12)
+                                .sharedTransition(tile)
+                                .gridRow(tile / 3)
+                                .gridColumn(tile % 3)
+                        }
+                    }
+                    .rows(.fixed(84, count: 2))
+                    .columns(.fill(count: 3))
+                } else {
+                    HStack {
+                        ForEach([0, 1, 2, 3, 4, 5]) { tile in
+                            Rectangle()
+                                .fill(.indigo)
+                                .cornerRadius(20)
+                                .width(40)
+                                .height(40)
+                                .sharedTransition(tile)
+                        }
+                    }
+                }
+            }
+            .transitionScope("tiles")
+            .motion(.spring(response: .milliseconds(480), damping: 0.78))
+        }
+    }
+}
+```
 
 One view leaving and one entering under a key, in one window and on one
 page, are tied - a view entering with the `MotionLayout` that places it too:

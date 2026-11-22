@@ -57,6 +57,7 @@ extension MountedElement {
         // One view left wearing the key this one wears: it sets out from where that one was drawn - and that one,
         // kept for it, goes along onto where it lands. Design: docs/design/host/motion.md#a-shared-transition-drawn-by-both
         if !isRemade, let tree, let pair = tree.shared.source(for: self, in: tree) {
+            // The larger of the two is drawn in front, and it alone crosses over: the one behind stands whole.
             let corner = pair.corner.flatMap { from in ownCorner.map { (from: from, to: $0 * scaleInScope) } }
             let crossing = SharedWay.crossing(from: pair.from, to: pair.to)
             let leads = pair.to.width * pair.to.height >= pair.from.width * pair.from.height
@@ -64,14 +65,17 @@ extension MountedElement {
                 let keyed = pair.leaving ?? kept
                 kept.goAlong(
                     keyed: keyed, from: pair.from, onto: pair.to, in: pair.scope,
-                    under: tree.layoutMotion.law(of: motion), corner: corner, crossing: crossing)
+                    under: tree.layoutMotion.law(of: motion), speed: pair.speed, corner: corner,
+                    crossing: leads ? nil : crossing)
                 keyed.drawKeptInFront(under: pair.scope, besides: self, leads: !leads)
+                alongside = keyed.way == nil ? nil : keyed
             } else {
                 pair.leaving?.endExit(.interrupted, arranging: true)
             }
             let runs = enter(
-                from: pair.setsOut, to: pair.lands, on: view, corner: corner,
-                crossing: pair.kept == nil ? nil : crossing)
+                from: pair.setsOut, to: pair.lands, on: view,
+                speeds: ownSpeed(drawnAt: pair.speed, place: pair.lands, in: pair.scope), corner: corner,
+                crossing: pair.kept != nil && leads ? crossing : nil)
             return drawInFront(under: pair.scope, runs: runs, besides: pair.kept, leads: leads)
         }
         guard let transition = transition?.host else {

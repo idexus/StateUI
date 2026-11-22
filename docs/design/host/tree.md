@@ -180,8 +180,8 @@ host whose layout drops what it is not handed keeps nothing, and its
 dropped views go at once.
 
 A kept child stays found by its mount, so a frame's values reach its view -
-as does the keyed view in it while that one goes along for its partner - and
-nothing else of the tree finds it. Each number its exit touches -
+as do the keyed views in it while they go along for their partners, and what
+fades out beside them - and nothing else of the tree finds it. Each number its exit touches -
 opacity, the move across and down, scale - sets out from where it is drawn
 now, a motion on its way going on from there, and travels to what the
 effect says by the road a property's own animation takes - an effect out of

@@ -3,20 +3,19 @@
 
 @_spi(Host) import StateUI
 
-/// One view's way in a shared transition drawn by both views - the entering one onto its place, the one leaving onto
-/// where the entering one lands - and what each frame works out of how far it has got: the corner of the view rounded
-/// on it, drawn from the one partner's to the other's, and its opacity as the two cross over near the smaller.
+/// One view's way in a shared transition drawn by both views - the entering one onto its place, the keyed one leaving
+/// onto where the entering one lands - and what each frame works out of how far it has got: its corner, drawn from
+/// the one partner's to the other's, and its opacity as the two cross over near the smaller.
 /// Design: docs/design/host/motion.md#a-shared-transition-drawn-by-both
 struct SharedWay {
     /// Each number the way moves: where it set out and where it lands.
     var spans: [Prop: (from: Double, to: Double)]
 
-    /// The view traveling the way - the one entering, or the keyed view of the one kept for it - whose corner is
-    /// carried on it, as drawn at the way's start and at its end.
-    weak var traveler: MountedElement?
+    /// The corner of the view traveling it, as drawn at the way's start and at its end.
     var corner: (from: Double, to: Double)?
 
-    /// Whether the view fades in as the two cross over, or out; nil where no partner is drawn to cross with.
+    /// Whether the view fades in as the two cross over, or out - the one drawn in front of the other; nil where it
+    /// stands whole: behind its partner, or with none drawn to cross with.
     var comes: Bool?
 
     /// The part of the way the two views cross over in.

@@ -13,11 +13,13 @@
         let number: Int
     }
 
-    /// A view that left wearing a key: the patch that dropped it, where it was drawn, in its window's
-    /// coordinates, its corner as drawn there, and where it stood.
-    private struct Source {
+    /// What a view wearing a key was drawn as when it left - what the view of its key made next takes over: the
+    /// patch that dropped it, the rectangle it was drawn in, in its window's coordinates, how fast that moved, its
+    /// corner as drawn there, and where it stood.
+    private struct Presence {
         let patch: Int
         let drawn: Rect
+        let speed: RectSpeed
         let corner: Double?
         let window: UInt64?
         let page: UInt64?
@@ -26,7 +28,8 @@
 
     /// Two views made one: where the dropped one was drawn and the made one lands as drawn, in the scope; the
     /// same two as the made one's own place stands, what holds it undone; the scope they are one in, the view
-    /// dropped - and the view kept for it as it left, should its holder keep one - and its corner as drawn.
+    /// dropped - and the view kept for it as it left, should its holder keep one - how fast it was drawn moving,
+    /// and its corner as drawn.
     struct Pair {
         let from: Rect
         let to: Rect
@@ -35,10 +38,12 @@
         let scope: UInt64
         weak var leaving: MountedElement?
         weak var kept: MountedElement?
+        let speed: RectSpeed
         let corner: Double?
     }
 
-    private var sources: [Key: [Source]] = [:]
+    /// What each key's view was drawn as as it left, by its key: one each, else the key meets no single partner.
+    private var presences: [Key: [Presence]] = [:]
     private var made: [Key: [(mount: UInt64, patch: Int)]] = [:]
 
     /// The views a patch dropped holding a key, kept for the partner it may have made, by their mount.
@@ -65,7 +70,7 @@
 
     /// How many views dropped and made the last patch's notes hold.
     var entries: Int {
-        sources.values.reduce(0) { $0 + $1.count } + made.values.reduce(0) { $0 + $1.count } + born.count
+        presences.values.reduce(0) { $0 + $1.count } + made.values.reduce(0) { $0 + $1.count } + born.count
             + awaiting.count
     }
 
@@ -76,16 +81,23 @@
     }
 
     /// `element` is dropped by the patch being applied, before it is let go: every view wearing a key in it or
-    /// under it is noted where it is drawn, its corner as drawn. Whether one was.
+    /// under it is noted under its key as it is drawn - its rectangle, how fast that moves, its corner. Whether one
+    /// was.
     @discardableResult
     func dropped(_ element: MountedElement) -> Bool {
+        // A keyed view going along with it has nothing left to go along with: the key's view is this one now.
+        if let along = element.alongside {
+            element.alongside = nil
+            along.stopsGoingAlong()
+        }
         var noted = false
         if let key = Self.key(of: element), let numbers = element.native.frameNumbers(), numbers.count >= 8 {
             let own = element.drawnTransform.bounds(of: Rect(x: numbers[4], y: numbers[5], width: numbers[2], height: numbers[3]))
             let drawn = Self.drawn(own, above: element, to: key.scope)
             let scale = numbers[2] > 0 && numbers[3] > 0 ? (drawn.width / numbers[2] * drawn.height / numbers[3]).squareRoot() : 1
-            sources[key, default: []].append(Source(
-                patch: patch, drawn: drawn, corner: element.ownCorner.map { $0 * scale },
+            presences[key, default: []].append(Presence(
+                patch: patch, drawn: drawn, speed: element.drawnSpeed(to: key.scope),
+                corner: element.ownCorner.map { $0 * scale },
                 window: element.enclosing(type: .window)?.mount, page: element.enclosing(type: .page)?.mount,
                 element: element))
             framesLeft = PresentationChanges.layoutWindow
@@ -109,7 +121,7 @@
                 awaiting[mount] = nil
                 continue
             }
-            let partnered = sources.contains { key, left in
+            let partnered = presences.contains { key, left in
                 left.contains { $0.patch == patch && $0.element.map { holds(root, $0) } == true }
                     && (made[key] ?? []).contains { $0.patch == patch }
             }
@@ -153,33 +165,36 @@
     }
 
     /// The rectangle `element`, given its first place, enters from: where the one view its patch dropped
-    /// wearing its key was drawn, in its window's coordinates, with where `element` is placed there - and that
-    /// view, should it still be leaving. Nil where the patch dropped none wearing the key; nil too, and said,
-    /// where it dropped or made more than one, they stood in other windows or pages, or where `element` stands
-    /// is not known yet - and a view kept for it goes then.
+    /// wearing its key was drawn, in its window's coordinates, and how fast, with where `element` is placed there -
+    /// and that view, should it still be leaving. Nil where the patch dropped none wearing the key; nil too, and
+    /// said, where it dropped or made more than one, they stood in other windows or pages, or where `element`
+    /// stands is not known yet - and a view kept for it that sends no other keyed view along goes then.
     func source(for element: MountedElement, in tree: MountedTree) -> Pair? {
         guard let key = Self.key(of: element),
               let mine = made[key]?.first(where: { $0.mount == element.mount })?.patch,
-              let left = sources[key]?.filter({ $0.patch == mine }), !left.isEmpty
+              let left = presences[key]?.filter({ $0.patch == mine }), !left.isEmpty
         else { return nil }
         defer {
-            sources[key]?.removeAll { $0.patch == mine }
+            presences[key]?.removeAll { $0.patch == mine }
             made[key]?.removeAll { $0.patch == mine }
         }
         guard let source = partner(of: element, key: key, patch: mine),
               let destination = placeInWindow(of: element, scope: key.scope, in: tree),
               destination.width > 0, destination.height > 0
         else {
-            for each in left { if let kept = keptHolding(each.element) { release(kept.mount) } }
+            for each in left {
+                if let kept = keptHolding(each.element), kept.exitsRunning == 0 { release(kept.mount) }
+            }
             refused?(element)
             return nil
         }
+        // The kept view stays awaiting: another key of its own may meet its partner in this patch too.
         let kept = keptHolding(source.element)
-        if let kept { awaiting[kept.mount] = nil }
         let landsDrawn = Self.drawn(element.drawnTransform.bounds(of: destination), above: element, to: key.scope)
         return Pair(
             from: source.drawn, to: landsDrawn, setsOut: Self.undrawn(source.drawn, above: element, to: key.scope),
-            lands: destination, scope: key.scope, leaving: source.element, kept: kept, corner: source.corner)
+            lands: destination, scope: key.scope, leaving: source.element, kept: kept, speed: source.speed,
+            corner: source.corner)
     }
 
     /// Whether `element` was made with a patch whose notes are kept: what came with a view setting out.
@@ -199,8 +214,8 @@
     /// The one view the patch `patch` dropped wearing `key` that `element`, made by it wearing the key, sets out
     /// from - all that is known before `element` is placed: one dropped and one made, drawn, in one window and one
     /// page, and nothing between `element` and its scope standing where the tree does not know.
-    private func partner(of element: MountedElement, key: Key, patch: Int) -> Source? {
-        let left = (sources[key] ?? []).filter { $0.patch == patch }
+    private func partner(of element: MountedElement, key: Key, patch: Int) -> Presence? {
+        let left = (presences[key] ?? []).filter { $0.patch == patch }
         guard left.count == 1, let source = left.first, (made[key] ?? []).count(where: { $0.patch == patch }) == 1,
               source.drawn.width > 0, source.drawn.height > 0,
               source.window == element.enclosing(type: .window)?.mount,
@@ -221,8 +236,11 @@
 
         framesLeft -= 1
         if framesLeft == 0 {
-            for mount in awaiting.keys.sorted() { release(mount) }
-            sources.removeAll()
+            // A kept view sending keyed views along goes as the last lands; one sending none goes now.
+            for (mount, held) in awaiting.sorted(by: { $0.key < $1.key }) {
+                if (held.root.element?.exitsRunning ?? 0) > 0 { awaiting[mount] = nil } else { release(mount) }
+            }
+            presences.removeAll()
             made.removeAll()
             born.removeAll()
         }

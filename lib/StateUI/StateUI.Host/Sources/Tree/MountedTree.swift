@@ -471,13 +471,11 @@
     public func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) -> FrameImpact {
         var properties = properties
         // A view traveling a shared transition's way draws, with its numbers, what the way works out of them: its
-        // own corner, and the opacity of the view whose way it is.
+        // opacity as it crosses over, and its corner.
         for (mount, changed) in properties.sorted(by: { $0.key < $1.key }) where !changed.isDisjoint(with: SharedWay.moved) {
-            guard let traveler = byMount[mount]?.element, let holder = traveler.travelsFor ?? Optional(traveler),
-                  let way = holder.way, way.traveler === traveler
-            else { continue }
-            if way.comes != nil { properties[holder.mount, default: []].insert(.opacity) }
-            if way.corner != nil, let rounding = traveler.roundingProperty { properties[mount, default: []].insert(rounding) }
+            guard let traveler = byMount[mount]?.element, let way = traveler.way else { continue }
+            if way.comes != nil { properties[mount]?.insert(.opacity) }
+            if way.corner != nil, let rounding = traveler.roundingProperty { properties[mount]?.insert(rounding) }
         }
         return ProgramWrite.perform {
             var touched = Set(properties.keys)

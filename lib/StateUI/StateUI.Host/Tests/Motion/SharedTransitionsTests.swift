@@ -267,18 +267,23 @@ final class SharedTransitionsTests: XCTestCase {
     }
 
     /// ONLY ITS KEYED VIEW GOES ALONG: what else the view kept for its partner holds - a caption under its thumbnail
-    /// - stands where it is drawn, never moved nor stretched, while the thumbnail alone travels onto the detail's
-    /// place, each frame drawing it there; the list goes as the thumbnail lands.
+    /// - stands where it is drawn, never moved nor stretched, and fades there, while the thumbnail alone travels onto
+    /// the detail's place, each frame drawing it there; the list goes as the thumbnail lands.
     func testWhatElseTheKeptViewHoldsStandsWhereItIsDrawn() throws {
         let bench = Bench(keeps: true)
-        let caption = HostPatch(id: .manual("caption"), type: .text)
-        let list = try standingList(bench, thumbnails: [Bench.keyed("thumbnail", 5), caption])
+        let words = HostPatch(id: .manual("caption"), type: .text)
+        let list = try standingList(bench, thumbnails: [Bench.keyed("thumbnail", 5), words])
         bench.stands("caption", at: Point(x: 50, y: 110), size: LayoutSize(width: 40, height: 20))
         let thumbnail = try XCTUnwrap(bench.element("thumbnail"))
+        let caption = try XCTUnwrap(bench.element("caption"))
         paged(bench)
         XCTAssertEqual(list.lifecycle, .exiting, "kept for its partner")
 
+        bench.frame(at: 16)
+        bench.frame(at: 32)
         bench.frame(at: 100)
+        let fading = bench.tree.presentedPropertyValue(mount: caption.mount, property: .opacity)?.number ?? 1
+        XCTAssertTrue(fading > 0 && fading < 1, "the caption fades where it stands: \(fading)")
         let drawn = list.drawingTransform
         XCTAssertEqual([drawn.translationX, drawn.translationY, drawn.scaleX, drawn.scaleY], [0, 0, 1, 1], "the list stands")
         let thumbnailDrawn = thumbnail.drawingTransform
@@ -291,6 +296,88 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(list.lifecycle, .released, "landed, it is gone")
     }
 
+    /// SEVERAL KEYS GO TOGETHER: a list leaving with two thumbnails, each wearing its own key, and a page made with a
+    /// view of each key - each thumbnail travels onto its own partner's place, and the list goes as the last lands.
+    func testSeveralKeysInOneViewLeavingEachGoOntoTheirOwn() throws {
+        let bench = Bench(keeps: true)
+        let list = try standingList(bench, thumbnails: [Bench.keyed("thumbnail", 5), Bench.keyed("other", 6)])
+        bench.stands("other", at: Point(x: 100, y: 60), size: LayoutSize(width: 40, height: 40))
+        let thumbnails = try ["thumbnail", "other"].map { try XCTUnwrap(bench.element($0)) }
+        bench.show([Bench.holder("page", [Bench.keyed("detail", 5), Bench.keyed("second", 6)])])
+        bench.place("page", at: Rect(x: 0, y: 100, width: 300, height: 200))
+        bench.place("detail", at: Rect(x: 20, y: 30, width: 200, height: 100))
+        bench.place("second", at: Rect(x: 20, y: 140, width: 100, height: 50))
+        let ends = thumbnails.map { view in [Prop.translationX, .translationY, .scaleX, .scaleY].map { view.exitEnds[$0] } }
+        XCTAssertEqual(ends, [[60, 120, 5, 2.5], [-40, 205, 2.5, 1.25]], "each onto its own partner's place")
+        XCTAssertEqual(bench.drawn(.scaleX, of: "second") ?? .nan, 0.4, accuracy: 0.001, "set out from its own: 40 of 100")
+
+        bench.frame(at: 100)
+        XCTAssertEqual(list.lifecycle, .exiting, "on their way")
+        bench.frame(at: 250)
+        XCTAssertEqual(list.lifecycle, .released, "the last landed, the list goes")
+    }
+
+    /// A VIEW STILL ENTERING GOES BACK ALONG: a thumbnail on its way in from the detail, its list dropped before it
+    /// lands, is sent along onto the detail made again - the way it was entering by ended, the new one its own.
+    func testAViewStillEnteringGoesBackAlong() throws {
+        let bench = Bench(keeps: true)
+        bench.show([Bench.holder("page", [Self.rounded("detail", 5, corner: 12)])], complete: true)
+        bench.stands("page", at: Point(x: 10, y: 120), size: LayoutSize(width: 300, height: 200))
+        bench.stands("detail", at: Point(x: 30, y: 150), size: LayoutSize(width: 200, height: 100))
+        bench.show([Bench.holder("list", [Self.rounded("thumbnail", 5, corner: 6)])])
+        bench.place("list", at: Rect(x: 30, y: 30, width: 100, height: 100))
+        bench.place("thumbnail", at: Rect(x: 10, y: 10, width: 40, height: 40))
+        bench.stands("list", at: Point(x: 40, y: 50), size: LayoutSize(width: 100, height: 100))
+        bench.stands("thumbnail", at: Point(x: 50, y: 60), size: LayoutSize(width: 40, height: 40))
+        let thumbnail = try XCTUnwrap(bench.element("thumbnail"))
+        XCTAssertNotNil(thumbnail.way, "on its way in, its corner carried")
+        bench.frame(at: 50)
+
+        paged(bench, details: [Self.rounded("detail", 5, corner: 12)])
+        XCTAssertNotNil(thumbnail.exitEnds[.scaleX], "sent along onto the detail made again")
+    }
+
+    /// A VIEW GOING ALONG ENDS AS ITS PARTNER LEAVES: the detail growing out of a thumbnail is dropped before it
+    /// lands, for another list's thumbnail of its key - the first thumbnail, going along with it, has nothing left to
+    /// go along with: it is drawn no more at once, and goes as its runs land. Nothing is let go while the patch is
+    /// applied: a toolkit arranging what lets go would place the views the patch makes before their partners are
+    /// noted.
+    func testAViewGoingAlongEndsAsItsPartnerLeaves() throws {
+        let bench = Bench(keeps: true)
+        let list = try standingList(bench)
+        let thumbnail = try XCTUnwrap(bench.element("thumbnail"))
+        paged(bench)
+        bench.frame(at: 50)
+        XCTAssertNotNil(thumbnail.way, "going along with the detail")
+
+        bench.show([Bench.holder("shelf", [Bench.keyed("again", 5)])])
+        XCTAssertEqual(thumbnail.value(.opacity)?.number, 0, "its partner gone, it is drawn no more")
+        XCTAssertEqual(list.lifecycle, .exiting, "nothing let go while the patch is applied")
+        bench.frame(at: 250)
+        XCTAssertEqual([thumbnail.lifecycle, list.lifecycle], [.released, .released], "gone as its runs land")
+    }
+
+    /// A SPEED IS CARRIED THROUGH WHAT DRAWS IT: a thumbnail growing at 2 a second in a list drawn at half its size is
+    /// drawn growing at 40 points a second; read back into its own numbers, it is the 2 it runs at.
+    func testASpeedIsCarriedThroughWhatDrawsIt() throws {
+        let bench = Bench()
+        var list = Bench.holder("list", [Bench.keyed("thumbnail", 5)])
+        list.properties = [.scale: .number(0.5)]
+        bench.show([list], complete: true)
+        bench.stands("list", at: Point(x: 40, y: 50), size: LayoutSize(width: 100, height: 100))
+        bench.stands("thumbnail", at: Point(x: 50, y: 60), size: LayoutSize(width: 40, height: 40))
+        let thumbnail = try XCTUnwrap(bench.element("thumbnail"))
+        bench.tree.receiveProperty(
+            mount: thumbnail.mount, property: .scaleX, standing: .number(1), target: .number(3),
+            motion: .eased(.milliseconds(1000), curve: .linear))
+
+        let speed = thumbnail.drawnSpeed(to: bench.root.mount)
+        XCTAssertEqual(speed.width, 40, accuracy: 0.5, "40 points grown 2 a second, drawn at half")
+        XCTAssertEqual(speed.x, 0, accuracy: 0.001, "about its middle")
+        let own = thumbnail.ownSpeed(drawnAt: speed, place: Rect(x: 50, y: 60, width: 40, height: 40), in: bench.root.mount)
+        XCTAssertEqual(own[.scaleX] ?? .nan, 2, accuracy: 0.01, "its own run")
+    }
+
     /// A VIEW DROPPED HOLDING A KEY ITS PATCH MADE NO PARTNER FOR GOES AT ONCE, as the patch is applied whole.
     func testAViewDroppedWithNoPartnerGoesAtOnce() throws {
         let bench = Bench(keeps: true)
@@ -299,17 +386,19 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(list.lifecycle, .released)
     }
 
-    /// THE TWO CROSS OVER NEAR THE SMALLER: growing from the thumbnail, the detail comes in over the way's first
-    /// part as the list goes out; half way they have crossed.
+    /// THE TWO CROSS OVER NEAR THE SMALLER, THE ONE IN FRONT ALONE: growing from the thumbnail, the detail - the
+    /// larger, in front - comes in over the way's first part while the thumbnail behind it stays whole, so the two
+    /// never let through what stands under them; half way they have crossed.
     func testTheTwoCrossOverNearTheSmaller() throws {
         let bench = Bench(keeps: true)
         let list = try standingList(bench)
+        let thumbnail = try XCTUnwrap(bench.element("thumbnail"))
         paged(bench)
         let detail = try XCTUnwrap(bench.element("detail"))
-        let opacities = { [detail.value(.opacity)?.number, list.value(.opacity)?.number] }
-        XCTAssertEqual(opacities(), [0, 1], "setting out: the thumbnail's list alone")
+        let opacities = { [detail, thumbnail, list].map { $0.value(.opacity)?.number ?? 1 } }
+        XCTAssertEqual(opacities(), [0, 1, 1], "setting out: the thumbnail alone")
         bench.frame(at: 100)
-        XCTAssertEqual(opacities(), [1, 0], "half way, grown past where they cross")
+        XCTAssertEqual(opacities(), [1, 1, 1], "half way, grown past where they cross: the detail over it, whole")
         XCTAssertEqual(SharedWay.crossing(from: Rect(x: 0, y: 0, width: 200, height: 100), to: Rect(x: 0, y: 0, width: 40, height: 40)), 0.55...1, "shrinking, late")
     }
 
@@ -339,8 +428,9 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(list.lifecycle, .released)
     }
 
-    /// THE VIEW LEAVING GOES ON AT THE SPEED IT HAD: a list on its way across as it is dropped stands where it is
-    /// drawn, and its thumbnail sets out onto its partner's place at that speed.
+    /// THE TWO GO ON AT THE SPEED THE LEAVING ONE WAS DRAWN AT: a list on its way across as it is dropped stands
+    /// where it is drawn, its thumbnail sets out onto its partner's place at that speed, and the detail made takes
+    /// it over too.
     func testTheViewLeavingGoesOnAtTheSpeedItHad() throws {
         let bench = Bench(keeps: true)
         bench.runtime.layoutMotion.applicationMotion = .spring(response: .milliseconds(300), damping: 1)
@@ -353,6 +443,9 @@ final class SharedTransitionsTests: XCTestCase {
         paged(bench)
         let speed = bench.runtime.tree.standingProperty(mount: thumbnail.mount, property: .translationX)?.velocity.first
         XCTAssertEqual(speed ?? .nan, 250, accuracy: 1, "50 points in 200 ms, on its way on")
+        let detail = try XCTUnwrap(bench.element("detail"))
+        let taken = bench.runtime.tree.standingProperty(mount: detail.mount, property: .translationX)?.velocity.first
+        XCTAssertEqual(taken ?? .nan, 250, accuracy: 1, "the detail sets out at it")
         XCTAssertNil(bench.runtime.tree.standingProperty(mount: list.mount, property: .translationX), "the list stops")
         XCTAssertEqual(list.number(.translationX) ?? .nan, 12.5, accuracy: 0.01, "where it is drawn")
     }

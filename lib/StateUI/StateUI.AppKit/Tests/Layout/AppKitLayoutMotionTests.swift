@@ -405,8 +405,8 @@ final class AppKitLayoutMotionTests: XCTestCase {
 
     /// A thumbnail coming back from its picture - made in a row the same patch makes, under an application that
     /// moves - is set out over the picture's rectangle from the layout pass that places it, the row unfaded; the
-    /// picture, kept by its ZStack, stands drawn whole where it was and in front of the row, the larger of the two,
-    /// the thumbnail waiting to cross over late.
+    /// picture, kept by its ZStack, stands drawn whole where it was and in front of the row, the larger of the two -
+    /// it alone crosses over, late - and the thumbnail stands whole under it.
     @MainActor
     func testAThumbnailComingBackSetsOutUnderItsPictureFromItsFirstPass() throws {
         let renderer = testRenderer(
@@ -456,7 +456,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
             XCTAssertEqual(view.alphaValue, 1, accuracy: 0.001, "\(view) faded")
             shown = view.superview
         }
-        XCTAssertEqual(thumbnail.alphaValue, 0, accuracy: 0.001, "shrinking, it crosses over late")
+        XCTAssertEqual(thumbnail.alphaValue, 1, accuracy: 0.001, "behind the picture, whole")
         let kept = renderer.runtime.tree.root?.keptExits.first { $0.id == .manual("picture") }
         let picture = try XCTUnwrap((kept?.native as? AppKitElement)?.view)
         XCTAssertTrue(picture.superview === native, "the picture kept as it goes along")

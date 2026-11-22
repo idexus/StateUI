@@ -133,13 +133,16 @@ number is given twice.
 
 What a host does with the two numbers is
 [the host layer's](../host/motion.md#a-shared-transition): where one view
-dropped and one view made meet under a key, the made one enters from where
-the dropped one was drawn, and the dropped one - kept where its holder keeps a
-view that leaves - goes along onto where the made one lands, the two drawn as
-one; anywhere else each goes by its own transition. What travels is the view
-wearing the key, with what it holds: what else left with it - a caption under
-a picture - stands where it is drawn and fades out as the two cross, so a
-view meant to travel whole wears the key itself.
+dropped and one view made meet under a key, the made one takes over from the
+dropped one - where it was drawn, how fast it was moving, its corner - and the
+dropped one, kept where its holder keeps a view that leaves, goes along onto
+where the made one lands, the two drawn as one; anywhere else each goes by its
+own transition. A key ties one view before a change to one after it, and a
+change may carry many keys at once: a row of tiles becoming a grid, each tile
+its own key, each going its own way. What travels is the view wearing the key,
+with what it holds: what else left with it - a caption under a picture -
+stands where it is drawn and fades out there, so a view meant to travel whole
+wears the key itself.
 
 The trap is a key read as an identity. Two views of one `.id(_:)` are one
 element continued; two views of one shared key are two elements, each with

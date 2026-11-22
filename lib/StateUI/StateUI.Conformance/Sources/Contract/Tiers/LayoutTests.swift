@@ -18,7 +18,7 @@
                 Aspects.holds(LayoutContract.letsInputThrough, on: element, false, then: true),
                 bodied(element), unbodied(element), scoped(element),
             ] + (SettingOut.kinds.contains(element) ? [drawnInFront(element)] : [])
-                + (SettingOut.keeping.contains(element) ? [keptForItsPartner(element)] : [])
+                + (SettingOut.keeping.contains(element) ? [keptForItsPartner(element), eachKeyOwn(element)] : [])
         }
     }
 
@@ -355,6 +355,43 @@ extension LayoutTests {
         }
     }
 
+    /// A layout that is a scope and keeps a view that leaves pairs each key of one change with its own partner: two
+    /// views leaving in a row, a key on each, and two made in a column - each sets out as large as its own partner
+    /// was drawn, and grows onto its own place.
+    @MainActor
+    static func eachKeyOwn(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).eachKeyOfAChangeSetsOutFromItsOwnPartner", proves: [
+            Covered(LayoutContract.transitionScope, on: element),
+        ], needs: [
+            Covered(ViewContract.sharedTransition, on: RectangleContract.self),
+            Covered(ViewContract.presentationFrameChanged, on: RectangleContract.self),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+        ]) { s in
+            let clock = TestClock()
+            let detailed = State(wrappedValue: false)
+            let (first, second) = (Received<[Double]>(), Received<[Double]>())
+            s.start(clock: clock) {
+                VStack {
+                    Button("Toggle").onClicked { detailed.wrappedValue.toggle() }.id("toggle")
+                    SettingOut.pairs(element, detailed: detailed.wrappedValue, first: first, second: second)
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.frames(of: clock, until: 200)
+
+            try s.perform(.activate, on: s.element("toggle"))
+            s.settle { !first.values.isEmpty && !second.values.isEmpty }
+            let setOut = [first, second].map { $0.values.first.map(FrameReport.size)?.map { $0.rounded() } ?? [] }
+            s.expect(setOut, [[40, 40], [20, 20]], "each sets out as large as its own partner was drawn")
+
+            s.frames(of: clock, until: 1_400)
+            let landed = { [first, second].map { $0.values.last.map(FrameReport.size) ?? [] } }
+            s.settle { landed() == [[160, 80], [100, 50]] }
+            s.expect(landed(), [[160, 80], [100, 50]], "and grows onto its own place")
+        }
+    }
+
     /// A layout whose bodies are none stands a child at its new place at once, though the layout's own motion
     /// would take it there in time.
     @MainActor
@@ -527,6 +564,41 @@ enum SettingOut {
         default: dressing.dress(VStack { box("before"); picture(detailed); box("after") })
         }
         return AnyView(layout)
+    }
+
+    /// Two views of two keys in a layout of each kind that keeps a view leaving it, the scope: small side by side in a
+    /// row, or - once `detailed` - large one under the other in a column, each large one telling where it is drawn.
+    static func pairs(
+        _ element: String, detailed: Bool, first: Received<[Double]>, second: Received<[Double]>
+    ) -> AnyView {
+        let dressing = Dressing([Write(LayoutContract.transitionScope, 1)], id: "layout")
+        let layout: any View = switch element {
+        case "HStack": dressing.dress(HStack { pair(detailed, first, second) })
+        case "Grid": dressing.dress(Grid { pair(detailed, first, second) })
+        case "ZStack": dressing.dress(ZStack { pair(detailed, first, second) })
+        default: dressing.dress(VStack { pair(detailed, first, second) })
+        }
+        return AnyView(layout)
+    }
+
+    @ViewBuilder
+    private static func pair(_ detailed: Bool, _ first: Received<[Double]>, _ second: Received<[Double]>) -> some View {
+        if detailed {
+            VStack {
+                Rectangle().fill(.red).width(160).height(80).sharedTransition("a")
+                    .onEvent(ViewContract.presentationFrameChanged) { first.values.append($0) }
+                    .motion(.eased(.milliseconds(600), curve: .linear))
+                Rectangle().fill(.blue).width(100).height(50).sharedTransition("b")
+                    .onEvent(ViewContract.presentationFrameChanged) { second.values.append($0) }
+                    .motion(.eased(.milliseconds(600), curve: .linear))
+            }
+            .horizontalAlignment(.start)
+        } else {
+            HStack {
+                Rectangle().fill(.red).width(40).height(40).sharedTransition("a")
+                Rectangle().fill(.blue).width(20).height(20).sharedTransition("b")
+            }
+        }
     }
 
     private static func box(_ id: String) -> some View {

@@ -11983,6 +11983,59 @@ enum Listings {
             .height(150)
         }
         """#,
+        "SharedTiles": #"""
+        // Sources/Samples/Animation/TransitionSample.swift
+        static let tints: [Color] = [
+            Color(hex: 0x7C3AED), Color(hex: 0x2563EB), Color(hex: 0x0D9488),
+            Color(hex: 0xD97706), Color(hex: 0xDB2777), Color(hex: 0x16A34A),
+        ]
+
+        @State private var asGrid = false
+
+        var body: some View {
+            VStack {
+                SwitchRow("As a grid", $asGrid)
+
+                VStack {
+                    if asGrid {
+                        // THE GRID: the same keys, larger, three to a row.
+                        Grid {
+                            ForEach(Array(Self.tints.indices)) { tile in
+                                Self.tile(tile, corner: 12)
+                                    .gridRow(tile / 3)
+                                    .gridColumn(tile % 3)
+                            }
+                        }
+                        .rows(.fixed(84, count: 2))
+                        .columns(.fill(count: 3))
+                    } else {
+                        // THE ROW: each tile small and round.
+                        HStack {
+                            ForEach(Array(Self.tints.indices)) { tile in
+                                Self.tile(tile, corner: 20)
+                                    .width(40)
+                                    .height(40)
+                            }
+                        }
+                    }
+                }
+                // THE SCOPE: a tile and the one of its key in the other
+                // arrangement are one to the eye in it.
+                .transitionScope("tiles")
+                .height(200)
+            }
+        }
+
+        /// One tile: its color, its corner, and its key - its number. The tile
+        /// made takes over where the one of its key was drawn, how fast it was
+        /// moving and its corner, and goes on from there onto its own place.
+        static func tile(_ index: Int, corner: Double) -> some View {
+            Rectangle()
+                .fill(tints[index])
+                .sharedTransition(index)
+                .motion(.spring(response: .milliseconds(480), damping: 0.78))
+        }
+        """#,
         "ShortList": #"""
         // Sources/Samples/Collections/LoadingItemsSample.swift
         @State private var shown = false

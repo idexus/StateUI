@@ -237,9 +237,14 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   the leaving view keeps a view that leaves - a stack, a grid, a ZStack - the two are drawn as one: the leaving
   one goes along onto where the entering one lands, at the speed it had, so a view the hand throws goes on as
   thrown; they cross over near the smaller, and a rounded corner - a rectangle's, a layout's rounded shape - goes
-  from the one's to the other's as drawn, whatever either is scaled to. What goes along is the view wearing the
+  from the one's to the other's as drawn, whatever either is scaled to; only the one in front, the larger, fades
+  as they cross, so the two never let through what lies under them. What goes along is the view wearing the
   key, with what it holds: anything else that left with it - a caption under a picture - stands where it is
-  drawn and fades out as the two cross, so a view meant to travel whole wears the key itself.
+  drawn and fades out there, so a view meant to travel whole wears the key itself. A key ties one view before
+  a change to one after it, and one change carries as many keys as it holds - a row of tiles laid out again as
+  a grid sends each tile onto its own cell, with no `MotionLayout`. The view made takes over from the one of its
+  key where it was drawn, how fast it was moving and its corner, so a change made again during the movement
+  turns each view from where it is, as fast as it was going.
 - **For a host: a layout draws its children in one order.** `DrawingOrder.of(_:placedBy:inFront:)`, and
   `TravelingPlaces.drawingOrder(of:placedBy:)` over the children's mounts, replace
   `ZStackArithmetic.drawingOrder(of:placedBy:)`: a run's ranks, else the tree's order, and last a child a shared
