@@ -236,8 +236,10 @@ class WebLayoutView: WebDOMView {
         var views: [UInt64: WebDOMView] = [:]
         for (index, view) in children.enumerated() { views[mounts[index]] = view }
         for (index, mount) in keptMounts.enumerated() where index < leaving.count { views[mount] = leaving[index] }
+        // With none leaving the children stand in their order, told apart by place: views with no mount share one.
+        let standingViews: [WebDOMView?] = leaving.isEmpty ? children : standing.map { views[$0] }
         let ordered = places.drawingOrder(of: standing, kept: Set(keptMounts), placedBy: run)
-            .compactMap { views[standing[$0]] }
+            .compactMap { standingViews[$0] }
         let held = children + leaving
         let inOrder = ordered.count == held.count && zip(ordered, held).allSatisfy { $0 === $1 }
         let writes = arrangement == .layers || arrangement == .grid || !inOrder
