@@ -5,9 +5,53 @@ import XCTest
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 
+/// A deck of two cards a motion layout places, the second drawn at half its size.
+private struct HalvedDeck: View {
+    var body: some View {
+        VStack {
+            MotionLayout([1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { card in
+                Text("card \(card)")
+            } placements: { _, _ in
+                [Placement(Rect(x: 40, y: 40, width: 40, height: 40)),
+                 Placement(Rect(x: 90, y: 40, width: 40, height: 40), transform: .scale(0.5))]
+            }
+        }
+    }
+}
+
+private struct HalvedDeckApplication: Application {
+    var body: some Scene { WindowGroup { HalvedDeck() } }
+}
+
 /// Where an element's laid-out rectangle stands in its window, no transform in it (`MountedElement.cornerInWindow`).
 @MainActor
 final class WindowCornerTests: XCTestCase {
+    /// A VIEW ITS LAYOUT'S PROGRAM DRAWS TRANSFORMED stands transformed too: its corner is its layout's with its place
+    /// added - never the toolkit's, which the program's scale about the view's middle moves.
+    func testACornerTakesNoTransformItsLayoutDrawsItWith() throws {
+        HalvedDeckApplication.register()
+        let clock = WoundClock()
+        let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let deck = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
+        deck.reportFrame([0, 0, 300, 200, 10, 20, 10, 20], in: runtime)
+        for time in stride(from: 16.0, through: 64, by: 16) {
+            clock.time = time
+            runtime.displayCycle.frame(now: time)
+            runtime.pump.turn()
+        }
+        let halved = try XCTUnwrap(deck.children.last)
+        XCTAssertEqual(halved.drawnTransform.scaleX, 0.5, accuracy: 0.001, "drawn at half its size by its layout")
+
+        // The toolkit converts the 40-point square at (90, 40) in a deck at (10, 20), halved about its middle.
+        let corner = halved.cornerInWindow(
+            toolkit: { $0 === halved ? Point(x: 110, y: 70) : $0 === deck ? Point(x: 10, y: 20) : nil },
+            place: { $0 === halved ? Point(x: 90, y: 40) : nil },
+            scrolled: { _ in Point(x: 0, y: 0) })
+        XCTAssertEqual(corner, Point(x: 100, y: 60), "the deck's corner with its place added, no scale in it")
+    }
+
     /// A rectangle moved by a transform of its own, and one in a moved layout, stand where their layouts placed them:
     /// the corner of the layout above, their place in it added and its scroll taken away - never the toolkit's,
     /// which moves with the drawing; one under no transform stands at the toolkit's own.

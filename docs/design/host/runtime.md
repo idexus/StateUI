@@ -491,7 +491,8 @@ presentation stage alone adds ([two rectangles](#two-rectangles)). A
 toolkit's conversion to the window carries the transforms of the view and of
 every view above it on most hosts, so the rule is the host layer's
 (`MountedElement.cornerInWindow`): where no transform stands on the element
-or a layout above it, the toolkit's own corner, exact under bars, insets and
+or a layout above it - its own, or the one its layout's program draws it
+with, a side card of a deck drawn smaller - the toolkit's own corner, exact under bars, insets and
 scrolls; else the corner of the layout placing it, its place there added and
 that layout's scroll taken away, down from the nearest layout under no
 transform. A host hands it its toolkit's corner, an element's place and a

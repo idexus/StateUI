@@ -201,11 +201,13 @@ extension MountedElement {
         return Point(x: above.x + at.x - scroll.x, y: above.y + at.y - scroll.y)
     }
 
-    /// Whether a transform - a move, a turn, a size - stands on the element or on a layout above it.
+    /// Whether a transform - a move, a turn, a size, its own or the one its layout's program draws it with - stands on
+    /// the element or on a layout above it.
     var standsTransformed: Bool {
         var each: MountedElement? = self
         while let element = each {
             if Self.transforms.contains(where: { (element.number($0.property) ?? $0.none) != $0.none }) { return true }
+            if let placing = element.placingTransform, placing != .identity { return true }
             each = element.layoutParent
         }
         return false
