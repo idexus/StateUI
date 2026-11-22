@@ -1,4 +1,4 @@
-# revision 44.1
+# revision 45.1
 Button.longPressDuration: ✅
 Button.pointerMoved: ✓ hover on Button: the view's listening handed the recognizer's states, no touch sent
 Button.pointerPressed: ✓ hover on Button: the view's listening handed the recognizer's states, no touch sent
@@ -160,6 +160,7 @@ VStack.longPressDuration: ✅
 VStack.pointerMoved: ✓ hover on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.pointerPressed: ✓ hover on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.pointerReleased: ✓ hover on VStack: the view's listening handed the recognizer's states, no touch sent
+VStack.sharedPresentation: ✅
 WebView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 WebView.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 WebView.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -170,5 +171,5 @@ ZStack.horizontalAlignment: ✅
 ZStack.interaction: ✓ pressDown on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.layoutBody: ✅
 ZStack.layoutFrameChanged: ✅
-ZStack.sharedPresentation: ✅
+ZStack.tapped: ✓ pressDown on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.verticalAlignment: ✅

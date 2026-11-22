@@ -1,4 +1,4 @@
-# revision 44.2
+# revision 45.2
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
 Button.layoutFrameChanged: ✅
@@ -92,7 +92,6 @@ ProgressBar.rotationUpdated: ✓ rotate on ProgressBar: the relay's report of th
 ProgressBar.tapped: ✓ pressDown on ProgressBar: the relay's report of the press handed to the host, no pointer sent
 Rectangle.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Rectangle.layoutBody: ✅
-Rectangle.layoutFrameChanged: ✅
 Rectangle.presentationFrameChanged: ✅
 ScrollView.gridColumnSpan: ✅
 ScrollView.gridRowSpan: ✅
@@ -158,3 +157,4 @@ WebView.tapped: – WebView2 gives the user's hand to its page: listened to by W
 ZStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 ZStack.layoutBody: ✅
 ZStack.presentationFrameChanged: ✅
+ZStack.sharedPresentation: ✅

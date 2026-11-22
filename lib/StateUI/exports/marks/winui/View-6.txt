@@ -1,4 +1,4 @@
-# revision 44.2
+# revision 45.2
 Button.dragEnded: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragStarting: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragText: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
@@ -64,7 +64,9 @@ Map.swipeThreshold: 🧩
 Map.swiped: 🧩
 MotionLayout.dismissed: ✓ pressDown on MotionLayout: the relay's report of the press handed to the host, no pointer sent
 MotionLayout.horizontalAlignment: ✅
+MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 MotionLayout.layoutFrameChanged: ✅
+MotionLayout.sharedPresentation: ✅
 MotionLayout.verticalAlignment: ✅
 Path.area: ✅
 Path.layoutFrameChanged: ✅
@@ -133,7 +135,6 @@ Text.dragStarting: ✓ dragAndDrop on Text: the relay's drag reports told by the
 Text.dragText: ✓ dragAndDrop on Text: the relay's drag reports told by the driver, no drag WinUI began
 Text.isDraggable: ✓ dragAndDrop on Text: the relay's drag reports told by the driver, no drag WinUI began
 Text.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
-Text.verticalAlignment: ✅
 TextEditor.area: ✅
 TextEditor.layoutFrameChanged: ✅
 TextEditor.tapped: ✓ pressDown on TextEditor: the relay's report of the press handed to the host, no pointer sent
@@ -146,7 +147,6 @@ TimePicker.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches th
 TimePicker.presentationSample: ✅
 TimePicker.transition: ✅
 VStack.pinchUpdated: ✓ pinch on VStack: the relay's report of the manipulation handed to the host, no touch sent
-VStack.sharedPresentation: ✅
 VStack.tapCount: ✓ tap on VStack: the relay's report of the tap handed to the host, no pointer sent
 VStack.tapped: ✓ tap on VStack: the relay's report of the tap handed to the host, no pointer sent
 WebView.droppedFileTypes: ✓ dropFiles on WebView: the relay's drop report told the driver's files, no drag WinUI began

@@ -1,4 +1,4 @@
-# revision 44.1
+# revision 45.1
 Button.pinchUpdated: ✓ pinch on Button: the view's listening handed the recognizer's states, no touch sent
 Button.sharedPresentation: ✅
 Button.tapped: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
@@ -73,7 +73,7 @@ MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interac
 MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 MotionLayout.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-MotionLayout.interaction: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.interaction: ✓ pinch on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.presentationFrameChanged: ✅
 Path.dragEnded: ✓ dragAndDrop on Path: the drag and drop interactions' handlers called, no drag session
 Path.dragStarting: ✓ dragAndDrop on Path: the drag and drop interactions' handlers called, no drag session
@@ -99,10 +99,12 @@ Polyline.transition: ✅
 ProgressBar.pinchUpdated: ✓ pinch on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.sharedPresentation: ✅
 ProgressBar.tapped: ✓ pressDown on ProgressBar: the view's listening handed the recognizer's states, no touch sent
+Rectangle.layoutFrameChanged: ✅
 Rectangle.longPressDuration: ✅
 Rectangle.pointerMoved: ✓ hover on Rectangle: the view's listening handed the recognizer's states, no touch sent
 Rectangle.pointerPressed: ✓ hover on Rectangle: the view's listening handed the recognizer's states, no touch sent
 Rectangle.pointerReleased: ✓ hover on Rectangle: the view's listening handed the recognizer's states, no touch sent
+Rectangle.presentationFrameChanged: ✅
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ScrollView.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ScrollView.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -171,4 +173,3 @@ ZStack.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions'
 ZStack.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 ZStack.interaction: ✓ sweep on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.presentationFrameChanged: ✅
-ZStack.sharedPresentation: ✅

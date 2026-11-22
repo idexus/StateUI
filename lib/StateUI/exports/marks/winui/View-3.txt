@@ -1,4 +1,4 @@
-# revision 44.2
+# revision 45.2
 Button.pinchUpdated: ✓ pinch on Button: the relay's report of the manipulation handed to the host, no touch sent
 Button.tapCount: ✓ tap on Button: the relay's report of the tap handed to the host, no pointer sent
 Button.tapped: ✓ tap on Button: the relay's report of the tap handed to the host, no pointer sent
@@ -95,7 +95,6 @@ ProgressBar.pointerMoved: ✓ hover on ProgressBar: the relay's report of the po
 ProgressBar.pointerPressed: ✓ hover on ProgressBar: the relay's report of the pointer handed to the host, no pointer sent
 ProgressBar.pointerReleased: ✓ hover on ProgressBar: the relay's report of the pointer handed to the host, no pointer sent
 Rectangle.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
-Rectangle.layoutFrameChanged: ✅
 Rectangle.presentationSample: ✅
 Rectangle.transition: ✅
 ScrollView.pinchUpdated: ✓ pinch on ScrollView: the relay's report of the manipulation handed to the host, no touch sent
@@ -156,4 +155,5 @@ WebView.pointerPressed: – WebView2 gives the user's hand to its page: listened
 WebView.pointerReleased: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 ZStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 ZStack.presentationSample: ✅
+ZStack.sharedPresentation: ✅
 ZStack.transition: ✅

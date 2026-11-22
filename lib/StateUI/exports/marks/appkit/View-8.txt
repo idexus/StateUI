@@ -1,4 +1,4 @@
-# revision 44.1
+# revision 45.1
 Button.longPressed: ✓ longPress on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.rotationUpdated: ✓ rotate on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the drag source and the window's drop routing told by the driver, no dragging session
@@ -39,11 +39,11 @@ Grid.horizontalAlignment: ✅
 Grid.interaction: ✓ pressDown on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.layoutBody: ✅
 Grid.layoutFrameChanged: ✅
+Grid.sharedPresentation: ✅
 Grid.verticalAlignment: ✅
 HStack.gridColumn: ✅
 HStack.gridRow: ✅
 HStack.layoutFrameChanged: ✅
-HStack.sharedPresentation: ✅
 HStack.tapped: ✓ pressDown on HStack: handed to the host's recognizer or handler, no NSEvent sent
 Image.swipeDirections: ✓ pan on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.swipeThreshold: ✓ pan on Image: handed to the host's recognizer or handler, no NSEvent sent
@@ -144,6 +144,7 @@ Text.layoutFrameChanged: ✅
 Text.margin: ✅
 Text.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Text.panUpdated: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
+Text.verticalAlignment: ✅
 TextEditor.horizontalAlignment: ✅
 TextEditor.interaction: ✓ pressDown on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.layoutBody: ✅
@@ -161,6 +162,7 @@ TimePicker.tapped: ✓ tap on TimePicker: handed to the host's recognizer or han
 TimePicker.transition: ✅
 VStack.longPressed: ✓ longPress on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.rotationUpdated: ✓ rotate on VStack: handed to the host's recognizer or handler, no NSEvent sent
+VStack.sharedPresentation: ✅
 WebView.dragEnded: ✓ dragAndDrop on WebView: the drag source and the window's drop routing told by the driver, no dragging session
 WebView.dragStarting: ✓ dragAndDrop on WebView: the drag source and the window's drop routing told by the driver, no dragging session
 WebView.dragText: ✓ dragAndDrop on WebView: the drag source and the window's drop routing told by the driver, no dragging session
@@ -173,4 +175,3 @@ ZStack.droppedFileTypes: ✓ dropFiles on ZStack: the window's drop routing told
 ZStack.filesDropped: ✓ dropFiles on ZStack: the window's drop routing told the driver's files, no dragging session
 ZStack.interaction: ✓ pressDown on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.presentationSample: ✅
-ZStack.sharedPresentation: ✅

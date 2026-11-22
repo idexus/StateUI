@@ -1,4 +1,4 @@
-# revision 44.2
+# revision 45.2
 Button.rotationUpdated: ✓ rotate on Button: the relay's report of the manipulation handed to the host, no touch sent
 Button.tapped: ✓ pressDown on Button: the relay's report of the press handed to the host, no pointer sent
 Canvas.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
@@ -40,6 +40,7 @@ HStack.gridColumn: ✅
 HStack.gridRow: ✅
 HStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 HStack.layoutFrameChanged: ✅
+HStack.sharedPresentation: ✅
 HStack.transition: ✅
 Image.dragEnded: ✓ dragAndDrop on Image: the relay's drag reports told by the driver, no drag WinUI began
 Image.dragStarting: ✓ dragAndDrop on Image: the relay's drag reports told by the driver, no drag WinUI began
@@ -70,7 +71,6 @@ Map.transition: 🧩
 MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 MotionLayout.layoutBody: ✅
 MotionLayout.presentationFrameChanged: ✅
-MotionLayout.sharedPresentation: ✅
 Path.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Path.presentationSample: ✅
 Path.transition: ✅
@@ -156,4 +156,5 @@ WebView.longPressDuration: – WinUI's long press comes after the system's own t
 ZStack.dismissed: ✓ pressDown on ZStack: the relay's report of the press handed to the host, no pointer sent
 ZStack.horizontalAlignment: ✅
 ZStack.layoutFrameChanged: ✅
+ZStack.sharedPresentation: ✅
 ZStack.verticalAlignment: ✅

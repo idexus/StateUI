@@ -1,4 +1,4 @@
-# revision 44.1
+# revision 45.1
 Button.gridColumn: ✅
 Button.gridRow: ✅
 Button.layoutFrameChanged: ✅
@@ -71,9 +71,10 @@ Map.area: ✅
 Map.dismissed: ✓ pressDown on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.layoutFrameChanged: ✅
 Map.transition: ✅
-MotionLayout.interaction: ✓ rotate on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.interaction: ✓ pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.longPressed: ✓ longPress on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.rotationUpdated: ✓ rotate on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.sharedPresentation: ✅
 Path.pinchUpdated: ✓ pinch on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.sharedPresentation: ✅
 Path.tapped: ✓ pressDown on Path: handed to the host's recognizer or handler, no NSEvent sent
@@ -96,6 +97,7 @@ ProgressBar.gridColumn: ✅
 ProgressBar.gridRow: ✅
 ProgressBar.layoutFrameChanged: ✅
 ProgressBar.tapped: ✓ pressDown on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
+Rectangle.layoutFrameChanged: ✅
 Rectangle.swipeDirections: ✓ pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.swipeThreshold: ✓ pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.swiped: ✓ pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
@@ -144,7 +146,6 @@ Text.swiped: ✓ pan on Text: handed to the host's recognizer or handler, no NSE
 Text.tapCount: ✓ tap on Text: handed to the host's recognizer or handler, no NSEvent sent
 Text.tapped: ✓ tap on Text: handed to the host's recognizer or handler, no NSEvent sent
 Text.transition: ✅
-Text.verticalAlignment: ✅
 TextEditor.longPressDuration: ✅
 TextEditor.pointerMoved: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.pointerPressed: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
@@ -163,7 +164,6 @@ TimePicker.verticalAlignment: ✅
 VStack.gridColumn: ✅
 VStack.gridRow: ✅
 VStack.layoutFrameChanged: ✅
-VStack.sharedPresentation: ✅
 VStack.tapped: ✓ pressDown on VStack: handed to the host's recognizer or handler, no NSEvent sent
 WebView.swipeDirections: ✓ pan on WebView: handed to the host's recognizer or handler, no NSEvent sent
 WebView.swipeThreshold: ✓ pan on WebView: handed to the host's recognizer or handler, no NSEvent sent

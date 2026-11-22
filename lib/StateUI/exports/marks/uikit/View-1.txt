@@ -1,4 +1,4 @@
-# revision 44.1
+# revision 45.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the drop interaction's handler told the driver's files, no drag session
 Button.filesDropped: ✓ dropFiles on Button: the drop interaction's handler told the driver's files, no drag session
 Button.interaction: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
@@ -42,6 +42,7 @@ Grid.tapped: ✓ tap on Grid: the view's listening handed the recognizer's state
 Grid.transition: ✅
 HStack.longPressed: ✓ longPress on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.rotationUpdated: ✓ rotate on HStack: the view's listening handed the recognizer's states, no touch sent
+HStack.sharedPresentation: ✅
 Image.dragEnded: ✓ dragAndDrop on Image: the drag and drop interactions' handlers called, no drag session
 Image.dragStarting: ✓ dragAndDrop on Image: the drag and drop interactions' handlers called, no drag session
 Image.dragText: ✓ dragAndDrop on Image: the drag and drop interactions' handlers called, no drag session
@@ -71,7 +72,6 @@ MotionLayout.gridColumnSpan: ✅
 MotionLayout.gridRowSpan: ✅
 MotionLayout.interaction: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.layoutFrameChanged: ✅
-MotionLayout.sharedPresentation: ✅
 MotionLayout.transition: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅
@@ -173,4 +173,5 @@ ZStack.gridColumnSpan: ✅
 ZStack.gridRowSpan: ✅
 ZStack.interaction: ✓ pressDown on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.layoutFrameChanged: ✅
+ZStack.sharedPresentation: ✅
 ZStack.transition: ✅

@@ -1,4 +1,4 @@
-# revision 44.1
+# revision 45.1
 Button.horizontalAlignment: ✅
 Button.interaction: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.layoutBody: ✅
@@ -44,6 +44,7 @@ HStack.longPressDuration: ✅
 HStack.pointerMoved: ✓ hover on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.pointerPressed: ✓ hover on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.pointerReleased: ✓ hover on HStack: handed to the host's recognizer or handler, no NSEvent sent
+HStack.sharedPresentation: ✅
 Image.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Image.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Image.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
@@ -70,7 +71,6 @@ Map.filesDropped: ✓ dropFiles on Map: the window's drop routing told the drive
 Map.interaction: ✓ pressDown on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.presentationSample: ✅
 MotionLayout.interaction: ✓ sweep on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
-MotionLayout.sharedPresentation: ✅
 MotionLayout.swipeDirections: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.swipeThreshold: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.swiped: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
@@ -169,6 +169,7 @@ WebView.gridColumn: ✅
 WebView.gridRow: ✅
 WebView.layoutFrameChanged: ✅
 WebView.tapped: ✓ pressDown on WebView: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.sharedPresentation: ✅
 ZStack.swipeDirections: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.swipeThreshold: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.swiped: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent

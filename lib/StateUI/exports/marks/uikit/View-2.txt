@@ -1,4 +1,4 @@
-# revision 44.1
+# revision 45.1
 Button.horizontalAlignment: ✅
 Button.interaction: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
 Button.layoutBody: ✅
@@ -44,6 +44,7 @@ HStack.longPressDuration: ✅
 HStack.pointerMoved: ✓ hover on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.pointerPressed: ✓ hover on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.pointerReleased: ✓ hover on HStack: the view's listening handed the recognizer's states, no touch sent
+HStack.sharedPresentation: ✅
 Image.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Image.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Image.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -70,7 +71,6 @@ Map.filesDropped: ✓ dropFiles on Map: the drop interaction's handler told the 
 Map.interaction: ✓ pressDown on Map: the view's listening handed the recognizer's states, no touch sent
 Map.presentationSample: ✅
 MotionLayout.interaction: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
-MotionLayout.sharedPresentation: ✅
 MotionLayout.swipeDirections: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.swipeThreshold: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.swiped: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
@@ -169,6 +169,7 @@ WebView.gridColumn: ✅
 WebView.gridRow: ✅
 WebView.layoutFrameChanged: ✅
 WebView.tapped: ✓ pressDown on WebView: the view's listening handed the recognizer's states, no touch sent
+ZStack.sharedPresentation: ✅
 ZStack.swipeDirections: ✓ pan on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.swipeThreshold: ✓ pan on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.swiped: ✓ pan on ZStack: the view's listening handed the recognizer's states, no touch sent

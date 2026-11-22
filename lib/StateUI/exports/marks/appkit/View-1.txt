@@ -1,4 +1,4 @@
-# revision 44.1
+# revision 45.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the window's drop routing told the driver's files, no dragging session
 Button.filesDropped: ✓ dropFiles on Button: the window's drop routing told the driver's files, no dragging session
 Button.interaction: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -42,6 +42,7 @@ Grid.tapped: ✓ tap on Grid: handed to the host's recognizer or handler, no NSE
 Grid.transition: ✅
 HStack.longPressed: ✓ longPress on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.rotationUpdated: ✓ rotate on HStack: handed to the host's recognizer or handler, no NSEvent sent
+HStack.sharedPresentation: ✅
 Image.dragEnded: ✓ dragAndDrop on Image: the drag source and the window's drop routing told by the driver, no dragging session
 Image.dragStarting: ✓ dragAndDrop on Image: the drag source and the window's drop routing told by the driver, no dragging session
 Image.dragText: ✓ dragAndDrop on Image: the drag source and the window's drop routing told by the driver, no dragging session
@@ -71,7 +72,6 @@ MotionLayout.gridColumnSpan: ✅
 MotionLayout.gridRowSpan: ✅
 MotionLayout.interaction: ✓ pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.layoutFrameChanged: ✅
-MotionLayout.sharedPresentation: ✅
 MotionLayout.transition: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅
@@ -173,4 +173,5 @@ ZStack.gridColumnSpan: ✅
 ZStack.gridRowSpan: ✅
 ZStack.interaction: ✓ pressDown on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.layoutFrameChanged: ✅
+ZStack.sharedPresentation: ✅
 ZStack.transition: ✅

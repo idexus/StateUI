@@ -1,4 +1,4 @@
-# revision 44.1
+# revision 45.1
 Button.area: ✅
 Button.dismissed: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.layoutFrameChanged: ✅
@@ -69,7 +69,7 @@ Map.interaction: ✓ pressDown on Map: handed to the host's recognizer or handle
 Map.layoutBody: ✅
 Map.layoutFrameChanged: ✅
 Map.verticalAlignment: ✅
-MotionLayout.interaction: ✓ pinch on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.interaction: ✓ notch on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.pinchUpdated: ✓ pinch on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.sharedPresentation: ✅
 MotionLayout.tapped: ✓ pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
@@ -101,7 +101,6 @@ Rectangle.gridColumnSpan: ✅
 Rectangle.gridRowSpan: ✅
 Rectangle.interaction: ✓ pressDown on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.layoutFrameChanged: ✅
-Rectangle.presentationFrameChanged: ✅
 Rectangle.transition: ✅
 ScrollView.pinchUpdated: ✓ pinch on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.sharedPresentation: ✅
@@ -161,7 +160,6 @@ TimePicker.presentationSample: ✅
 VStack.area: ✅
 VStack.dismissed: ✓ pressDown on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.layoutFrameChanged: ✅
-VStack.sharedPresentation: ✅
 VStack.transition: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRowSpan: ✅

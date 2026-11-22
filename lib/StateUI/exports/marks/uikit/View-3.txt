@@ -1,4 +1,4 @@
-# revision 44.1
+# revision 45.1
 Button.area: ✅
 Button.dismissed: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
 Button.layoutFrameChanged: ✅
@@ -69,7 +69,7 @@ Map.interaction: ✓ pressDown on Map: the view's listening handed the recognize
 Map.layoutBody: ✅
 Map.layoutFrameChanged: ✅
 Map.verticalAlignment: ✅
-MotionLayout.interaction: ✓ pinch on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.interaction: ✓ notch on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.pinchUpdated: ✓ pinch on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.sharedPresentation: ✅
 MotionLayout.tapped: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
@@ -101,7 +101,6 @@ Rectangle.gridColumnSpan: ✅
 Rectangle.gridRowSpan: ✅
 Rectangle.interaction: ✓ pressDown on Rectangle: the view's listening handed the recognizer's states, no touch sent
 Rectangle.layoutFrameChanged: ✅
-Rectangle.presentationFrameChanged: ✅
 Rectangle.transition: ✅
 ScrollView.pinchUpdated: ✓ pinch on ScrollView: the view's listening handed the recognizer's states, no touch sent
 ScrollView.sharedPresentation: ✅
@@ -161,7 +160,6 @@ TimePicker.presentationSample: ✅
 VStack.area: ✅
 VStack.dismissed: ✓ pressDown on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.layoutFrameChanged: ✅
-VStack.sharedPresentation: ✅
 VStack.transition: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRowSpan: ✅

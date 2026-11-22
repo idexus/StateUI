@@ -1,4 +1,4 @@
-# revision 44.1
+# revision 45.1
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
 Button.interaction: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -71,6 +71,7 @@ Map.gridColumn: ✅
 Map.gridRow: ✅
 Map.layoutFrameChanged: ✅
 Map.tapped: ✓ pressDown on Map: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.interaction: ✓ sweep on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.longPressDuration: ✅
 MotionLayout.pointerMoved: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.pointerPressed: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
@@ -98,6 +99,7 @@ ProgressBar.gridRowSpan: ✅
 ProgressBar.interaction: ✓ pressDown on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.layoutFrameChanged: ✅
 ProgressBar.transition: ✅
+Rectangle.layoutFrameChanged: ✅
 Rectangle.pinchUpdated: ✓ pinch on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.sharedPresentation: ✅
 Rectangle.tapped: ✓ pressDown on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
@@ -170,4 +172,3 @@ ZStack.longPressDuration: ✅
 ZStack.pointerMoved: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.pointerPressed: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.pointerReleased: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
-ZStack.tapped: ✓ pressDown on ZStack: handed to the host's recognizer or handler, no NSEvent sent

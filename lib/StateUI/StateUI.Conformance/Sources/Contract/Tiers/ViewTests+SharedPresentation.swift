@@ -130,6 +130,49 @@ extension ViewTests {
         }
     }
 
+    /// A layout that keeps a view that leaves keeps the one closed as it opens: the small view made again while the
+    /// large one still grows out of it meets it through their presentation - never taking the small one leaving
+    /// back - and the large one goes back along onto it, drawn until that run lands, and gone then.
+    @MainActor
+    static func closedAsItOpens(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aViewClosedAsItOpensGoesBackAlong", proves: [
+            Covered(ViewContract.sharedPresentation, on: element),
+        ], needs: [
+            Covered(ViewContract.sharedPresentation, on: RectangleContract.self),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+        ]) { s in
+            let clock = TestClock()
+            let detailed = State(wrappedValue: false)
+            s.start(clock: clock) {
+                VStack {
+                    Button("Toggle").onClicked { detailed.wrappedValue.toggle() }.id("toggle")
+                    SettingOut.layout(element, detailed: detailed.wrappedValue)
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.frames(of: clock, until: 200)
+
+            let layout = try s.element("layout")
+            let small = layout.children.map(\.id)
+            try s.perform(.activate, on: s.element("toggle"))
+            s.settle { layout.children.count == 3 && layout.children.map(\.id) != small }
+            let large = layout.children[1].id
+            s.frames(of: clock, until: 300)
+
+            // A sixth of its way in, the large one is closed: the small one made again where it still leaves, and
+            // the two on their way back - a view let go had gone two frames on.
+            try s.perform(.activate, on: s.element("toggle"))
+            s.frames(of: clock, until: 500)
+            s.expect(try s.drawingOrder(of: layout).contains(large), true, "the large one goes back along, drawn")
+
+            s.frames(of: clock, until: 2_000)
+            let landed = layout.children.map(\.id)
+            try s.settle { try s.drawingOrder(of: layout) == landed }
+            s.expect(try s.drawingOrder(of: layout), landed, "landed: the large one is gone")
+        }
+    }
+
     /// A layout that keeps a view that leaves pairs each id of one change with its own partner: two
     /// views leaving in a row, an id on each, and two made in a column - each sets out as large as its own partner
     /// was drawn, and grows onto its own place.
@@ -287,6 +330,7 @@ enum SettingOut {
                 .width(40)
                 .height(40)
                 .id("picture")
+                .motion(.eased(.milliseconds(600), curve: .linear))
         }
     }
 }

@@ -1,4 +1,4 @@
-# revision 44.2
+# revision 45.2
 Button.area: ✅
 Button.layoutFrameChanged: ✅
 Button.tapped: ✓ pressDown on Button: the relay's report of the press handed to the host, no pointer sent
@@ -33,11 +33,12 @@ Fill.horizontalAlignment: ✅
 Fill.layoutFrameChanged: ✅
 Fill.verticalAlignment: ✅
 Grid.rotationUpdated: ✓ rotate on Grid: the relay's report of the manipulation handed to the host, no touch sent
+Grid.sharedPresentation: ✅
 Grid.tapped: ✓ pressDown on Grid: the relay's report of the press handed to the host, no pointer sent
 HStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 HStack.layoutBody: ✅
 HStack.presentationFrameChanged: ✅
-HStack.sharedPresentation: ✅
+HStack.tapped: ✅
 Image.gridColumnSpan: ✅
 Image.gridRowSpan: ✅
 Image.layoutFrameChanged: ✅
@@ -62,7 +63,6 @@ Map.filesDropped: 🧩
 Map.interaction: 🧩
 Map.layoutFrameChanged: 🧩
 Map.margin: 🧩
-MotionLayout.interaction: does not apply - notch on MotionLayout - A wheel reaches the layout as WinUI's own scroller takes it, its tracker's: the tracker tells no notch
 MotionLayout.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 MotionLayout.pointerMoved: ✓ hover on MotionLayout: the relay's report of the pointer handed to the host, no pointer sent
 MotionLayout.pointerPressed: ✓ hover on MotionLayout: the relay's report of the pointer handed to the host, no pointer sent
@@ -147,6 +147,7 @@ TimePicker.tapped: ✓ pressDown on TimePicker: the relay's report of the press 
 VStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 VStack.layoutBody: ✅
 VStack.presentationFrameChanged: ✅
+VStack.sharedPresentation: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRowSpan: ✅
 WebView.layoutFrameChanged: ✅
@@ -160,4 +161,3 @@ ZStack.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told b
 ZStack.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 ZStack.panTouchCount: ✓ pan on ZStack: the relay's report of the press dragged handed to the host, no pointer sent
 ZStack.panUpdated: ✓ pan on ZStack: the relay's report of the press dragged handed to the host, no pointer sent
-ZStack.sharedPresentation: ✅

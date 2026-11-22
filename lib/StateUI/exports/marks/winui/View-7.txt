@@ -1,4 +1,4 @@
-# revision 44.2
+# revision 45.2
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -61,7 +61,9 @@ Map.pinchUpdated: 🧩
 Map.tapCount: 🧩
 Map.tapped: 🧩
 MotionLayout.area: ✅
+MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 MotionLayout.layoutFrameChanged: ✅
+MotionLayout.sharedPresentation: ✅
 MotionLayout.tapped: ✓ pressDown on MotionLayout: the relay's report of the press handed to the host, no pointer sent
 MotionLayout.transition: ✅
 Path.gridColumn: ✅
@@ -148,7 +150,6 @@ TimePicker.horizontalAlignment: ✅
 TimePicker.layoutFrameChanged: ✅
 TimePicker.verticalAlignment: ✅
 VStack.rotationUpdated: ✓ rotate on VStack: the relay's report of the manipulation handed to the host, no touch sent
-VStack.sharedPresentation: ✅
 VStack.tapped: ✓ pressDown on VStack: the relay's report of the press handed to the host, no pointer sent
 WebView.interaction: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.layoutBody: ✅
@@ -160,4 +161,3 @@ ZStack.sharedPresentation: ✅
 ZStack.swipeDirections: ✓ pan on ZStack: the relay's report of the press dragged handed to the host, no pointer sent
 ZStack.swipeThreshold: ✓ pan on ZStack: the relay's report of the press dragged handed to the host, no pointer sent
 ZStack.swiped: ✓ pan on ZStack: the relay's report of the press dragged handed to the host, no pointer sent
-ZStack.tapped: ✓ pressDown on ZStack: the relay's report of the press handed to the host, no pointer sent

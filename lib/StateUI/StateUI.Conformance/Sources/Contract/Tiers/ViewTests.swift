@@ -25,7 +25,8 @@
             ]
         } + Specimens.wearing(LayoutContract.self).flatMap { element in
             [sharedIn(element)] + (SettingOut.kinds.contains(element) ? [drawnInFront(element)] : [])
-                + (SettingOut.keeping.contains(element) ? [keptForItsPartner(element), eachKeyOwn(element)] : [])
+                + (SettingOut.keeping.contains(element)
+                    ? [keptForItsPartner(element), eachKeyOwn(element), closedAsItOpens(element)] : [])
         } + [
             scrolledInItsWindow, scrolledInAList, atItsPagesCorner, carriedToItsPlace, onAFirstBaseline, showsItsPress,
             pressedByAScreenReader,
