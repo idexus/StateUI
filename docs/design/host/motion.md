@@ -615,6 +615,15 @@ through that hold, would be drawn off by as much for the whole way - a step at
 the start, an outline around the partner at the end. So what a kept view is
 held at is what its toolkit shows (`KeptViewDrawingTests`).
 
+The trap is the patch that moves what holds the view it drops. A patch takes
+an element's own values before its children and sets them moving after: read
+while the children are applied, a holder told to move a hundred points would
+already stand there, and its keyed view, noted as it is dropped, would set out
+from a place no frame drew. So while a patch changes a number of an element's
+transform and has not set it moving, the element is drawn where that number
+stood on the last frame (`MountedElement.stoodAt`,
+`SharedTransitionsTests.testAViewSetsOutFromWhereItWasDrawnAsItsHolderMoves`).
+
 ## Drawn in front
 
 A view setting out from its partner passes over what stands around it, so

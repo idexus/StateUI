@@ -281,6 +281,24 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(bench.runtime.tree.shared.entries, 0, "its patch's notes let go, nothing of the pair is held")
     }
 
+    /// A VIEW SETS OUT FROM WHERE IT WAS DRAWN as the patch dropping it moves what holds it: the list, at rest, told
+    /// to move a hundred points across by the patch that drops its thumbnail, held it at (50, 60) on the last frame -
+    /// and the detail sets out there, never from where the list goes.
+    func testAViewSetsOutFromWhereItWasDrawnAsItsHolderMoves() throws {
+        let bench = Bench(keeps: true)
+        _ = try standingList(bench)
+        var moved = Bench.holder("list", [])
+        moved.properties = [.translationX: .number(100)]
+        bench.show([moved, Bench.holder("page", [Bench.keyed("detail", 5)])])
+        bench.place("page", at: Rect(x: 0, y: 100, width: 300, height: 200))
+        bench.place("detail", at: Rect(x: 20, y: 30, width: 200, height: 100))
+        let detail = try XCTUnwrap(bench.element("detail"))
+
+        assertAlike(
+            drawn(detail, at: Rect(x: 30, y: 150, width: 200, height: 100), in: bench),
+            Rect(x: 50, y: 60, width: 40, height: 40), "set out where the thumbnail was drawn")
+    }
+
     /// A VIEW CLOSED AS IT OPENS GOES BACK ALONG: an icon's square grows into its app, and the app is closed before
     /// it lands - the square made again in its tile, where the one it grew from still leaves. The new square meets
     /// the app through their presentation, never taking the leaving one back: the app goes along onto it and stays

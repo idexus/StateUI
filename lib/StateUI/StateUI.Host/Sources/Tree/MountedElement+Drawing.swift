@@ -19,17 +19,17 @@ extension MountedElement {
     /// How the view is moved, turned and scaled: `scale` multiplies both axes on top of `scaleX` and `scaleY`, and
     /// it turns about its middle where the tree says no pivot.
     public var drawingTransform: HostDrawingTransform {
-        let scale = number(.scale) ?? 1
+        let scale = drawn(.scale) ?? 1
         let own = HostDrawingTransform(
-            translationX: number(.translationX) ?? 0,
-            translationY: number(.translationY) ?? 0,
-            rotation: number(.rotation) ?? 0,
-            rotationX: number(.rotationX) ?? 0,
-            rotationY: number(.rotationY) ?? 0,
-            scaleX: scale * (number(.scaleX) ?? 1),
-            scaleY: scale * (number(.scaleY) ?? 1),
-            pivotX: number(.pivotX) ?? 0.5,
-            pivotY: number(.pivotY) ?? 0.5)
+            translationX: drawn(.translationX) ?? 0,
+            translationY: drawn(.translationY) ?? 0,
+            rotation: drawn(.rotation) ?? 0,
+            rotationX: drawn(.rotationX) ?? 0,
+            rotationY: drawn(.rotationY) ?? 0,
+            scaleX: scale * (drawn(.scaleX) ?? 1),
+            scaleY: scale * (drawn(.scaleY) ?? 1),
+            pivotX: drawn(.pivotX) ?? 0.5,
+            pivotY: drawn(.pivotY) ?? 0.5)
         // What the hand does to the view itself is laid over its own transform here where no layout program
         // places it; one that does lays it over the view's place.
         // Design: docs/design/host/interaction.md#a-views-own-press-and-drag
@@ -40,6 +40,12 @@ extension MountedElement {
             translationX: local.pressed.translation.x + held.x, translationY: local.pressed.translation.y + held.y,
             rotation: local.pressed.rotation, rotationX: 0, rotationY: 0, scaleX: local.pressed.scaleX,
             scaleY: local.pressed.scaleY, pivotX: 0.5, pivotY: 0.5))
+    }
+
+    /// The number of `property` the view is drawn with: a shared presentation's, else - while a patch changes it and
+    /// has not set it moving - where it stood on the last frame, else its own.
+    private func drawn(_ property: Prop) -> Double? {
+        presentationValue(property)?.number ?? stoodAt?[property] ?? number(property)
     }
 
     /// How the view is drawn over its place: its own transform, under the one its layout's program places it with.

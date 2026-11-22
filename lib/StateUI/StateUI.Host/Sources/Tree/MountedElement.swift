@@ -199,6 +199,10 @@
     var exitPlace: Rect?
     var returned: Returned?
 
+    /// Where each number of its transform the patch being applied changes stood as its last frame drew it, until the
+    /// patch sets it moving; nil outside one. Design: docs/design/host/motion.md#a-shared-presentation-drawn-by-both
+    var stoodAt: [Prop: Double]?
+
     /// What its shared entry draws in front until it lands, and how many of the entry's numbers are on their way.
     var raisedByEntry: [RaisedChild] = []
     var entryRunsLeft = 0
@@ -491,6 +495,11 @@
         let standing = Dictionary(uniqueKeysWithValues: received.compactMap { property in
             standingValue(property, target: patch.properties[property]).map { (property, $0) }
         })
+        let moved = changed.filter { Self.transformProperties.contains($0) && driven[$0] == nil }
+        stoodAt = !described ? nil : moved.reduce(into: [:]) { stood, property in
+            let drawn = tree.presentedPropertyValue(mount: mount, property: property) ?? properties[property]
+            stood[property] = (drawn ?? identity(of: property))?.number
+        }
 
         for property in patch.clearedProperties {
             properties[property] = nil
@@ -650,6 +659,7 @@
     /// enablement and the direction, the frames read and the pages presented.
     @inline(never)
     private func settled(_ patch: HostPatch, _ applying: Applying, tree: MountedTree) {
+        stoodAt = nil
         let changed = applying.changed
         for property in applying.received.sorted() {
             let hasDrivenPresentation = driven[property].map { $0.mode != .in } ?? false
