@@ -528,7 +528,7 @@ a shared presentation are drawn as one on the way, the same on every host
   a patch drops a child   holding a key, its holder keeping a view that leaves, no engine under it,
                           the window's budget holding: kept for its partner (`awaitsPartner`) - no
                           more the application's, each number it and each keyed view in it is drawn
-                          with held where it stands, with its speed, a state's too
+                          with held where its last frame drew it, with its speed, a state's too
   the patch is applied    a kept view its patch made no partner for goes at once
   a partner's first       the keyed view it pairs with lends itself to the presentation (`lends`):
   place                   drawn from it as the partner is - each keyed view of the kept view in its
@@ -586,11 +586,20 @@ as its own transform is drawn under them.
 The trap is the speed. A view the hand pulls is moved by its states'
 channels: what it is drawn with is a state's lane, not the tree's animation.
 Kept, it is no state's any more, so its numbers are read off the channels
-before it is deactivated - where each run is and how fast
-(`StateChannels.standing(of:now:)`), and the speed each keyed view is drawn
+before it is deactivated - where the last frame drew each and how fast
+(`StateChannels.standing(_:)`), and the speed each keyed view is drawn
 at is noted under its key as it is dropped. The kept view then stands, its own
-runs cut short, and the presentation's run sets out at that speed - the two
-drawn as one from the first frame: a throw goes on as thrown.
+runs cut short where the last frame drew them, and the presentation's run sets
+out at that speed - the two drawn as one from the first frame: a throw goes on
+as thrown.
+
+The trap is the time a patch comes at. It comes between two frames, and a
+short spring following the hand moves tens of points in that time. Held where
+its run stands at the patch, a kept view no frame draws again would be held
+where its toolkit never showed it; the keyed view drawn under it, read back
+through that hold, would be drawn off by as much for the whole way - a step at
+the start, an outline around the partner at the end. So what a kept view is
+held at is what its toolkit shows (`KeptViewDrawingTests`).
 
 ## Drawn in front
 

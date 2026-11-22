@@ -80,16 +80,15 @@ extension MountedElement {
         return true
     }
 
-    /// Notes where each number the element is drawn with stands, with its speed - a state's too - before it stops
-    /// being the application's.
+    /// Notes where each number the element is drawn with stands as its last frame drew it, with its speed - a
+    /// state's too - before it stops being the application's: what its toolkit shows is what the tree holds.
     private func holdStanding(in tree: MountedTree) {
         for property in Self.travelingProperties {
             if let binding = driven[property], binding.kind == .property,
-               let standing = tree.stateChannels.standing(of: binding.state, now: tree.time) {
-                standsAt[property] = standing
-            } else if let standing = tree.standingProperty(mount: mount, property: property),
-                      let value = standing.value.number {
-                standsAt[property] = (value, standing.velocity.first ?? 0)
+               let drawn = tree.stateChannels.standing(binding.state), drawn.value.count == 1 {
+                standsAt[property] = (drawn.value[0], drawn.velocity.first ?? 0)
+            } else if let drawn = tree.presentedPropertyValue(mount: mount, property: property)?.number {
+                standsAt[property] = (drawn, tree.standingProperty(mount: mount, property: property)?.velocity.first ?? 0)
             }
         }
     }
@@ -108,12 +107,10 @@ extension MountedElement {
         fadeTheRest(under: law, in: tree)
     }
 
-    /// Stands each number of the element's transform where it is drawn, its run cut short.
+    /// Stands each number of the element's transform where its last frame drew it, its run cut short.
     private func standStill(in tree: MountedTree) {
         for property in Self.travelingProperties where property != .opacity {
-            guard let standing = tree.standingProperty(mount: mount, property: property),
-                  let value = standing.value.number
-            else { continue }
+            guard let value = tree.presentedPropertyValue(mount: mount, property: property)?.number else { continue }
             standsAt[property] = (value, 0)
             tree.receiveProperty(mount: mount, property: property, standing: nil, target: nil, motion: nil)
         }
