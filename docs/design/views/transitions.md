@@ -136,7 +136,10 @@ What a host does with the two numbers is
 dropped and one view made meet under a key, the made one enters from where
 the dropped one was drawn, and the dropped one - kept where its holder keeps a
 view that leaves - goes along onto where the made one lands, the two drawn as
-one; anywhere else each goes by its own transition.
+one; anywhere else each goes by its own transition. What travels is the view
+wearing the key, with what it holds: what else left with it - a caption under
+a picture - stands where it is drawn and fades out as the two cross, so a
+view meant to travel whole wears the key itself.
 
 The trap is a key read as an identity. Two views of one `.id(_:)` are one
 element continued; two views of one shared key are two elements, each with

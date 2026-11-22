@@ -5,8 +5,8 @@
 
 /// A view setting out from its partner is drawn in front of what it passes over until it lands, up to its scope:
 /// in a layout that does not layer its children, in front of them all; in one that does, of those that stood
-/// before it - what came with it keeps the order its author layered. The partner kept for it goes along so too,
-/// and in the first layout holding both, the larger of the two is in front.
+/// before it - what came with it keeps the order its author layered. The keyed view of the partner kept for it goes
+/// along so too, and in the first layout holding both, the larger of the two is in front.
 /// Design: docs/design/host/motion.md#drawn-in-front
 extension MountedElement {
     /// A child drawn in front in the layout that holds it, by its mount.
@@ -23,8 +23,9 @@ extension MountedElement {
         entryRunsLeft = runs
     }
 
-    /// Draws this element, kept for `partner` as it goes along, and each layout holding it in front up to the scope
-    /// `scope` - in the first layout holding `partner` too, only where it `leads` - until it is released.
+    /// Draws this element, the keyed view of the one kept for `partner` as it goes along, and each layout holding it
+    /// in front up to the scope `scope` - in the first layout holding `partner` too, only where it `leads` - until
+    /// it is released.
     func drawKeptInFront(under scope: UInt64, besides partner: MountedElement, leads: Bool) {
         guard lifecycle == .exiting else { return }
         raise(under: scope, besides: partner, leads: leads)
@@ -79,6 +80,6 @@ extension MountedElement {
         let raised = raisedByEntry
         (raisedByEntry, entryRunsLeft) = ([], 0)
         for each in raised { tree.layoutMotion.lower(each.mount) }
-        for each in raised { each.layout?.native.orderChildren() }
+        for each in raised where each.layout?.lifecycle != .released { each.layout?.native.orderChildren() }
     }
 }

@@ -440,7 +440,11 @@ the leaving view keeps a view that leaves - a stack, a grid, a ZStack - the
 two are drawn as one on the way: the leaving one goes along onto where the
 entering one lands, at the speed it had, so a view the hand throws goes on
 as thrown; they cross over near the smaller of the two, and a rounded corner
-goes from the one's to the other's. Elsewhere the leaving one goes at once.
+goes from the one's to the other's. What goes along is the view wearing the
+key, with what it holds; anything else that left with it - a caption under a
+picture - stands where it is drawn and fades out as the two cross, so a view
+meant to travel whole, an app with its words, wears the key itself.
+Elsewhere the leaving one goes at once.
 Going back during the movement sets out from where the picture is drawn at
 that moment. On its
 way the entering view is drawn in front of what it passes over - every

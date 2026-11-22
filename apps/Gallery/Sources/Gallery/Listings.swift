@@ -2538,9 +2538,13 @@ enum Listings {
                         .motion(.eased(.milliseconds(600), curve: .sineInOut))
                         .onPanUpdated { pan in pulled(pan) }
 
+                    // ITS NAME comes in as the card grows; going back, it stays
+                    // where it stands and fades as the card leaves.
                     Text(card.name)
                         .fontWeight(.semibold)
                         .horizontalAlignment(.center)
+                        .transition(Transition(enter: .opacity, exit: .identity).initialAppearance(true))
+                        .motion(.eased(.milliseconds(600), curve: .sineInOut))
                 }
                 // THE DETAIL AS THE HAND DRAWS IT: gone back, it goes on from
                 // there into its card at the speed it had.
@@ -5881,8 +5885,8 @@ enum Listings {
         /// How what is on an app's surface comes in: faded in as the app appears.
         static let landing = Transition(enter: .opacity, exit: .identity).initialAppearance(true)
 
-        /// An icon's app, over the boards: its surface grows out of the icon's
-        /// square and closes back onto it, its words come in as it lands; pulled
+        /// An icon's app, over the boards: it grows out of the icon's square and
+        /// closes back onto it, its words on it - they come in as it lands; pulled
         /// up by the bar at its foot, or pressed there, it closes.
         struct HomeApp: View {
             let icon: HomeIcon
@@ -5896,56 +5900,56 @@ enum Listings {
 
             var body: some View {
                 ZStack {
-                    // THE SURFACE, tied to the icon's square by the icon's name:
-                    // the two are drawn as one on the way, its corner going from
-                    // the square's to its own as far as it has got.
-                    Rectangle()
-                        .fill(icon.color)
-                        .sharedTransition(icon.name)
-                        .motion(HomeScreenSample.opening)
+                    // THE APP, tied to the icon's square by the icon's name: the
+                    // two are drawn as one on the way, its words with it, its
+                    // corner going from the square's to its own as far as it has
+                    // got.
+                    ZStack {
+                        // THE WORDS come in slowly, then all at once: unseen while
+                        // the app is still small.
+                        VStack {
+                            ZStack {
+                                Rectangle()
+                                    .fill(.white)
+                                    .opacity(0.3)
+                                Image(.platform(icon.glyph))
+                                    .width(48)
+                                    .height(48)
+                                    .horizontalAlignment(.center)
+                                    .verticalAlignment(.center)
+                            }
+                            .width(96)
+                            .height(96)
+                            .horizontalAlignment(.center)
 
-                    // THE WORDS come in slowly, then all at once: unseen while the
-                    // surface is still small.
-                    VStack {
+                            Text(icon.name)
+                                .fontWeight(.semibold)
+                                .horizontalAlignment(.center)
+                        }
+                        .verticalAlignment(.center)
+                        .transition(HomeScreenSample.landing)
+                        .motion(HomeScreenSample.late)
+
+                        // THE BAR AT ITS FOOT, coming in with the words: held, it
+                        // takes the app up with the hand; pressed, it closes the app.
                         ZStack {
                             Rectangle()
                                 .fill(.white)
-                                .opacity(0.3)
-                            Image(.platform(icon.glyph))
-                                .width(48)
-                                .height(48)
+                                .opacity(0.7)
+                                .width(120)
+                                .height(6)
                                 .horizontalAlignment(.center)
                                 .verticalAlignment(.center)
                         }
-                        .width(96)
-                        .height(96)
-                        .horizontalAlignment(.center)
-
-                        Text(icon.name)
-                            .fontWeight(.semibold)
-                            .horizontalAlignment(.center)
+                        .height(40)
+                        .verticalAlignment(.end)
+                        .transition(HomeScreenSample.landing)
+                        .motion(HomeScreenSample.late)
+                        .onPanUpdated { pan in pulled(pan) }
+                        .onTapped { opened = nil }
                     }
-                    .verticalAlignment(.center)
-                    .transition(HomeScreenSample.landing)
-                    .motion(HomeScreenSample.late)
-
-                    // THE BAR AT ITS FOOT, coming in with the words: held, it takes
-                    // the app up with the hand; pressed, it closes the app.
-                    ZStack {
-                        Rectangle()
-                            .fill(.white)
-                            .opacity(0.7)
-                            .width(120)
-                            .height(6)
-                            .horizontalAlignment(.center)
-                            .verticalAlignment(.center)
-                    }
-                    .height(40)
-                    .verticalAlignment(.end)
-                    .transition(HomeScreenSample.landing)
-                    .motion(HomeScreenSample.late)
-                    .onPanUpdated { pan in pulled(pan) }
-                    .onTapped { opened = nil }
+                    .sharedTransition(icon.name)
+                    .motion(HomeScreenSample.opening)
                 }
                 // THE APP AS THE HAND DRAWS IT: moved, and scaled about its foot,
                 // where the hand holds it. Closed, it goes on from there onto its

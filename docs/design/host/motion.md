@@ -492,17 +492,25 @@ a shared transition are drawn as one on the way, the same on every host
 ```text
   a patch drops a child   holding a key, its holder keeping a view that leaves, no engine under it,
                           the window's budget holding: kept for its partner (`awaitsPartner`) - no
-                          more the application's, each number it is drawn with held where it stands,
-                          with its speed, a state's too
+                          more the application's, each number it and each keyed view in it is drawn
+                          with held where it stands, with its speed, a state's too
   the patch is applied    a kept view its patch made no partner for goes at once
-  the partner's first     the kept view goes along (`goAlong`): from where it is drawn, at the speed
-  place                   it had, its keyed view onto where the partner lands, under the partner's
-                          motion; released as it lands
-  every frame             how far the way has got, read off the number that moves most - a scale,
-                          else a move; from it each one's opacity, and each rounded one's corner
+  the partner's first     its keyed view goes along (`goAlong`): from where it is drawn, at the speed
+  place                   it had, onto where the partner lands, under the partner's motion; the rest
+                          of the kept view stands where it is drawn; released as the keyed view lands
+  every frame             how far the way has got, read off the number of the view traveling it that
+                          moves most - a scale, else a move; from it each one's opacity, and each
+                          rounded one's corner
   no partner in two       the kept view goes
   frames
 ```
+
+The trap is what the kept view holds besides its key. Taken along with the
+keyed view, a caption under a picture would be drawn under the picture's two
+scales - stretched - and carried over whatever stands on the way. So only the
+keyed view travels, found by its mount again while it does, and what else the
+kept view holds stands where it is drawn, fading out with it. A view meant to
+travel whole - an app with its words - wears the key itself.
 
 The two cross over near the smaller: a view growing out of a small one
 comes in over the way's first part (0 to 0.45), one shrinking onto a small
@@ -533,7 +541,9 @@ The trap is the speed. A view the hand pulls is moved by its states'
 channels: what it is drawn with is a state's lane, not the tree's animation.
 Kept, it is no state's any more, so its numbers are read off the channels
 before it is deactivated - where each run is and how fast
-(`StateChannels.standing(of:now:)`) - and the way sets out at that speed: a
+(`StateChannels.standing(of:now:)`). The kept view then stands, its own
+motion cut short, and the speed it drew its keyed view at is carried into
+that view's own numbers (`standStill(carrying:)`), which set out at it: a
 throw goes on as thrown.
 
 ## Drawn in front
@@ -559,9 +569,10 @@ over its surface would, by "what stood before", keep a row of thumbnails
 made with the one coming back over it; a stack is no layering, so there the
 view is in front of every sibling.
 
-A view kept for its partner goes along over what stands around it too: it,
-and each layout holding it, is drawn in front up to the scope
-(`MountedElement.drawKeptInFront`) until it is released. The two are drawn
+The keyed view of a view kept for its partner goes along over what stands
+around it too: it, and each layout holding it - the kept view among them - is
+drawn in front up to the scope (`MountedElement.drawKeptInFront`) until it is
+released. The two are drawn
 as one, and the eye follows the larger - they cross over near the smaller -
 so in the first layout holding both, the two ways up meeting there, the
 larger alone is put in front: the other stands as it stood. The trap is an

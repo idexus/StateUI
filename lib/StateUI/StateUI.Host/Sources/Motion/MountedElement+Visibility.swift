@@ -61,10 +61,11 @@ extension MountedElement {
             let crossing = SharedWay.crossing(from: pair.from, to: pair.to)
             let leads = pair.to.width * pair.to.height >= pair.from.width * pair.from.height
             if let kept = pair.kept {
+                let keyed = pair.leaving ?? kept
                 kept.goAlong(
-                    keyed: pair.leaving ?? kept, from: pair.from, onto: pair.to, in: pair.scope,
+                    keyed: keyed, from: pair.from, onto: pair.to, in: pair.scope,
                     under: tree.layoutMotion.law(of: motion), corner: corner, crossing: crossing)
-                kept.drawKeptInFront(under: pair.scope, besides: self, leads: !leads)
+                keyed.drawKeptInFront(under: pair.scope, besides: self, leads: !leads)
             } else {
                 pair.leaving?.endExit(.interrupted, arranging: true)
             }

@@ -203,11 +203,12 @@
     var raisedByEntry: [RaisedChild] = []
     var entryRunsLeft = 0
 
-    /// The shared transition's way it travels, the view whose way rounds its corner, and - kept for its partner -
-    /// the numbers it stood at, with their speed, as it stopped being the application's.
+    /// The shared transition's way it travels, the view kept for its partner whose way it travels as that one's
+    /// keyed view, and - kept for its partner - the numbers it stood at, with their speed, as it stopped being the
+    /// application's.
     /// Design: docs/design/host/motion.md#a-shared-transition-drawn-by-both
     var way: SharedWay?
-    weak var roundedBy: MountedElement?
+    weak var travelsFor: MountedElement?
     var standsAt: [Prop: (value: Double, velocity: Double)] = [:]
 
     /// The id a view of the element's authored identity is known by as it comes back: the one its render said it

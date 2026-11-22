@@ -210,10 +210,14 @@ struct CommonBoardSample: SampleContent, ExampleContent {
                     .onPanUpdated { pan in pulled(pan) }
                     .accessibilityIdentifier("board.detail")
 
+                // ITS NAME comes in as the card grows; going back, it stays
+                // where it stands and fades as the card leaves.
                 Text(card.name)
                     .fontSize(20)
                     .fontWeight(.semibold)
                     .horizontalAlignment(.center)
+                    .transition(Transition(enter: .opacity, exit: .identity).initialAppearance(true))
+                    .motion(.eased(.milliseconds(600), curve: .sineInOut))
             }
             .spacing(10)
             // THE DETAIL AS THE HAND DRAWS IT: gone back, it goes on from

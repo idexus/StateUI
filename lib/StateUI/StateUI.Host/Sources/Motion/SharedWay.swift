@@ -11,9 +11,9 @@ struct SharedWay {
     /// Each number the way moves: where it set out and where it lands.
     var spans: [Prop: (from: Double, to: Double)]
 
-    /// The view whose corner is rounded on the way - the one traveling, or the one the leaving view holds - and
-    /// its corner as drawn at the way's start and at its end.
-    weak var rounded: MountedElement?
+    /// The view traveling the way - the one entering, or the keyed view of the one kept for it - whose corner is
+    /// carried on it, as drawn at the way's start and at its end.
+    weak var traveler: MountedElement?
     var corner: (from: Double, to: Double)?
 
     /// Whether the view fades in as the two cross over, or out; nil where no partner is drawn to cross with.

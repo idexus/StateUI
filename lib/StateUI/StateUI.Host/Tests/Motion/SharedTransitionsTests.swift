@@ -246,22 +246,49 @@ final class SharedTransitionsTests: XCTestCase {
         return patch
     }
 
-    /// A VIEW DROPPED HOLDING A KEY GOES ALONG ONTO WHERE ITS PARTNER LANDS: kept where its holder keeps one, it is
-    /// taken from where it is drawn so that its keyed view lands on the partner's place - (50, 60) forty square onto
-    /// (30, 150) two hundred by a hundred, about the list's middle - and released as it lands.
+    /// A VIEW DROPPED HOLDING A KEY GOES ALONG ONTO WHERE ITS PARTNER LANDS: kept where its holder keeps one, its
+    /// keyed view is taken from where it is drawn onto the partner's place - (50, 60) forty square onto (30, 150)
+    /// two hundred by a hundred, about its own middle - and the kept view is released as it lands.
     func testAViewKeptForItsPartnerGoesAlongOntoWhereItLands() throws {
         let bench = Bench(keeps: true)
         let list = try standingList(bench)
+        let thumbnail = try XCTUnwrap(bench.element("thumbnail"))
         paged(bench)
         XCTAssertEqual(list.lifecycle, .exiting, "kept for its partner")
-        let ends = [list.exitEnds[.translationX], list.exitEnds[.translationY], list.exitEnds[.scaleX], list.exitEnds[.scaleY]]
-        XCTAssertEqual(ends, [140, 150, 5, 2.5], "its thumbnail's middle onto the detail's, 40 onto 200 and 100")
+        let ends = [.translationX, .translationY, .scaleX, .scaleY].map { thumbnail.exitEnds[$0] }
+        XCTAssertEqual(ends, [60, 120, 5, 2.5], "its middle onto the detail's, 40 onto 200 and 100")
+        XCTAssertEqual(list.exitEnds, [:], "the list stands")
 
         bench.frame(at: 250)
         XCTAssertEqual(list.lifecycle, .released, "landed, it is gone")
         bench.frame(at: 266)
         bench.frame(at: 282)
         XCTAssertEqual(bench.runtime.tree.shared.entries, 0, "its patch's notes let go, nothing of the pair is held")
+    }
+
+    /// ONLY ITS KEYED VIEW GOES ALONG: what else the view kept for its partner holds - a caption under its thumbnail
+    /// - stands where it is drawn, never moved nor stretched, while the thumbnail alone travels onto the detail's
+    /// place, each frame drawing it there; the list goes as the thumbnail lands.
+    func testWhatElseTheKeptViewHoldsStandsWhereItIsDrawn() throws {
+        let bench = Bench(keeps: true)
+        let caption = HostPatch(id: .manual("caption"), type: .text)
+        let list = try standingList(bench, thumbnails: [Bench.keyed("thumbnail", 5), caption])
+        bench.stands("caption", at: Point(x: 50, y: 110), size: LayoutSize(width: 40, height: 20))
+        let thumbnail = try XCTUnwrap(bench.element("thumbnail"))
+        paged(bench)
+        XCTAssertEqual(list.lifecycle, .exiting, "kept for its partner")
+
+        bench.frame(at: 100)
+        let drawn = list.drawingTransform
+        XCTAssertEqual([drawn.translationX, drawn.translationY, drawn.scaleX, drawn.scaleY], [0, 0, 1, 1], "the list stands")
+        let thumbnailDrawn = thumbnail.drawingTransform
+        XCTAssertEqual(thumbnailDrawn.translationX, 30, accuracy: 0.5, "half of 70 onto 130 across")
+        XCTAssertEqual(thumbnailDrawn.scaleY, 1.75, accuracy: 0.01, "half of 40 onto 100")
+        XCTAssertEqual(
+            (thumbnail.native as? NoView)?.presented.last?.contains(.translationX), true, "the frame draws it there")
+
+        bench.frame(at: 250)
+        XCTAssertEqual(list.lifecycle, .released, "landed, it is gone")
     }
 
     /// A VIEW DROPPED HOLDING A KEY ITS PATCH MADE NO PARTNER FOR GOES AT ONCE, as the patch is applied whole.
@@ -300,10 +327,10 @@ final class SharedTransitionsTests: XCTestCase {
         bench.frame(at: 100)
         XCTAssertEqual(detail.number(.cornerRadius) ?? .nan, 9 / (0.6 * 0.7).squareRoot(), accuracy: 0.001, "drawn 9 half way")
         XCTAssertEqual(thumbnail.number(.cornerRadius) ?? .nan, 9 / (3 * 1.75).squareRoot(), accuracy: 0.001)
-        // A frame moving the two draws each one's corner too: the kept list's keyed view, no more the tree's own.
+        // A frame moving the two draws each one's corner too: the kept list's keyed view, found by its mount as it travels.
         let views = [detail, thumbnail].map { $0.native as? NoView }
         let before = views.map { $0?.presented.count ?? 0 }
-        bench.tree.present(states: [:], properties: [detail.mount: [.translationX], list.mount: [.translationX]])
+        bench.tree.present(states: [:], properties: [detail.mount: [.translationX], thumbnail.mount: [.translationX]])
         let corners = zip(views, before).map { view, count in view?.presented.dropFirst(count).first?.contains(.cornerRadius) }
         XCTAssertEqual(corners, [true, true], "each drawn so on every frame")
 
@@ -312,19 +339,22 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(list.lifecycle, .released)
     }
 
-    /// THE VIEW LEAVING GOES ON AT THE SPEED IT HAD: a list on its way across as it is dropped sets out onto its
-    /// partner's place at that speed.
+    /// THE VIEW LEAVING GOES ON AT THE SPEED IT HAD: a list on its way across as it is dropped stands where it is
+    /// drawn, and its thumbnail sets out onto its partner's place at that speed.
     func testTheViewLeavingGoesOnAtTheSpeedItHad() throws {
         let bench = Bench(keeps: true)
         bench.runtime.layoutMotion.applicationMotion = .spring(response: .milliseconds(300), damping: 1)
         let list = try standingList(bench)
+        let thumbnail = try XCTUnwrap(bench.element("thumbnail"))
         bench.runtime.tree.receiveProperty(
             mount: list.mount, property: .translationX, standing: .number(0), target: .number(50),
             motion: .eased(.milliseconds(200), curve: .linear))
         bench.frame(at: 50)
         paged(bench)
-        let speed = bench.runtime.tree.standingProperty(mount: list.mount, property: .translationX)?.velocity.first
+        let speed = bench.runtime.tree.standingProperty(mount: thumbnail.mount, property: .translationX)?.velocity.first
         XCTAssertEqual(speed ?? .nan, 250, accuracy: 1, "50 points in 200 ms, on its way on")
+        XCTAssertNil(bench.runtime.tree.standingProperty(mount: list.mount, property: .translationX), "the list stops")
+        XCTAssertEqual(list.number(.translationX) ?? .nan, 12.5, accuracy: 0.01, "where it is drawn")
     }
 
     /// A VIEW DRAWN UNDER WHAT HOLDS IT SETS ITS PARTNER OUT FROM THERE: the transform of every view above it, up to
@@ -344,11 +374,13 @@ final class SharedTransitionsTests: XCTestCase {
     }
 
     /// A VIEW ENTERING UNDER WHAT HOLDS IT LANDS WHERE IT IS DRAWN: on a page drawn at half its size, the detail sets
-    /// out from the thumbnail with the page's transform undone, the list kept for it goes onto where the page draws
-    /// the detail - (95, 185), a hundred by fifty - and the corner is the drawn one: 12 at half is 6 all the way.
+    /// out from the thumbnail with the page's transform undone, the thumbnail of the list kept for it goes onto
+    /// where the page draws the detail - (95, 185), a hundred by fifty - and the corner is the drawn one: 12 at half
+    /// is 6 all the way.
     func testAViewEnteringUnderWhatHoldsItLandsWhereItIsDrawn() throws {
         let bench = Bench(keeps: true)
-        let list = try standingList(bench, thumbnails: [Self.rounded("thumbnail", 5, corner: 6)])
+        _ = try standingList(bench, thumbnails: [Self.rounded("thumbnail", 5, corner: 6)])
+        let thumbnail = try XCTUnwrap(bench.element("thumbnail"))
         var page = Bench.holder("page", [Self.rounded("detail", 5, corner: 12)])
         page.properties = [.scale: .number(0.5)]
         bench.show([page])
@@ -361,8 +393,8 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(bench.drawn(.translationY, of: "detail") ?? .nan, -260, accuracy: 0.001, "-60 against 200 down")
         XCTAssertEqual(bench.drawn(.scaleX, of: "detail") ?? .nan, 0.4, accuracy: 0.001, "80 of 200: drawn 40 at half")
         XCTAssertEqual(bench.drawn(.scaleY, of: "detail") ?? .nan, 0.8, accuracy: 0.001, "80 of 100")
-        let ends = [list.exitEnds[.translationX], list.exitEnds[.translationY], list.exitEnds[.scaleX], list.exitEnds[.scaleY]]
-        XCTAssertEqual(ends, [105, 135, 2.5, 1.25], "the thumbnail's middle onto (145, 210), 40 onto 100 and 50")
+        let ends = [.translationX, .translationY, .scaleX, .scaleY].map { thumbnail.exitEnds[$0] }
+        XCTAssertEqual(ends, [75, 130, 2.5, 1.25], "the thumbnail's middle onto (145, 210), 40 onto 100 and 50")
         XCTAssertEqual(detail.number(.cornerRadius) ?? .nan, 6 / (0.4 * 0.8).squareRoot() / 0.5, accuracy: 0.001)
 
         bench.frame(at: 250)
@@ -403,9 +435,10 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(ordered(), [2, 2])
     }
 
-    /// WHERE ONE LAYOUT HOLDS BOTH, THE LARGER IS IN FRONT: the detail is drawn in front in its page, and the list
-    /// kept for it goes along drawn in front in what holds it - in its shelf, its shelf in its area - and in the
-    /// scope, which holds the page and the area both, the page of the larger, the detail, alone; released, nothing.
+    /// WHERE ONE LAYOUT HOLDS BOTH, THE LARGER IS IN FRONT: the detail is drawn in front in its page, and the
+    /// thumbnail of the list kept for it goes along drawn in front in what holds it - in its list, the list in its
+    /// shelf, the shelf in its area - and in the scope, which holds the page and the area both, the page of the
+    /// larger, the detail, alone; released, nothing.
     func testWhereOneLayoutHoldsBothTheLargerIsInFront() throws {
         let bench = Bench(keeps: true)
         let thumbnail = Bench.keyed("thumbnail", 5)
@@ -413,6 +446,7 @@ final class SharedTransitionsTests: XCTestCase {
         bench.stands("list", at: Point(x: 40, y: 50), size: LayoutSize(width: 100, height: 100))
         bench.stands("thumbnail", at: Point(x: 50, y: 60), size: LayoutSize(width: 40, height: 40))
         let list = try XCTUnwrap(bench.element("list"))
+        let thumbnailView = try XCTUnwrap(bench.element("thumbnail"))
         bench.show([Bench.holder("area", [Bench.holder("shelf", [])]), Bench.holder("page", [Bench.keyed("detail", 5)])])
         bench.place("page", at: Rect(x: 0, y: 100, width: 300, height: 200))
         bench.place("detail", at: Rect(x: 20, y: 30, width: 200, height: 100))
@@ -420,14 +454,15 @@ final class SharedTransitionsTests: XCTestCase {
 
         let motion = bench.runtime.layoutMotion
         let inFront = { (id: String) in bench.element(id).map { motion.drawsInFront($0.mount) } }
+        let kept = { [thumbnailView, list].map { motion.drawsInFront($0.mount) } }
         XCTAssertEqual(inFront("detail"), true, "the detail in its page")
-        XCTAssertEqual([motion.drawsInFront(list.mount), inFront("shelf")], [true, true], "the list in its shelf, the shelf in its area")
+        XCTAssertEqual(kept() + [inFront("shelf")], [true, true, true], "the thumbnail in its list, on up to the area")
         XCTAssertEqual([inFront("page"), inFront("area")], [true, false], "in the scope, the larger's alone")
 
         bench.frame(at: 250)
         XCTAssertEqual(list.lifecycle, .released)
-        let all = ["detail", "page", "shelf"].map(inFront) + [motion.drawsInFront(list.mount)]
-        XCTAssertEqual(all, [false, false, false, false], "landed and released: none in front")
+        let all = ["detail", "page", "shelf"].map(inFront) + kept()
+        XCTAssertEqual(all, [false, false, false, false, false], "landed and released: none in front")
     }
 
     /// WHAT CAME WITH IT KEEPS THE LAYERS ITS AUTHOR GAVE IT: a view setting out in a ZStack made with it stays

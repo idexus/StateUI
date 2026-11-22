@@ -74,7 +74,7 @@ extension MountedElement {
             ) { started.insert(property) }
         }
         if !started.isEmpty, corner != nil || crossing != nil {
-            way = SharedWay(spans: spans, rounded: self, corner: corner, comes: crossing.map { _ in true },
+            way = SharedWay(spans: spans, traveler: self, corner: corner, comes: crossing.map { _ in true },
                             crossing: crossing ?? 0...1)
             if corner != nil, let rounding = roundingProperty { started.insert(rounding) }
         }

@@ -44,10 +44,15 @@ extension MountedElement {
 
     /// How the view is drawn over its place: its own transform, under the one its layout's program places it with.
     var drawnTransform: HostDrawingTransform {
+        placingTransform.map(drawingTransform.under) ?? drawingTransform
+    }
+
+    /// The transform its layout's program places the view with, over its own; nil where no program places it.
+    var placingTransform: HostDrawingTransform? {
         guard let parent, let run = parent.placement, let index = parent.children.firstIndex(where: { $0 === self }),
               run.placements.indices.contains(index)
-        else { return drawingTransform }
-        return drawingTransform.under(run.drawing(of: index))
+        else { return nil }
+        return run.drawing(of: index)
     }
 
     /// The property a layout's own placing run is presented under, where the element runs a layout program: the

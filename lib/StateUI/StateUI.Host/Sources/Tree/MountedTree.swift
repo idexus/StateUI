@@ -470,23 +470,20 @@
     @discardableResult
     public func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) -> FrameImpact {
         var properties = properties
-        // A view on a shared transition's way draws, with its numbers, what the way works out of them - the view
-        // it rounds too, which a kept one's leaving left out of what the tree finds by its mount.
-        var rounded: [UInt64: MountedElement] = [:]
+        // A view traveling a shared transition's way draws, with its numbers, what the way works out of them: its
+        // own corner, and the opacity of the view whose way it is.
         for (mount, changed) in properties.sorted(by: { $0.key < $1.key }) where !changed.isDisjoint(with: SharedWay.moved) {
-            guard let way = byMount[mount]?.element?.way else { continue }
-            if way.comes != nil { properties[mount]?.insert(.opacity) }
-            if way.corner != nil, let view = way.rounded, let rounding = view.roundingProperty {
-                properties[view.mount, default: []].insert(rounding)
-                rounded[view.mount] = view
-            }
+            guard let traveler = byMount[mount]?.element, let holder = traveler.travelsFor ?? Optional(traveler),
+                  let way = holder.way, way.traveler === traveler
+            else { continue }
+            if way.comes != nil { properties[holder.mount, default: []].insert(.opacity) }
+            if way.corner != nil, let rounding = traveler.roundingProperty { properties[mount, default: []].insert(rounding) }
         }
         return ProgramWrite.perform {
             var touched = Set(properties.keys)
             for state in states.keys { touched.formUnion(presenters[state] ?? []) }
             return MountedElement.presentFrame(
-                touched.sorted().compactMap { byMount[$0]?.element ?? rounded[$0] }, states: states,
-                properties: properties)
+                touched.sorted().compactMap { byMount[$0]?.element }, states: states, properties: properties)
         }
     }
 
