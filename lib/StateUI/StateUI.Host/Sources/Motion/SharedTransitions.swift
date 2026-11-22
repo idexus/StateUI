@@ -46,6 +46,10 @@
     private var presences: [Key: [Presence]] = [:]
     private var made: [Key: [(mount: UInt64, patch: Int)]] = [:]
 
+    /// The presentations shared now, by the mount their run stands under - a number no element's - and the next.
+    private var presentations: [UInt64: SharedPresentation] = [:]
+    private var nextRun: UInt64 = 1 << 62
+
     /// The views a patch dropped holding a key, kept for the partner it may have made, by their mount.
     private var awaiting: [UInt64: (patch: Int, root: Weak)] = [:]
     struct Weak {
@@ -71,7 +75,7 @@
     /// How many views dropped and made the last patch's notes hold.
     var entries: Int {
         presences.values.reduce(0) { $0 + $1.count } + made.values.reduce(0) { $0 + $1.count } + born.count
-            + awaiting.count
+            + awaiting.count + presentations.count
     }
 
     /// A patch is about to be applied: what it drops and makes is its own.
@@ -85,11 +89,6 @@
     /// was.
     @discardableResult
     func dropped(_ element: MountedElement) -> Bool {
-        // A keyed view going along with it has nothing left to go along with: the key's view is this one now.
-        if let along = element.alongside {
-            element.alongside = nil
-            along.stopsGoingAlong()
-        }
         var noted = false
         if let key = Self.key(of: element), let numbers = element.native.frameNumbers(), numbers.count >= 8 {
             let own = element.drawnTransform.bounds(of: Rect(x: numbers[4], y: numbers[5], width: numbers[2], height: numbers[3]))
@@ -240,10 +239,76 @@
             for (mount, held) in awaiting.sorted(by: { $0.key < $1.key }) {
                 if (held.root.element?.exitsRunning ?? 0) > 0 { awaiting[mount] = nil } else { release(mount) }
             }
+            // A presentation whose view coming left with no partner of its own lands nowhere: it ends.
+            for entry in presentations.values.sorted(by: { $0.runMount < $1.runMount })
+            where entry.coming?.element?.lifecycle != .active {
+                entry.finish()
+            }
             presences.removeAll()
             made.removeAll()
             born.removeAll()
         }
+    }
+
+    /// The presentation whose run stands under `mount`; nil where none does.
+    func entry(run mount: UInt64) -> SharedPresentation? { presentations[mount] }
+
+    /// `entry` landed or ended: nothing is drawn from it any more.
+    func finished(_ entry: SharedPresentation) { presentations[entry.runMount] = nil }
+
+    /// `element`, given its first place, takes over from the view `pair` says its patch dropped wearing its id: the
+    /// two are drawn from one presentation - the one that view was drawn from, sent on, else a new one - onto
+    /// `element`'s place under `law`, the view kept for it lending its keyed view, should its holder keep one.
+    /// Design: docs/design/host/motion.md#a-shared-presentation-drawn-by-both
+    func present(
+        _ pair: Pair, coming element: MountedElement, on view: some FadingView, under law: Motion?, in tree: MountedTree
+    ) {
+        guard let law else { return }
+        let coming = SharedPresentation.Wearer(
+            element: element, place: pair.lands, above: Self.holders(above: element, to: pair.scope),
+            placing: element.placingTransform)
+        let keyed = pair.kept == nil ? nil : pair.leaving
+        let leaving = keyed.flatMap { keyed -> SharedPresentation.Wearer? in
+            guard let numbers = keyed.native.frameNumbers(), numbers.count >= 8 else { return nil }
+            return SharedPresentation.Wearer(
+                element: keyed, place: Rect(x: numbers[4], y: numbers[5], width: numbers[2], height: numbers[3]),
+                above: Self.holders(above: keyed, to: pair.scope), placing: keyed.placingTransform)
+        }
+        let entry = pair.leaving?.presentation.flatMap { $0.scope == pair.scope ? $0 : nil } ?? {
+            let entry = SharedPresentation(runMount: nextRun, scope: pair.scope, tree: tree)
+            nextRun += 1
+            presentations[entry.runMount] = entry
+            return entry
+        }()
+        let sent = entry.send(
+            coming: coming, to: pair.to, from: pair.from, speed: pair.speed, cornerFrom: pair.corner,
+            leaving: leaving, under: law)
+        guard sent else {
+            entry.finish()
+            if pair.kept == nil { pair.leaving?.endExit(.interrupted, arranging: true) }
+            return
+        }
+        element.presentation = entry
+        if let keyed = leaving?.element, let kept = pair.kept {
+            keyed.presentation = entry
+            kept.lends(keyed, to: entry, under: law)
+            keyed.drawKeptInFront(under: pair.scope, besides: element, leads: !entry.comingCrosses)
+            keyed.native.presentFrame(Self.drawn(by: keyed, of: entry))
+        } else {
+            pair.leaving?.endExit(.interrupted, arranging: true)
+        }
+        element.drawInFront(under: pair.scope, runs: 1, besides: pair.kept, leads: entry.comingCrosses)
+        // Drawn where it sets out from the frame its first place is given in, never at its place first.
+        view.setOpacity(element.value(.opacity)?.number ?? 1)
+        element.native.presentFrame(Self.drawn(by: element, of: entry).subtracting([.opacity]))
+    }
+
+    /// What `element`, drawn from `entry`, is drawn with: its move, scale and opacity, and its corner where one is
+    /// carried.
+    static func drawn(by element: MountedElement, of entry: SharedPresentation) -> Set<Prop> {
+        var drawn = SharedPresentation.drawnProperties
+        if entry.carriesACorner, let rounding = element.roundingProperty { drawn.insert(rounding) }
+        return drawn
     }
 
     /// `rect`, drawn by `element`, as every view above it up to the scope `scope` draws it too - each one's
@@ -263,7 +328,7 @@
     }
 
     /// Each view above `element` up to `scope`, innermost first: how it is drawn and where its toolkit stands it.
-    private static func holders(
+    static func holders(
         above element: MountedElement, to scope: UInt64
     ) -> [(transform: HostDrawingTransform, frame: Rect)] {
         var (holders, above) = ([(transform: HostDrawingTransform, frame: Rect)](), element.parent)

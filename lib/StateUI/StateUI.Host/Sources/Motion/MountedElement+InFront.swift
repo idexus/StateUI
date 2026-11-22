@@ -61,16 +61,6 @@ extension MountedElement {
         entryRunsLeft -= 1
         guard entryRunsLeft <= 0 else { return }
         lowerEntry()
-        endWay()
-    }
-
-    /// The way ends: what it worked out stands as the element declares it again.
-    func endWay() {
-        guard let way else { return }
-        self.way = nil
-        var presented: Set<Prop> = way.comes != nil ? [.opacity] : []
-        if way.corner != nil, let rounding = roundingProperty { presented.insert(rounding) }
-        if !presented.isEmpty { native.presentFrame(presented) }
     }
 
     /// What the entry drew in front stands back in its layout's order.

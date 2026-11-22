@@ -55,29 +55,10 @@ extension MountedElement {
             self.returned = nil
             return comeBack(as: returned, on: view)
         }
-        // One view left wearing the key this one wears: it sets out from where that one was drawn - and that one,
-        // kept for it, goes along onto where it lands. Design: docs/design/host/motion.md#a-shared-presentation-drawn-by-both
+        // One view left wearing the id this one wears: the two are drawn from one presentation, onto this one's place.
+        // Design: docs/design/host/motion.md#a-shared-presentation-drawn-by-both
         if !isRemade, let tree, let pair = tree.shared.source(for: self, in: tree) {
-            // The larger of the two is drawn in front, and it alone crosses over: the one behind stands whole.
-            let corner = pair.corner.flatMap { from in ownCorner.map { (from: from, to: $0 * scaleInScope) } }
-            let crossing = SharedWay.crossing(from: pair.from, to: pair.to)
-            let leads = pair.to.width * pair.to.height >= pair.from.width * pair.from.height
-            if let kept = pair.kept {
-                let keyed = pair.leaving ?? kept
-                kept.goAlong(
-                    keyed: keyed, from: pair.from, onto: pair.to, in: pair.scope,
-                    under: tree.layoutMotion.law(of: motion), speed: pair.speed, corner: corner,
-                    crossing: leads ? nil : crossing)
-                keyed.drawKeptInFront(under: pair.scope, besides: self, leads: !leads)
-                alongside = keyed.way == nil ? nil : keyed
-            } else {
-                pair.leaving?.endExit(.interrupted, arranging: true)
-            }
-            let runs = enter(
-                from: pair.setsOut, to: pair.lands, on: view,
-                speeds: ownSpeed(drawnAt: pair.speed, place: pair.lands, in: pair.scope), corner: corner,
-                crossing: pair.kept != nil && leads ? crossing : nil)
-            return drawInFront(under: pair.scope, runs: runs, besides: pair.kept, leads: leads)
+            return tree.shared.present(pair, coming: self, on: view, under: tree.layoutMotion.law(of: motion), in: tree)
         }
         guard let transition = transition?.host else {
             if case .joining(let law) = entry, law.animates, presentsOpacity, driven[.opacity] == nil,

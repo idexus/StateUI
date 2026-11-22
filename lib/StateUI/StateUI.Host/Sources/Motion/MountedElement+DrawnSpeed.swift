@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 
 /// How fast a view is drawn moving, the same on every host: the runs of its own numbers and of every view above it,
-/// carried through each transform up to a scope - and the speed of its own numbers that draws it so.
+/// carried through each transform up to a scope - or the run of the presentation it is drawn from.
 /// Design: docs/design/host/motion.md#a-shared-presentation
 extension MountedElement {
     /// How fast `property` runs now: a state's lane while the element is the application's, else the tree's own
@@ -18,8 +18,9 @@ extension MountedElement {
     }
 
     /// How fast the rectangle the element is drawn in moves in its window, as every view up to the scope `scope`
-    /// draws it.
+    /// draws it - as its presentation moves, where it is drawn from one.
     func drawnSpeed(to scope: UInt64) -> RectSpeed {
+        if let presentation { return presentation.speed }
         guard let numbers = native.frameNumbers(), numbers.count >= 8 else { return .still }
         let frame = Rect(x: numbers[4], y: numbers[5], width: numbers[2], height: numbers[3])
         var (rect, speed) = Self.carried(frame, .still, by: drawingTransform, within: frame, running: self)
@@ -38,28 +39,6 @@ extension MountedElement {
             holder = each.parent
         }
         return speed
-    }
-
-    /// The speed of each of the element's own numbers - its move and its scale - that draws it at `speed` in the
-    /// scope `scope` from its place `place`, all above it standing still.
-    func ownSpeed(drawnAt speed: RectSpeed, place: Rect, in scope: UInt64) -> [Prop: Double] {
-        var above = (x: placingTransform?.scaleX ?? 1, y: placingTransform?.scaleY ?? 1)
-        var holder = parent
-        while let each = holder, each.mount != scope {
-            (above.x, above.y) = (above.x * each.drawnTransform.scaleX, above.y * each.drawnTransform.scaleY)
-            holder = each.parent
-        }
-        guard above.x != 0, above.y != 0, place.width > 0, place.height > 0 else { return [:] }
-
-        let own = drawingTransform
-        let uniform = number(.scale) ?? 1
-        let pivot = Point(x: place.x + place.width * own.pivotX, y: place.y + place.height * own.pivotY)
-        let scaling = (x: speed.width / (above.x * place.width), y: speed.height / (above.y * place.height))
-        return [
-            .translationX: speed.x / above.x - scaling.x * (place.x + place.width / 2 - pivot.x),
-            .translationY: speed.y / above.y - scaling.y * (place.y + place.height / 2 - pivot.y),
-            .scaleX: scaling.x / uniform, .scaleY: scaling.y / uniform,
-        ]
     }
 
     /// `rect`, moving at `speed`, as `transform` draws it within `frame` - and its speed then, the numbers of

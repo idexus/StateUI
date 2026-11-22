@@ -362,8 +362,8 @@ final class SharedTransitionsTests: XCTestCase {
     }
 
     /// A VIEW GOING ALONG ENDS AS ITS PARTNER LEAVES: the detail growing out of a thumbnail is dropped before it
-    /// lands, for another list's thumbnail of its key - the first thumbnail, going along with it, has nothing left to
-    /// go along with: it is drawn no more at once, and goes as its runs land. Nothing is let go while the patch is
+    /// lands, for another shelf's view of its id - the presentation goes on to that view, the detail the one leaving
+    /// now, and the first thumbnail is drawn no more; it goes as the run lands. Nothing is let go while the patch is
     /// applied: a toolkit arranging what lets go would place the views the patch makes before their partners are
     /// noted.
     func testAViewGoingAlongEndsAsItsPartnerLeaves() throws {
@@ -371,6 +371,7 @@ final class SharedTransitionsTests: XCTestCase {
         let list = try standingList(bench)
         let thumbnail = try XCTUnwrap(bench.element("thumbnail"))
         paged(bench)
+        bench.stands("detail", at: Point(x: 30, y: 150), size: LayoutSize(width: 200, height: 100))
         bench.frame(at: 50)
         let detail = try XCTUnwrap(bench.element("detail"))
         assertAlike(
@@ -378,10 +379,40 @@ final class SharedTransitionsTests: XCTestCase {
             drawn(detail, at: Rect(x: 30, y: 150, width: 200, height: 100), in: bench), "going along with the detail")
 
         bench.show([Bench.holder("shelf", [Bench.keyed("again", 5)])])
-        XCTAssertEqual(thumbnail.value(.opacity)?.number, 0, "its partner gone, it is drawn no more")
         XCTAssertEqual(list.lifecycle, .exiting, "nothing let go while the patch is applied")
+        bench.place("shelf", at: Rect(x: 0, y: 0, width: 300, height: 100))
+        bench.place("again", at: Rect(x: 100, y: 20, width: 60, height: 60))
+        XCTAssertEqual(thumbnail.value(.opacity)?.number, 0, "its partner gone on, it is drawn no more")
+        assertAlike(
+            drawn(detail, at: Rect(x: 30, y: 150, width: 200, height: 100), in: bench),
+            drawn(try XCTUnwrap(bench.element("again")), at: Rect(x: 110, y: 40, width: 60, height: 60), in: bench),
+            "the detail and the view of its id drawn as one")
         bench.frame(at: 250)
         XCTAssertEqual([thumbnail.lifecycle, list.lifecycle], [.released, .released], "gone as its runs land")
+    }
+
+    /// ONE PRESENTATION, SENT ON: the thumbnail coming back while the detail grows out of it is drawn from the same
+    /// presentation the detail was - its run sent on onto the thumbnail's place, from where it is and as fast as it
+    /// goes - and the detail, kept as it leaves, is drawn from it too.
+    func testAReturnSendsTheSamePresentationOn() throws {
+        let bench = Bench(keeps: true)
+        bench.runtime.layoutMotion.applicationMotion = .spring(response: .milliseconds(300), damping: 1)
+        _ = try standingList(bench)
+        paged(bench)
+        bench.stands("detail", at: Point(x: 30, y: 150), size: LayoutSize(width: 200, height: 100))
+        let detail = try XCTUnwrap(bench.element("detail"))
+        let shared = try XCTUnwrap(detail.presentation)
+        bench.frame(at: 50)
+        let going = detail.drawnSpeed(to: bench.root.mount)
+
+        bench.show([Bench.holder("shelf", [Bench.keyed("again", 5)])])
+        bench.place("shelf", at: Rect(x: 0, y: 0, width: 300, height: 100))
+        bench.place("again", at: Rect(x: 40, y: 40, width: 40, height: 40))
+        let again = try XCTUnwrap(bench.element("again"))
+        XCTAssertTrue(again.presentation === shared, "the same presentation, sent on")
+        XCTAssertTrue(detail.presentation === shared, "the detail, leaving, drawn from it")
+        let speed = again.drawnSpeed(to: bench.root.mount)
+        XCTAssertEqual([speed.x, speed.y, speed.width], [going.x, going.y, going.width], "as fast as it went")
     }
 
     /// A SPEED IS CARRIED THROUGH WHAT DRAWS IT: a thumbnail growing at 2 a second in a list drawn at half its size is
@@ -440,7 +471,7 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(opacities(), [0, 1, 1], "setting out: the thumbnail alone")
         bench.frame(at: 100)
         XCTAssertEqual(opacities(), [1, 1, 1], "half way, grown past where they cross: the detail over it, whole")
-        XCTAssertEqual(SharedWay.crossing(from: Rect(x: 0, y: 0, width: 200, height: 100), to: Rect(x: 0, y: 0, width: 40, height: 40)), 0.55...1, "shrinking, late")
+        XCTAssertEqual(SharedPresentation.crossing(from: Rect(x: 0, y: 0, width: 200, height: 100), to: Rect(x: 0, y: 0, width: 40, height: 40)), 0.55...1, "shrinking, late")
     }
 
     /// THE CORNER IS CARRIED ON THE WAY, DRAWN: from the thumbnail's 6 points to the detail's 12, straight as the way
@@ -457,11 +488,15 @@ final class SharedTransitionsTests: XCTestCase {
         bench.frame(at: 100)
         XCTAssertEqual(detail.number(.cornerRadius) ?? .nan, 9 / (0.6 * 0.7).squareRoot(), accuracy: 0.001, "drawn 9 half way")
         XCTAssertEqual(thumbnail.number(.cornerRadius) ?? .nan, 9 / (3 * 1.75).squareRoot(), accuracy: 0.001)
-        // A frame moving the two draws each one's corner too: the kept list's keyed view, found by its mount as it travels.
+        // A frame of the presentation's run draws each one's corner too: the kept list's keyed view, found by its
+        // mount as it travels.
         let views = [detail, thumbnail].map { $0.native as? NoView }
         let before = views.map { $0?.presented.count ?? 0 }
-        bench.tree.present(states: [:], properties: [detail.mount: [.translationX], thumbnail.mount: [.translationX]])
-        let corners = zip(views, before).map { view, count in view?.presented.dropFirst(count).first?.contains(.cornerRadius) }
+        let run = try XCTUnwrap(detail.presentation?.runMount)
+        bench.tree.present(states: [:], properties: [run: [.area]])
+        let corners = zip(views, before).map { view, count in
+            view?.presented.dropFirst(count).contains { $0.contains(.cornerRadius) }
+        }
         XCTAssertEqual(corners, [true, true], "each drawn so on every frame")
 
         bench.frame(at: 250)

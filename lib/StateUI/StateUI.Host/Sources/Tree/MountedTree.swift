@@ -358,7 +358,8 @@
         self.diagnostics = diagnostics
         changes = PresentationChanges(core: core)
         describedMotion.born = { [weak self] key in
-            guard let self, let element = byMount[key.mount]?.element else { return }
+            guard let self, let element = byMount[key.mount]?.element ?? shared.entry(run: key.mount)?.coming?.element
+            else { return }
             changes.born(.described(key), on: element, inLayoutPass: patchTime == nil)
         }
         describedMotion.ended = { [weak self] key, end in self?.changes.ended(.described(key), as: end) }
@@ -470,12 +471,13 @@
     @discardableResult
     public func present(states: [Int32: HostStateValue], properties: [UInt64: Set<Prop>]) -> FrameImpact {
         var properties = properties
-        // A view traveling a shared transition's way draws, with its numbers, what the way works out of them: its
-        // opacity as it crosses over, and its corner.
-        for (mount, changed) in properties.sorted(by: { $0.key < $1.key }) where !changed.isDisjoint(with: SharedWay.moved) {
-            guard let traveler = byMount[mount]?.element, let way = traveler.way else { continue }
-            if way.comes != nil { properties[mount]?.insert(.opacity) }
-            if way.corner != nil, let rounding = traveler.roundingProperty { properties[mount]?.insert(rounding) }
+        // A shared presentation's run draws every view drawn from it: its move, scale, opacity and corner.
+        for mount in properties.keys.sorted() {
+            guard let entry = shared.entry(run: mount) else { continue }
+            properties[mount] = nil
+            for wearer in entry.wearers {
+                properties[wearer.mount, default: []].formUnion(SharedTransitions.drawn(by: wearer, of: entry))
+            }
         }
         return ProgramWrite.perform {
             var touched = Set(properties.keys)

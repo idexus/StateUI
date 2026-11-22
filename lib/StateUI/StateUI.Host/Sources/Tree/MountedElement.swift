@@ -203,11 +203,10 @@
     var raisedByEntry: [RaisedChild] = []
     var entryRunsLeft = 0
 
-    /// The shared transition's way it travels, the keyed view going along with it as it enters, and - kept for its
-    /// partner - the numbers it stood at, with their speed, as it stopped being the application's.
+    /// The shared presentation it is drawn from, and - kept for its partner - the numbers it stood at, with their
+    /// speed, as it stopped being the application's.
     /// Design: docs/design/host/motion.md#a-shared-presentation-drawn-by-both
-    var way: SharedWay?
-    weak var alongside: MountedElement?
+    var presentation: SharedPresentation?
     var standsAt: [Prop: (value: Double, velocity: Double)] = [:]
 
     /// The id a view of the element's authored identity is known by as it comes back: the one its render said it
@@ -1073,7 +1072,7 @@
     /// number that is none.
     /// Design: docs/design/core/contracts.md#a-number-that-is-none
     public func value(_ property: Prop) -> HostValue? {
-        let shown = wayValue(property) ?? plainValue(property)
+        let shown = presentationValue(property) ?? plainValue(property)
         guard let value = GeometryArithmetic.value(shown, for: property), !value.holdsNonFiniteNumber else { return nil }
         return value
     }

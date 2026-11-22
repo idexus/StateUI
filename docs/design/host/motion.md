@@ -404,12 +404,13 @@ shows, and the move takes the view past that.
 ## A shared presentation
 
 A view made with an id written by hand - its key - takes over from the one
-view its patch dropped with that id on its page: it enters where that one was
-drawn, as fast as it was moving, its corner as it was drawn
-([the declaration](../views/transitions.md#a-shared-presentation)), whatever
-kind of view either is.
-The host layer keeps what each key's view was drawn as, by its key - the notes
-of one patch (`SharedTransitions`, the tree's `shared`) - and no host adds to it:
+view its patch dropped with that id on its page: the two are drawn from ONE
+presentation, held by the host layer, which the one dropped was drawn as and
+the one made lands as - where they are drawn, how fast that moves, their
+corner ([the declaration](../views/transitions.md#a-shared-presentation)),
+whatever kind of view either is. The host layer keeps the notes of one patch
+and the presentations shared now (`SharedTransitions`, the tree's `shared`),
+and no host adds to them:
 
 ```text
   a patch drops a child     every view wearing a key in it or under it is noted under its key
@@ -419,27 +420,44 @@ of one patch (`SharedTransitions`, the tree's `shared`) - and no host adds to it
                             grows (`drawnSpeed`), and the corner it is drawn with
   a patch makes a view      wearing a key: noted
   its first place           one view dropped and one made under the key, in that patch, one window
-                            and one page, and both rectangles known:
-                              it is drawn moved by the difference of their middles and scaled by
-                              the ratio of their sizes, each way apart, and brought onto what it
-                              declares under its own motion, else the application's, its numbers
-                              setting out at the speed the dropped one was drawn at (`ownSpeed`)
-                              the dropped one, kept for it, goes along (drawn by both, below);
-                              one still leaving by its own exit ends at once
+                            and one page, and both rectangles known: the presentation
+                            (`SharedPresentation`) the dropped one was drawn from, else a new one,
+                            sends its ONE run - the rectangle drawn, as its middle and its size, in
+                            the window - onto where the made one lands as drawn, under the made
+                            one's motion, else the application's: from where it stands and as
+                            fast as it goes where it already runs, else from the dropped one's
+                            rectangle at its speed; the made one is drawn from it, and the
+                            dropped one, kept for it, too (drawn by both, below); one still
+                            leaving by its own exit ends at once
                             anything else: it enters as any view does, and a change that waits
                             for the patch hears `.unsupported`
-  two frames later          the notes are let go
+  every frame               the run's step draws every view drawn from it: each one's move and
+                            scale onto the rectangle drawn, worked out against its own place and
+                            what holds it, as they stood when it joined; its opacity and corner
+  it lands                  the made one stands as it declares; the views that left are drawn no
+                            more, and those kept for them are released
+  two frames later          the notes are let go; a presentation whose made view left with no
+                            partner of its own lands nowhere, and ends
 ```
 
 Each key is its own: a patch dropping a row of tiles and making a grid of
-them, a key on each, pairs every tile with its own, and each goes its own way.
+them, a key on each, pairs every tile with its own, and each presentation runs
+its own way.
+
+The trap is two views moved alike. Moved each by its own run, from one place
+at one speed, the two coincide only while nothing sends either on - a return
+during the movement made each anew, and the speeds of two runs read back
+through two views' transforms. Drawn from one run, the two are one by what they
+read: a return sends the same run on onto the view coming back, from where it
+is and as fast as it goes (`SharedPresentation.send`), and every view drawn from
+it follows. Only the run's own landing ends it - one it was sent from ends
+nothing.
 
 The trap is a speed read off one number. A view is drawn moving by its own
 numbers' runs and by those of every view holding it - a list thrown across
-carries its thumbnail - so the speed is carried up through each transform to
-the scope, and read back down into the numbers of the view taking it over,
-with all above it standing still. A return during a movement so turns from
-where the view is, as fast as it was going.
+carries its thumbnail - so the speed a new presentation sets out at is carried
+up through each transform to the scope; a view drawn from a presentation moves
+as its run does.
 
 A key is the scope and the number the id crosses as: the scope is the page
 the view stands on (`presentationScope`) - on none, the top of what holds it -
@@ -504,7 +522,7 @@ and the view kept for the partner draws the way over it meanwhile.
 
 Where what held the view dropped keeps a view that leaves, the two views of
 a shared presentation are drawn as one on the way, the same on every host
-(`SharedWay`, `MountedElement+SharedWay`):
+(`SharedPresentation`, `MountedElement+SharedPresentation`):
 
 ```text
   a patch drops a child   holding a key, its holder keeping a view that leaves, no engine under it,
@@ -512,15 +530,14 @@ a shared presentation are drawn as one on the way, the same on every host
                           more the application's, each number it and each keyed view in it is drawn
                           with held where it stands, with its speed, a state's too
   the patch is applied    a kept view its patch made no partner for goes at once
-  a partner's first       the keyed view it pairs with goes along (`goAlong`): from where it is
-  place                   drawn, at the speed it was drawn at, onto where the partner lands, under
-                          the partner's motion - each keyed view of the kept view its own way; the
-                          kept view stands where it is drawn, what else it holds fades out there
-  every frame             how far each way has got, read off the number of the view traveling it
-                          that moves most - a scale, else a move; from it the opacity of the one
-                          in front, and each rounded one's corner
-  the partner leaves      the keyed view going along with it is drawn no more, and goes as its runs
-                          land: the key's view is the one leaving now
+  a partner's first       the keyed view it pairs with lends itself to the presentation (`lends`):
+  place                   drawn from it as the partner is - each keyed view of the kept view in its
+                          own presentation; the kept view stands where it is drawn, what else it
+                          holds fades out there
+  every frame             how far the run has got, read off the size that changes most, else the
+                          middle; from it the opacity of the one in front, and each one's corner
+  the partner leaves      the presentation is sent on to the view of its key made next - the one
+                          that left is the one leaving now, those before it drawn no more
   the last lands          the kept view is released
   no partner in two       the kept view goes
   frames
@@ -529,20 +546,22 @@ a shared presentation are drawn as one on the way, the same on every host
 The trap is what the kept view holds besides its keys. Taken along with a
 keyed view, a caption under a picture would be drawn under the picture's two
 scales - stretched - and carried over whatever stands on the way. So only the
-keyed views travel, found by their mounts again while they do, and what else
+keyed views are drawn from presentations, found by their mounts again while
+they are, and what else
 the kept view holds stands where it is drawn and fades out there under the
 partner's motion. A view meant to travel whole - an app with its words -
 wears the key itself.
 
-The trap is letting go while the patch is applied. A view going along whose
-partner the patch drops is not released then: what kept it would arrange its
-views, the toolkit would lay out and place the views the patch makes before
-the patch has noted the views it drops, and they would set out from nothing.
+The trap is letting go while the patch is applied. A view kept for a partner
+the patch drops is not released then: what kept it would arrange its views,
+the toolkit would lay out and place the views the patch makes before the patch
+has noted the views it drops, and they would set out from nothing. Only a
+presentation's landing, or the frames after the patch, release.
 
 The two cross over near the smaller: a view growing out of a small one
 comes in over the way's first part (0 to 0.45), one shrinking onto a small
 one goes out over its last (0.55 to 1), two of one size in its middle (0.25
-to 0.75), each by a smoothstep (`SharedWay.crossing(from:to:)`). Only the one
+to 0.75), each by a smoothstep (`SharedPresentation.crossing(from:to:)`). Only the one
 drawn in front - the larger - crosses; the one behind stands whole under it,
 so the two never let through what stands under them. An app closing onto its
 icon is the app nearly all the way and the icon only as it lands; an icon
@@ -550,20 +569,19 @@ opening is the app nearly at once.
 
 A view rounded by one corner - a rectangle's, a layout's rounded outline -
 carries it: from the corner the leaving one is drawn with to the one the
-entering one is drawn with as it lands, straight as the way goes. Each frame
+entering one is drawn with as it lands, straight as the run goes. Each frame
 its own corner is that over the scale it is drawn at, its own and that of
 all that holds it up to the scope (`scaleInScope`): a view grown six times
-is drawn with the way's corner, never six times its own.
+is drawn with the presentation's corner, never six times its own.
 
 The trap is the space a rectangle stands in. A host says each corner with no
 transform in it, a layout program's placement is drawn over its child's own
 transform, and what holds the entering view may be scaled - an icon enlarged
-with its cell. So the rectangles are worked out in the scope's drawing
-(`SharedTransitions.drawn`): where the leaving view is drawn, and where the
-entering one lands as drawn, which the kept view goes onto; the entering view
-sets out from the leaving one's rectangle with the transforms of what holds
-it undone (`undrawn`, `HostDrawingTransform.place(drawnAs:within:)`), as its
-own transform is drawn under them.
+with its cell. So the presentation's rectangle stands in the window, as
+drawn (`SharedTransitions.drawn`): where the leaving view is drawn, and where
+the entering one lands as drawn; each view drawn from it reads it back with the
+transforms of what holds it undone (`HostDrawingTransform.place(drawnAs:within:)`),
+as its own transform is drawn under them.
 
 The trap is the speed. A view the hand pulls is moved by its states'
 channels: what it is drawn with is a state's lane, not the tree's animation.
@@ -571,9 +589,8 @@ Kept, it is no state's any more, so its numbers are read off the channels
 before it is deactivated - where each run is and how fast
 (`StateChannels.standing(of:now:)`), and the speed each keyed view is drawn
 at is noted under its key as it is dropped. The kept view then stands, its own
-runs cut short, and both views of a key set out at that speed in their own
-numbers - the two drawn as one from the first frame: a throw goes on as
-thrown.
+runs cut short, and the presentation's run sets out at that speed - the two
+drawn as one from the first frame: a throw goes on as thrown.
 
 ## Drawn in front
 

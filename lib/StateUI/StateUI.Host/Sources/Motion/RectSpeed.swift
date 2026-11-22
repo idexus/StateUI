@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// How fast a rectangle a view is drawn in moves: its middle across and down, and its width and height, in points a
-/// second - what a shared transition's partner takes over with the place.
+/// second - what a shared presentation sets out with from the place a view stood.
 /// Design: docs/design/host/motion.md#a-shared-presentation
 struct RectSpeed: Equatable {
     var x: Double

@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The numbers a shared transition's authored identities cross as - a scope's, a key's - so a host compares
-/// numbers and never what a value says of itself. A number lives while an element wears it; one nobody wears as
+/// The numbers the identities written by hand with `.id()` cross as, so a host compares numbers and never what
+/// a value says of itself. A number lives while an element wears it; one nobody wears as
 /// a walk ends is forgotten, and the same identity written later gets another.
 /// Design: docs/design/views/transitions.md#a-shared-presentation
 @MainActor
