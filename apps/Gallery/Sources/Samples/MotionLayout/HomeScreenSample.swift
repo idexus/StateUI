@@ -189,8 +189,6 @@ struct HomeScreenSample: SampleContent, ExampleContent {
         }
         .rows(.fill, .automatic)
         .rowSpacing(8)
-        // THE SCOPE: an icon and its app are one to the eye in it.
-        .transitionScope("home")
     }
 
     /// The grid the room fits now, written where it changed - the board in
@@ -278,8 +276,8 @@ struct HomeScreenSample: SampleContent, ExampleContent {
 
         var body: some View {
             ZStack {
-                // THE APP, tied to the icon's square by the icon's name: the
-                // two are drawn as one on the way, its words with it, its
+                // THE APP, of one id with the icon's square - the icon's name:
+                // the two are drawn as one on the way, its words with it, its
                 // corner going from the square's to its own as far as it has
                 // got.
                 ZStack {
@@ -334,7 +332,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                 }
                 .background(icon.color)
                 .shape(.roundedRectangle(24))
-                .sharedTransition(icon.name)
+                .id(icon.name)
                 .motion(HomeScreenSample.opening)
             }
             // THE APP AS THE HAND DRAWS IT: moved, and scaled about its foot,
@@ -409,10 +407,10 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                     .width(60)
                     .height(60)
                     .horizontalAlignment(.center)
-                    // TIED TO ITS APP by the icon's name: the app grows out of
-                    // the square and closes onto it, the two crossing over
+                    // ONE ID WITH ITS APP, the icon's name: the app grows out
+                    // of the square and closes onto it, the two crossing over
                     // near the square.
-                    .sharedTransition(icon.name)
+                    .id(icon.name)
                     .motion(HomeScreenSample.closing)
                 }
 

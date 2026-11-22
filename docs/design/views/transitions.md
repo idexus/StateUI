@@ -97,33 +97,43 @@ The trap is a transition read as the view's state. It is the last one a
 patch said: nothing follows it, and writing another to a standing view
 starts no motion.
 
-## A shared transition
+## A shared presentation
 
 Two views may be one thing to the user - a thumbnail and its picture. A
-transition of each says how each comes and goes; a shared transition says
+transition of each says how each comes and goes; a shared presentation says
 that as one goes and the other comes, in the same change, what the user sees
-is one view growing from where the first was.
+is one view, the one coming setting out from where the other is drawn. Their
+presentation is shared by the id written by hand on each:
 
 ```text
-  .transitionScope(id)     on a layout: the views in it are matched in it          LayoutContract.transitionScope
-  .sharedTransition(id)    on a view: the one of this id in its scope is its partner   ViewContract.sharedTransition
+  .id(value)     on a view: who it is among its siblings - and, written by hand, what its presentation
+                 is shared by on its page                                      ViewContract.sharedPresentation
 ```
 
-The views stay two views. Nothing of the leaving one's state is the entering
-one's, and the key is no `.id(_:)`: it ties what is drawn, not who a view is.
+A view's id says three things, tried in this order:
 
-A scope is a layout - the type refuses the modifier anywhere else - as it is
-what holds the views that come and go: a scope written on a view that holds
-none would promise nothing. A view's scope is the nearest layout above it
-that says one; a view under none is tied to nothing.
+```text
+  among the same siblings, of one kind     one element continued: its control, its state - its layout moves it
+  coming back while the one of it leaves   the same view coming back (the host's), from where that one is drawn
+  elsewhere on the page, or another kind   two elements of one presentation: the one coming takes over from
+                                           the one leaving - where it was drawn, how fast, its corner
+```
 
-Both identities are any `Hashable`, and a host compares none of them. The
-modifier asks the core for the number an identity crosses as
-(`SharedIdentities`): the same number while an element wears it - so the view
-a walk drops and the view the same walk makes, written with equal
-identities, cross under one number - and forgotten once a walk ends with
-nobody wearing it, so an identity written again later gets another. No
-number is given twice.
+Only an id written by hand shares a presentation: a list's items are keyed by
+their loop, and two lists showing the same items fly nothing between them. The
+views stay two views - nothing of the leaving one's state is the coming one's -
+and their kinds may differ: what is shared is where the view is drawn, its
+size and its corner.
+
+The page is where views of one id meet: a page that comes over another is the
+navigation's to bring, and two views of one id on two pages are each their own.
+
+An id is any `Hashable`, and a host compares none. The modifier asks the core
+for the number the identity crosses as (`SharedIdentities`): the same number
+while an element wears it - so the view a walk drops and the view the same walk
+makes, written with equal ids, cross under one number - and forgotten once a
+walk ends with nobody wearing it, so an id written again later gets another.
+No number is given twice.
 
 ```text
   a view is made or said    the differ notes it wears the number
@@ -131,20 +141,20 @@ number is given twice.
   a walk ends               the numbers nobody wears are let go
 ```
 
-What a host does with the two numbers is
-[the host layer's](../host/motion.md#a-shared-transition): where one view
-dropped and one view made meet under a key, the made one takes over from the
-dropped one - where it was drawn, how fast it was moving, its corner - and the
-dropped one, kept where its holder keeps a view that leaves, goes along onto
-where the made one lands, the two drawn as one; anywhere else each goes by its
-own transition. A key ties one view before a change to one after it, and a
-change may carry many keys at once: a row of tiles becoming a grid, each tile
-its own key, each going its own way. What travels is the view wearing the key,
-with what it holds: what else left with it - a caption under a picture -
-stands where it is drawn and fades out there, so a view meant to travel whole
-wears the key itself.
+What a host does with the numbers is
+[the host layer's](../host/motion.md#a-shared-presentation): where one view
+dropped and one view made meet under a number on one page, the made one takes
+over from the dropped one, and the dropped one, kept where its holder keeps a
+view that leaves, goes along onto where the made one lands, the two drawn as
+one; anywhere else each goes by its own transition. One change carries as many
+ids as it holds - a row of tiles becoming a grid, each tile its own id, each
+going its own way. What travels is the view wearing the id, with what it
+holds: what else left with it - a caption under a picture - stands where it is
+drawn and fades out there, so a view meant to travel whole wears the id itself.
 
-The trap is a key read as an identity. Two views of one `.id(_:)` are one
-element continued; two views of one shared key are two elements, each with
-its own life, tied for the length of one entry.
+The trap is one id among the same siblings. A thumbnail and its picture
+written in one stack, of one kind and one id, are one element continued: its
+size changes and its layout moves it, and nothing is shared. Written in two
+holders - the picture in its own - or of two kinds, they are two views, drawn
+as one.
 

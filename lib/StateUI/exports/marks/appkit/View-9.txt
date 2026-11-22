@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.longPressDuration: ✅
 Button.pointerMoved: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.pointerPressed: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -46,9 +46,10 @@ HStack.gridColumnSpan: ✅
 HStack.gridRowSpan: ✅
 HStack.interaction: ✓ pressDown on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.layoutFrameChanged: ✅
+HStack.sharedPresentation: ✅
 HStack.transition: ✅
 Image.pinchUpdated: ✓ pinch on Image: handed to the host's recognizer or handler, no NSEvent sent
-Image.sharedTransition: ✅
+Image.sharedPresentation: ✅
 Image.tapped: ✓ pressDown on Image: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.longPressDuration: ✅
 ItemsView.pointerMoved: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
@@ -85,7 +86,7 @@ Polygon.interaction: ✓ pressDown on Polygon: handed to the host's recognizer o
 Polygon.layoutFrameChanged: ✅
 Polygon.transition: ✅
 Polyline.pinchUpdated: ✓ pinch on Polyline: handed to the host's recognizer or handler, no NSEvent sent
-Polyline.sharedTransition: ✅
+Polyline.sharedPresentation: ✅
 Polyline.tapped: ✓ pressDown on Polyline: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.longPressDuration: ✅
 ProgressBar.pointerMoved: ✓ hover on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
@@ -123,7 +124,7 @@ Slider.transition: ✅
 Space.longPressed: ✓ longPress on Space: handed to the host's recognizer or handler, no NSEvent sent
 Space.rotationUpdated: ✓ rotate on Space: handed to the host's recognizer or handler, no NSEvent sent
 Spinner.pinchUpdated: ✓ pinch on Spinner: handed to the host's recognizer or handler, no NSEvent sent
-Spinner.sharedTransition: ✅
+Spinner.sharedPresentation: ✅
 Spinner.tapped: ✓ pressDown on Spinner: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the drag source and the window's drop routing told by the driver, no dragging session
 Stepper.dragStarting: ✓ dragAndDrop on Stepper: the drag source and the window's drop routing told by the driver, no dragging session
@@ -153,7 +154,7 @@ TextField.interaction: ✓ pressDown on TextField: handed to the host's recogniz
 TextField.layoutFrameChanged: ✅
 TextField.transition: ✅
 TimePicker.pinchUpdated: ✓ pinch on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
-TimePicker.sharedTransition: ✅
+TimePicker.sharedPresentation: ✅
 TimePicker.tapped: ✓ pressDown on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
 VStack.longPressDuration: ✅
 VStack.pointerMoved: ✓ hover on VStack: handed to the host's recognizer or handler, no NSEvent sent
@@ -169,5 +170,5 @@ ZStack.horizontalAlignment: ✅
 ZStack.interaction: ✓ pressDown on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.layoutBody: ✅
 ZStack.layoutFrameChanged: ✅
-ZStack.tapped: ✓ pressDown on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.sharedPresentation: ✅
 ZStack.verticalAlignment: ✅

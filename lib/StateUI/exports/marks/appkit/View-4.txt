@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.gridColumn: ✅
 Button.gridRow: ✅
 Button.layoutFrameChanged: ✅
@@ -33,12 +33,13 @@ Ellipse.interaction: ✓ pressDown on Ellipse: handed to the host's recognizer o
 Ellipse.layoutFrameChanged: ✅
 Ellipse.transition: ✅
 Fill.pinchUpdated: ✓ pinch on Fill: handed to the host's recognizer or handler, no NSEvent sent
-Fill.sharedTransition: ✅
+Fill.sharedPresentation: ✅
 Fill.tapped: ✓ pressDown on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Grid.longPressDuration: ✅
 Grid.pointerMoved: ✓ hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.pointerPressed: ✓ hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.pointerReleased: ✓ hover on Grid: handed to the host's recognizer or handler, no NSEvent sent
+Grid.sharedPresentation: ✅
 HStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 HStack.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 HStack.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
@@ -70,11 +71,11 @@ Map.area: ✅
 Map.dismissed: ✓ pressDown on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.layoutFrameChanged: ✅
 Map.transition: ✅
-MotionLayout.interaction: ✓ pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.interaction: ✓ rotate on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.longPressed: ✓ longPress on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.rotationUpdated: ✓ rotate on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 Path.pinchUpdated: ✓ pinch on Path: handed to the host's recognizer or handler, no NSEvent sent
-Path.sharedTransition: ✅
+Path.sharedPresentation: ✅
 Path.tapped: ✓ pressDown on Path: handed to the host's recognizer or handler, no NSEvent sent
 Picker.longPressDuration: ✅
 Picker.pointerMoved: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent
@@ -95,7 +96,6 @@ ProgressBar.gridColumn: ✅
 ProgressBar.gridRow: ✅
 ProgressBar.layoutFrameChanged: ✅
 ProgressBar.tapped: ✓ pressDown on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
-Rectangle.layoutFrameChanged: ✅
 Rectangle.swipeDirections: ✓ pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.swipeThreshold: ✓ pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.swiped: ✓ pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
@@ -136,7 +136,7 @@ Stepper.interaction: ✓ pressDown on Stepper: handed to the host's recognizer o
 Stepper.layoutFrameChanged: ✅
 Stepper.transition: ✅
 Switch.pinchUpdated: ✓ pinch on Switch: handed to the host's recognizer or handler, no NSEvent sent
-Switch.sharedTransition: ✅
+Switch.sharedPresentation: ✅
 Switch.tapped: ✓ pressDown on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Text.swipeDirections: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
 Text.swipeThreshold: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
@@ -144,6 +144,7 @@ Text.swiped: ✓ pan on Text: handed to the host's recognizer or handler, no NSE
 Text.tapCount: ✓ tap on Text: handed to the host's recognizer or handler, no NSEvent sent
 Text.tapped: ✓ tap on Text: handed to the host's recognizer or handler, no NSEvent sent
 Text.transition: ✅
+Text.verticalAlignment: ✅
 TextEditor.longPressDuration: ✅
 TextEditor.pointerMoved: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.pointerPressed: ✓ hover on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
@@ -162,6 +163,7 @@ TimePicker.verticalAlignment: ✅
 VStack.gridColumn: ✅
 VStack.gridRow: ✅
 VStack.layoutFrameChanged: ✅
+VStack.sharedPresentation: ✅
 VStack.tapped: ✓ pressDown on VStack: handed to the host's recognizer or handler, no NSEvent sent
 WebView.swipeDirections: ✓ pan on WebView: handed to the host's recognizer or handler, no NSEvent sent
 WebView.swipeThreshold: ✓ pan on WebView: handed to the host's recognizer or handler, no NSEvent sent

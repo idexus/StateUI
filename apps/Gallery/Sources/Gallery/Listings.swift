@@ -2396,8 +2396,8 @@ enum Listings {
         /// What was done last, and how what it started ended.
         @State private var said = "Throw the cards"
 
-        /// THE BOARD the changes are aimed at: the scope the card and its detail
-        /// are tied in.
+        /// THE BOARD the changes are aimed at: what holds the card and its
+        /// detail.
         @Aim(VStack.self) private var board
 
         var body: some View {
@@ -2417,8 +2417,6 @@ enum Listings {
                         deck
                     }
                 }
-                // THE SCOPE: the card and its detail are one to the eye in it.
-                .transitionScope("board")
                 .aim(board)
                 .height(300)
 
@@ -2533,7 +2531,8 @@ enum Listings {
                     Rectangle()
                         .fill(card.color)
                         .height(200)
-                        .sharedTransition(card.name)
+                        // THE CARD'S OWN ID: the detail and its card are drawn as one.
+                        .id(card.name)
                         // Slow enough to see the way.
                         .motion(.eased(.milliseconds(600), curve: .sineInOut))
                         .onPanUpdated { pan in pulled(pan) }
@@ -2652,9 +2651,9 @@ enum Listings {
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
                 }
-                // TIED TO ITS DETAIL by its name: opened, the detail grows from it;
-                // back, the detail shrinks into it as its deck comes.
-                .sharedTransition(card.name)
+                // ONE ID WITH ITS DETAIL, its name: opened, the detail grows from
+                // it; back, the detail shrinks into it as its deck comes.
+                .id(card.name)
                 .motion(.eased(.milliseconds(600), curve: .sineInOut))
                 .scale(held ? 1.1 : 1)
                 // THE HAND TAKES THE CARD ITSELF once a press has stood still on it.
@@ -5811,8 +5810,6 @@ enum Listings {
                 }
             }
             .rows(.fill, .automatic)
-            // THE SCOPE: an icon and its app are one to the eye in it.
-            .transitionScope("home")
         }
 
         /// The grid the room fits now, written where it changed - the board in
@@ -5900,8 +5897,8 @@ enum Listings {
 
             var body: some View {
                 ZStack {
-                    // THE APP, tied to the icon's square by the icon's name: the
-                    // two are drawn as one on the way, its words with it, its
+                    // THE APP, of one id with the icon's square - the icon's name:
+                    // the two are drawn as one on the way, its words with it, its
                     // corner going from the square's to its own as far as it has
                     // got.
                     ZStack {
@@ -5948,7 +5945,7 @@ enum Listings {
                         .onPanUpdated { pan in pulled(pan) }
                         .onTapped { opened = nil }
                     }
-                    .sharedTransition(icon.name)
+                    .id(icon.name)
                     .motion(HomeScreenSample.opening)
                 }
                 // THE APP AS THE HAND DRAWS IT: moved, and scaled about its foot,
@@ -6019,10 +6016,10 @@ enum Listings {
                         .width(60)
                         .height(60)
                         .horizontalAlignment(.center)
-                        // TIED TO ITS APP by the icon's name: the app grows out of
-                        // the square and closes onto it, the two crossing over
+                        // ONE ID WITH ITS APP, the icon's name: the app grows out
+                        // of the square and closes onto it, the two crossing over
                         // near the square.
-                        .sharedTransition(icon.name)
+                        .id(icon.name)
                         .motion(HomeScreenSample.closing)
                     }
 
@@ -11950,12 +11947,12 @@ enum Listings {
         var body: some View {
             ZStack {
                 if let chosen {
-                    // THE PICTURE: another view than its thumbnail, tied to it by
-                    // the key - it sets out from where the thumbnail is drawn.
+                    // THE PICTURE: another view than its thumbnail, of the same
+                    // id - it sets out from where the thumbnail is drawn.
                     Rectangle()
                         .fill(Self.tints[chosen])
                         .height(150)
-                        .sharedTransition(chosen)
+                        .id(chosen)
                         // Slow enough to see the way.
                         .motion(.eased(.milliseconds(700), curve: .sineInOut))
                         .onTapped { self.chosen = nil }
@@ -11966,10 +11963,10 @@ enum Listings {
                                 .fill(Self.tints[item])
                                 .width(56)
                                 .height(40)
-                                // THE THUMBNAIL wears the same key as its picture;
+                                // THE THUMBNAIL has the same id as its picture;
                                 // going back, it sets out from where the picture
                                 // is drawn at that moment.
-                                .sharedTransition(item)
+                                .id(item)
                                 .motion(.eased(.milliseconds(700), curve: .sineInOut))
                                 .onTapped { chosen = item }
                         }
@@ -11978,8 +11975,6 @@ enum Listings {
                     .verticalAlignment(.start)
                 }
             }
-            // THE SCOPE: a layout that stands while the views in it come and go.
-            .transitionScope("pictures")
             .height(150)
         }
         """#,
@@ -11998,7 +11993,7 @@ enum Listings {
 
                 VStack {
                     if asGrid {
-                        // THE GRID: the same keys, larger, three to a row.
+                        // THE GRID: the same ids, larger, three to a row.
                         Grid {
                             ForEach(Array(Self.tints.indices)) { tile in
                                 Self.tile(tile, corner: 12)
@@ -12019,20 +12014,17 @@ enum Listings {
                         }
                     }
                 }
-                // THE SCOPE: a tile and the one of its key in the other
-                // arrangement are one to the eye in it.
-                .transitionScope("tiles")
                 .height(200)
             }
         }
 
-        /// One tile: its color, its corner, and its key - its number. The tile
-        /// made takes over where the one of its key was drawn, how fast it was
+        /// One tile: its color, its corner, and its id - its number. The tile
+        /// made takes over where the one of its id was drawn, how fast it was
         /// moving and its corner, and goes on from there onto its own place.
         static func tile(_ index: Int, corner: Double) -> some View {
             Rectangle()
                 .fill(tints[index])
-                .sharedTransition(index)
+                .id(index)
                 .motion(.spring(response: .milliseconds(480), damping: 0.78))
         }
         """#,

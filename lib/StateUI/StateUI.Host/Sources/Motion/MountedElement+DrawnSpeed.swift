@@ -5,7 +5,7 @@
 
 /// How fast a view is drawn moving, the same on every host: the runs of its own numbers and of every view above it,
 /// carried through each transform up to a scope - and the speed of its own numbers that draws it so.
-/// Design: docs/design/host/motion.md#a-shared-transition
+/// Design: docs/design/host/motion.md#a-shared-presentation
 extension MountedElement {
     /// How fast `property` runs now: a state's lane while the element is the application's, else the tree's own
     /// animation; nought where nothing runs.

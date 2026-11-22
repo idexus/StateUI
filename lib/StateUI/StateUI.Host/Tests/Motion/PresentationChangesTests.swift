@@ -122,7 +122,7 @@ final class PresentationChangesTests: XCTestCase {
             runtime.layoutMotion.place(
                 view, mount: line.mount, at: Rect(x: 0, y: y, width: 100, height: 20), stated: [], words: .none,
                 natural: { LayoutSize(width: 100, height: 20) },
-                enter: entering ? { entry in line.enter(Shown(), as: entry) } : nil,
+                enter: entering ? { entry in line.enter(Shown(), as: entry, presentsOpacity: true) } : nil,
                 in: Arrangement(law: law, lanes: .all, joins: true), room: nil)
         }
 

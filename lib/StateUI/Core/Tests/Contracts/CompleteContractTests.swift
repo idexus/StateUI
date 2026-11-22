@@ -226,6 +226,8 @@ final class CompleteContractTests: XCTestCase {
         "View+PageValues.swift": ["Page"],
         "View+Toolbar.swift": ["ToolbarGroup"],
         "StyleSheet.swift": ["VisualElement", "Button"],
+        // `.id()`, written on every view, says what its presentation is shared by.
+        "VisualElement.swift": ["View"],
         "MenuItemElement.swift": ["MenuItem", "MenuToggle", "ToolbarButton", "ToolbarToggle"],
         "BarItemElement.swift": ["ToolbarButton", "ToolbarToggle", "ToolbarGroup"],
     ]

@@ -1,4 +1,4 @@
-# revision 43.2
+# revision 44.2
 Button.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Button.presentationSample: ✅
 Button.transition: ✅
@@ -32,7 +32,7 @@ Fill.presentationFrameChanged: ✅
 Grid.gridColumnSpan: ✅
 Grid.gridRowSpan: ✅
 Grid.layoutFrameChanged: ✅
-Grid.sharedTransition: ✅
+Grid.sharedPresentation: ✅
 Grid.swipeDirections: ✓ pan on Grid: the relay's report of the press dragged handed to the host, no pointer sent
 Grid.swipeThreshold: ✓ pan on Grid: the relay's report of the press dragged handed to the host, no pointer sent
 Grid.swiped: ✓ pan on Grid: the relay's report of the press dragged handed to the host, no pointer sent
@@ -77,7 +77,7 @@ Picker.presentationFrameChanged: ✅
 Polygon.gridColumnSpan: ✅
 Polygon.gridRowSpan: ✅
 Polygon.layoutFrameChanged: ✅
-Polygon.sharedTransition: ✅
+Polygon.sharedPresentation: ✅
 Polygon.swipeDirections: ✓ pan on Polygon: the relay's report of the press dragged handed to the host, no pointer sent
 Polygon.swipeThreshold: ✓ pan on Polygon: the relay's report of the press dragged handed to the host, no pointer sent
 Polygon.swiped: ✓ pan on Polygon: the relay's report of the press dragged handed to the host, no pointer sent
@@ -91,7 +91,6 @@ ProgressBar.area: ✅
 ProgressBar.layoutFrameChanged: ✅
 ProgressBar.tapped: ✓ pressDown on ProgressBar: the relay's report of the press handed to the host, no pointer sent
 ProgressBar.transition: ✅
-Rectangle.layoutFrameChanged: ✅
 Rectangle.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 Rectangle.pointerMoved: ✓ hover on Rectangle: the relay's report of the pointer handed to the host, no pointer sent
 Rectangle.pointerPressed: ✓ hover on Rectangle: the relay's report of the pointer handed to the host, no pointer sent
@@ -140,7 +139,7 @@ TextField.presentationFrameChanged: ✅
 TimePicker.gridColumnSpan: ✅
 TimePicker.gridRowSpan: ✅
 TimePicker.layoutFrameChanged: ✅
-TimePicker.sharedTransition: ✅
+TimePicker.sharedPresentation: ✅
 TimePicker.swipeDirections: ✓ pan on TimePicker: the relay's report of the press dragged handed to the host, no pointer sent
 TimePicker.swipeThreshold: ✓ pan on TimePicker: the relay's report of the press dragged handed to the host, no pointer sent
 TimePicker.swiped: ✓ pan on TimePicker: the relay's report of the press dragged handed to the host, no pointer sent
@@ -158,3 +157,4 @@ ZStack.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mous
 ZStack.pointerMoved: ✓ hover on ZStack: the relay's report of the pointer handed to the host, no pointer sent
 ZStack.pointerPressed: ✓ hover on ZStack: the relay's report of the pointer handed to the host, no pointer sent
 ZStack.pointerReleased: ✓ hover on ZStack: the relay's report of the pointer handed to the host, no pointer sent
+ZStack.sharedPresentation: ✅

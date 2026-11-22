@@ -54,7 +54,7 @@ final class StructuralEntryTests: XCTestCase {
         let view = Joining()
         XCTAssertTrue(element.entersMoving(presentsOpacity: false), "a transition enters whatever the view presents")
 
-        element.enter(view, as: .joining(under: .none))
+        element.enter(view, as: .joining(under: .none), presentsOpacity: true)
         XCTAssertEqual(shown(.opacity, of: element, in: runtime), 0, "from faded out")
         XCTAssertEqual(shown(.translationY, of: element, in: runtime), 14, "what it declares and the effect's move")
         XCTAssertEqual(shown(.scale, of: element, in: runtime), 0.5)
@@ -84,12 +84,12 @@ final class StructuralEntryTests: XCTestCase {
         XCTAssertTrue(element.entersMoving(presentsOpacity: true))
         XCTAssertFalse(element.entersMoving(presentsOpacity: false))
 
-        element.enter(view, as: .appearing)
-        element.enter(view, as: .joining(under: .none))
+        element.enter(view, as: .appearing, presentsOpacity: true)
+        element.enter(view, as: .joining(under: .none), presentsOpacity: true)
         XCTAssertNil(shown(.opacity, of: element, in: runtime))
         XCTAssertEqual(view.stood, 0, "a view that simply appears is not touched")
 
-        element.enter(view, as: .joining(under: .eased(.milliseconds(200), curve: .linear)))
+        element.enter(view, as: .joining(under: .eased(.milliseconds(200), curve: .linear)), presentsOpacity: true)
         XCTAssertEqual(shown(.opacity, of: element, in: runtime), 0)
         XCTAssertNil(shown(.translationY, of: element, in: runtime))
     }
@@ -98,11 +98,11 @@ final class StructuralEntryTests: XCTestCase {
     func testAChildAppearingWithItsLayoutEntersWhereItsTransitionSaysSo() {
         let transition = Transition.symmetric(.translation(y: 12))
         let (runtime, _, standing) = label([.transition: transition.propValue])
-        standing.enter(Joining(), as: .appearing)
+        standing.enter(Joining(), as: .appearing, presentsOpacity: true)
         XCTAssertNil(shown(.translationY, of: standing, in: runtime), "unless said, a view enters only as it joins")
 
         let (other, _, appearing) = label([.transition: transition.initialAppearance(true).propValue])
-        appearing.enter(Joining(), as: .appearing)
+        appearing.enter(Joining(), as: .appearing, presentsOpacity: true)
         XCTAssertEqual(shown(.translationY, of: appearing, in: other), 12)
     }
 
@@ -120,7 +120,7 @@ final class StructuralEntryTests: XCTestCase {
         runtime.tree.apply(root, complete: false)
         let joined = runtime.tree.root!.children[1]
         XCTAssertFalse(joined.isRemade, "a patch's")
-        joined.enter(Joining(), as: .joining(under: .none))
+        joined.enter(Joining(), as: .joining(under: .none), presentsOpacity: true)
         XCTAssertEqual(shown(.translationY, of: joined, in: runtime), 12)
 
         var whole = HostPatch(id: .manual("root"), type: .vStack)
@@ -132,7 +132,7 @@ final class StructuralEntryTests: XCTestCase {
         runtime.tree.apply(whole, complete: true)
         let resynced = runtime.tree.root!.children[1]
         XCTAssertTrue(resynced.isRemade, "a complete message over a standing root")
-        resynced.enter(Joining(), as: .joining(under: .none))
+        resynced.enter(Joining(), as: .joining(under: .none), presentsOpacity: true)
         XCTAssertNil(shown(.translationY, of: resynced, in: runtime))
 
         var swapped = HostPatch(id: .manual("another"), type: .vStack)
@@ -140,7 +140,7 @@ final class StructuralEntryTests: XCTestCase {
         runtime.tree.apply(swapped, complete: true)
         let remade = runtime.tree.root!.children[0]
         XCTAssertTrue(remade.isRemade, "another root")
-        remade.enter(Joining(), as: .appearing)
+        remade.enter(Joining(), as: .appearing, presentsOpacity: true)
         XCTAssertNil(shown(.translationY, of: remade, in: runtime))
     }
 
@@ -155,7 +155,7 @@ final class StructuralEntryTests: XCTestCase {
     func testAnEffectOutOfItsRoomEntersFromOutsideTheRoomItWasPlacedIn() {
         let transition = Transition.symmetric(.outside(.right))
         let (runtime, _, element) = label([.transition: transition.propValue])
-        element.enter(Joining(), as: .joining(under: .none))
+        element.enter(Joining(), as: .joining(under: .none), presentsOpacity: true)
         XCTAssertNil(shown(.translationX, of: element, in: runtime), "no layout placed it: no room to stand out of")
 
         let (placing, _, placed) = label([.transition: transition.propValue])
@@ -165,7 +165,7 @@ final class StructuralEntryTests: XCTestCase {
         places.place(
             Seated(), mount: placed.mount, at: Rect(x: 20, y: 30, width: 100, height: 40), values: LayoutValues(),
             natural: { .zero }, enter: nil)
-        placed.enter(Joining(), as: .joining(under: .none))
+        placed.enter(Joining(), as: .joining(under: .none), presentsOpacity: true)
         XCTAssertEqual(shown(.translationX, of: placed, in: placing), 280, "its near edge at the room's far one")
         XCTAssertNil(shown(.translationY, of: placed, in: placing))
     }
@@ -203,18 +203,18 @@ final class StructuralEntryTests: XCTestCase {
     /// it holds - the scroller - where its layout draws beyond its own room; past its layout's where that clips.
     func testAnEffectOutOfItsRoomEntersFromOutOfSight() throws {
         let open = try scrolled(.symmetric(.outside(.right)), clips: false)
-        open.label.enter(Joining(), as: .joining(under: .none))
+        open.label.enter(Joining(), as: .joining(under: .none), presentsOpacity: true)
         XCTAssertEqual(shown(.translationX, of: open.label, in: open.runtime), 360, "past the scroller's edge: 400 - 40")
 
         let clipped = try scrolled(.symmetric(.outside(.right)), clips: true)
-        clipped.label.enter(Joining(), as: .joining(under: .none))
+        clipped.label.enter(Joining(), as: .joining(under: .none), presentsOpacity: true)
         XCTAssertEqual(shown(.translationX, of: clipped.label, in: clipped.runtime), 280, "past its stack's: 300 - 20")
 
         func reads(_ bench: (runtime: HostRuntime, label: MountedElement, stack: MountedElement, tree: HostPatch)) -> [Int?] {
             [(bench.stack.native as? NoView)?.frameReads, (bench.runtime.tree.root?.native as? NoView)?.frameReads]
         }
         let faded = try scrolled(.symmetric(.opacity), clips: false)
-        faded.label.enter(Joining(), as: .joining(under: .none))
+        faded.label.enter(Joining(), as: .joining(under: .none), presentsOpacity: true)
         XCTAssertEqual(reads(faded), [0, 0], "entering with no way out: no frame is read")
 
         var leaving = try scrolled(.symmetric(.opacity), clips: false)
@@ -247,7 +247,7 @@ final class StructuralEntryTests: XCTestCase {
         let (runtime, _, element) = label([.transition: transition.propValue])
         runtime.layoutMotion.applicationMotion = .none
 
-        element.enter(Joining(), as: .joining(under: .eased(.milliseconds(200), curve: .linear)))
+        element.enter(Joining(), as: .joining(under: .eased(.milliseconds(200), curve: .linear)), presentsOpacity: true)
 
         XCTAssertNil(shown(.opacity, of: element, in: runtime), "the layout's law is not the view's")
         XCTAssertNil(shown(.translationY, of: element, in: runtime))
@@ -260,7 +260,7 @@ final class StructuralEntryTests: XCTestCase {
         let (runtime, _, element) = label([.transition: transition.propValue], driven: [.opacity: owned])
         XCTAssertNotNil(element.transition)
 
-        element.enter(Joining(), as: .joining(under: .none))
+        element.enter(Joining(), as: .joining(under: .none), presentsOpacity: true)
 
         XCTAssertNil(shown(.opacity, of: element, in: runtime), "the state's")
         XCTAssertEqual(shown(.translationY, of: element, in: runtime), 12)

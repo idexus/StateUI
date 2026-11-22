@@ -226,7 +226,7 @@ final class AppKitElement: NSObject, NativeElement {
     /// Brings this element in as it is given its first place, by the host layer's rule.
     func enter(_ entry: LayoutEntry) {
         guard entersMoving else { return }
-        element.enter(self, as: entry)
+        element.enter(self, as: entry, presentsOpacity: TransitionSurface.presents(.opacity, on: type))
     }
 
     /// Presents one display frame of this element's own changed properties.

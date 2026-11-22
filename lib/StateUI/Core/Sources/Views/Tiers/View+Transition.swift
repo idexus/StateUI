@@ -16,19 +16,4 @@ extension ViewProperties {
     /// the host keeps a view as it leaves; elsewhere it goes at once. Hiding a view with `isVisible(_:)` keeps it
     /// and its state, and is no leaving.
     public func transition(_ transition: Transition) -> Modified { setValue(ViewContract.transition, transition) }
-
-    /// Ties this view to the one of the same `id` in its scope: as one of them leaves and the other enters in the
-    /// same change, the entering one sets out from where the leaving one is drawn, onto its own place - a
-    /// thumbnail growing into its picture, and back.
-    ///
-    ///     Picture(item).sharedTransition(item.id)
-    ///
-    /// The views are two views: nothing of the leaving one's state is the entering one's. Where no single
-    /// partner is found - none, two of one id, another window or page - each goes by its own `transition(_:)`.
-    /// A view under no layout that is a `transitionScope(_:)` is tied to nothing.
-    ///
-    /// - Parameter id: what the two views share; any `Hashable`.
-    public func sharedTransition(_ id: some Hashable) -> Modified {
-        setValue(ViewContract.sharedTransition, Renderer.shared.sharedIdentities.number(for: ElementIdentity(AnyHashable(id))))
-    }
 }

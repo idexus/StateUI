@@ -219,8 +219,7 @@ extension NodeType {
     static let panTouchCount = ViewContract.panTouchCount.token
     static let layoutBody = ViewContract.layoutBody.token
     static let transition = ViewContract.transition.token
-    static let transitionScope = LayoutContract.transitionScope.token
-    static let sharedTransition = ViewContract.sharedTransition.token
+    static let sharedPresentation = ViewContract.sharedPresentation.token
     static let parameters = MotionLayoutContract.parameters.token
     static let placeholder = PlaceholderElementContract.placeholder.token
     static let placeholderColor = TextInputContract.placeholderColor.token

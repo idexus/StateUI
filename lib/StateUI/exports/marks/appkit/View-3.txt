@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.area: ✅
 Button.dismissed: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.layoutFrameChanged: ✅
@@ -9,7 +9,7 @@ Canvas.interaction: ✓ pressDown on Canvas: handed to the host's recognizer or 
 Canvas.layoutFrameChanged: ✅
 Canvas.transition: ✅
 Capsule.pinchUpdated: ✓ pinch on Capsule: handed to the host's recognizer or handler, no NSEvent sent
-Capsule.sharedTransition: ✅
+Capsule.sharedPresentation: ✅
 Capsule.tapped: ✓ pressDown on Capsule: handed to the host's recognizer or handler, no NSEvent sent
 CheckBox.longPressDuration: ✅
 CheckBox.pointerMoved: ✓ hover on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
@@ -69,9 +69,9 @@ Map.interaction: ✓ pressDown on Map: handed to the host's recognizer or handle
 Map.layoutBody: ✅
 Map.layoutFrameChanged: ✅
 Map.verticalAlignment: ✅
-MotionLayout.interaction: ✓ notch on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.interaction: ✓ pinch on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.pinchUpdated: ✓ pinch on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
-MotionLayout.sharedTransition: ✅
+MotionLayout.sharedPresentation: ✅
 MotionLayout.tapped: ✓ pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 Path.swipeDirections: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.swipeThreshold: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
@@ -101,9 +101,10 @@ Rectangle.gridColumnSpan: ✅
 Rectangle.gridRowSpan: ✅
 Rectangle.interaction: ✓ pressDown on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.layoutFrameChanged: ✅
+Rectangle.presentationFrameChanged: ✅
 Rectangle.transition: ✅
 ScrollView.pinchUpdated: ✓ pinch on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
-ScrollView.sharedTransition: ✅
+ScrollView.sharedPresentation: ✅
 ScrollView.tapped: ✓ pressDown on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.longPressDuration: ✅
 SearchField.pointerMoved: ✓ hover on SearchField: handed to the host's recognizer or handler, no NSEvent sent
@@ -160,6 +161,7 @@ TimePicker.presentationSample: ✅
 VStack.area: ✅
 VStack.dismissed: ✓ pressDown on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.layoutFrameChanged: ✅
+VStack.sharedPresentation: ✅
 VStack.transition: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRowSpan: ✅
@@ -167,5 +169,5 @@ WebView.interaction: ✓ pressDown on WebView: handed to the host's recognizer o
 WebView.layoutFrameChanged: ✅
 WebView.transition: ✅
 ZStack.pinchUpdated: ✓ pinch on ZStack: handed to the host's recognizer or handler, no NSEvent sent
-ZStack.sharedTransition: ✅
+ZStack.sharedPresentation: ✅
 ZStack.tapped: ✓ pressDown on ZStack: handed to the host's recognizer or handler, no NSEvent sent

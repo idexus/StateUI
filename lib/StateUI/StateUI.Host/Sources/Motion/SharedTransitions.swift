@@ -5,7 +5,7 @@
 
 /// The shared transitions of one tree: a view dropped and a view made in one patch, wearing one key in one
 /// scope, are one - the made one enters from the rectangle the dropped one was drawn in.
-/// Design: docs/design/host/motion.md#a-shared-transition
+/// Design: docs/design/host/motion.md#a-shared-presentation
 @_spi(Host) @MainActor public final class SharedTransitions {
     /// A key in its scope: the element that is the scope, by its mount, and the key's number.
     private struct Key: Hashable {
@@ -202,7 +202,7 @@
 
     /// Whether a view made under `element`, by the patch that made it, sets out from its partner, as far as is known
     /// before it is placed: `element` then comes as it stands, as its fade would hide where that view sets out.
-    /// Design: docs/design/host/motion.md#a-shared-transition
+    /// Design: docs/design/host/motion.md#a-shared-presentation
     func holdsAPartner(_ element: MountedElement) -> Bool {
         made.contains { key, entering in
             entering.contains { mine in
@@ -276,23 +276,19 @@
         return holders
     }
 
-    /// The key `element` wears in the scope it stands under; nil where it wears none or stands under no scope.
+    /// The key `element`'s presentation is shared by on its page; nil where its id was not written by hand.
     private static func key(of element: MountedElement) -> Key? {
-        guard let number = element.value(ViewContract.sharedTransition.token)?.int else { return nil }
-
-        var above = element.parent
-        while let holder = above {
-            if holder.value(LayoutContract.transitionScope.token) != nil { return Key(scope: holder.mount, number: number) }
-            above = holder.parent
-        }
-        return nil
+        guard let number = element.value(ViewContract.sharedPresentation.token)?.int,
+              let scope = element.presentationScope
+        else { return nil }
+        return Key(scope: scope.mount, number: number)
     }
 
     /// Where `element` is placed, in its window's coordinates: the place its layout gave it, and each place a
     /// layout gave what holds it, up to its scope or to the first view no layout's motion placed - whose corner
     /// the toolkit says. Nil where a place is not known yet - one a layout program places, made with this patch,
     /// that the program has shown none.
-    /// Design: docs/design/host/motion.md#a-shared-transition
+    /// Design: docs/design/host/motion.md#a-shared-presentation
     private func placeInWindow(of element: MountedElement, scope: UInt64, in tree: MountedTree) -> Rect? {
         guard case .at(let own) = place(of: element, in: tree) else { return nil }
 

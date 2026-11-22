@@ -363,13 +363,12 @@ WebView
   scale
   scaleX
   scaleY
-  sharedTransition
+  sharedPresentation
   swipeDirections
   swipeThreshold
   tapCount
   tooltip
   transition
-  transitionScope
   translationX
   translationY
   verticalAlignment

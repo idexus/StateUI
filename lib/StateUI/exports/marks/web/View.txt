@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.area: ✅
 Button.dismissed: ✅
@@ -31,7 +31,7 @@ Button.pointerReleased: ✅
 Button.presentationFrameChanged: ✅
 Button.presentationSample: ✅
 Button.rotationUpdated: ✅
-Button.sharedTransition: ✅
+Button.sharedPresentation: ✅
 Button.swipeDirections: ✅
 Button.swipeThreshold: ✅
 Button.swiped: ✅
@@ -71,7 +71,7 @@ Canvas.pointerReleased: ✅
 Canvas.presentationFrameChanged: ✅
 Canvas.presentationSample: ✅
 Canvas.rotationUpdated: ✅
-Canvas.sharedTransition: ✅
+Canvas.sharedPresentation: ✅
 Canvas.swipeDirections: ✅
 Canvas.swipeThreshold: ✅
 Canvas.swiped: ✅
@@ -111,7 +111,7 @@ Capsule.pointerReleased: ✅
 Capsule.presentationFrameChanged: ✅
 Capsule.presentationSample: ✅
 Capsule.rotationUpdated: ✅
-Capsule.sharedTransition: ✅
+Capsule.sharedPresentation: ✅
 Capsule.swipeDirections: ✅
 Capsule.swipeThreshold: ✅
 Capsule.swiped: ✅
@@ -151,7 +151,7 @@ CheckBox.pointerReleased: ✅
 CheckBox.presentationFrameChanged: ✅
 CheckBox.presentationSample: ✅
 CheckBox.rotationUpdated: ✅
-CheckBox.sharedTransition: ✅
+CheckBox.sharedPresentation: ✅
 CheckBox.swipeDirections: ✅
 CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
@@ -191,7 +191,7 @@ ColorPicker.pointerReleased: ✅
 ColorPicker.presentationFrameChanged: ✅
 ColorPicker.presentationSample: ✅
 ColorPicker.rotationUpdated: ✅
-ColorPicker.sharedTransition: ✅
+ColorPicker.sharedPresentation: ✅
 ColorPicker.swipeDirections: ✅
 ColorPicker.swipeThreshold: ✅
 ColorPicker.swiped: ✅
@@ -231,7 +231,7 @@ DatePicker.pointerReleased: ✅
 DatePicker.presentationFrameChanged: ✅
 DatePicker.presentationSample: ✅
 DatePicker.rotationUpdated: ✅
-DatePicker.sharedTransition: ✅
+DatePicker.sharedPresentation: ✅
 DatePicker.swipeDirections: ✅
 DatePicker.swipeThreshold: ✅
 DatePicker.swiped: ✅
@@ -271,7 +271,7 @@ Ellipse.pointerReleased: ✅
 Ellipse.presentationFrameChanged: ✅
 Ellipse.presentationSample: ✅
 Ellipse.rotationUpdated: ✅
-Ellipse.sharedTransition: ✅
+Ellipse.sharedPresentation: ✅
 Ellipse.swipeDirections: ✅
 Ellipse.swipeThreshold: ✅
 Ellipse.swiped: ✅
@@ -311,7 +311,7 @@ Fill.pointerReleased: ✅
 Fill.presentationFrameChanged: ✅
 Fill.presentationSample: ✅
 Fill.rotationUpdated: ✅
-Fill.sharedTransition: ✅
+Fill.sharedPresentation: ✅
 Fill.swipeDirections: ✅
 Fill.swipeThreshold: ✅
 Fill.swiped: ✅
@@ -351,7 +351,7 @@ Grid.pointerReleased: ✅
 Grid.presentationFrameChanged: ✅
 Grid.presentationSample: ✅
 Grid.rotationUpdated: ✅
-Grid.sharedTransition: ✅
+Grid.sharedPresentation: ✅
 Grid.swipeDirections: ✅
 Grid.swipeThreshold: ✅
 Grid.swiped: ✅
@@ -391,7 +391,7 @@ HStack.pointerReleased: ✅
 HStack.presentationFrameChanged: ✅
 HStack.presentationSample: ✅
 HStack.rotationUpdated: ✅
-HStack.sharedTransition: ✅
+HStack.sharedPresentation: ✅
 HStack.swipeDirections: ✅
 HStack.swipeThreshold: ✅
 HStack.swiped: ✅
@@ -431,7 +431,7 @@ Image.pointerReleased: ✅
 Image.presentationFrameChanged: ✅
 Image.presentationSample: ✅
 Image.rotationUpdated: ✅
-Image.sharedTransition: ✅
+Image.sharedPresentation: ✅
 Image.swipeDirections: ✅
 Image.swipeThreshold: ✅
 Image.swiped: ✅
@@ -471,7 +471,7 @@ ItemsView.pointerReleased: ✅
 ItemsView.presentationFrameChanged: ✅
 ItemsView.presentationSample: ✅
 ItemsView.rotationUpdated: ✅
-ItemsView.sharedTransition: ✅
+ItemsView.sharedPresentation: ✅
 ItemsView.swipeDirections: ✅
 ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
@@ -511,7 +511,7 @@ Line.pointerReleased: ✅
 Line.presentationFrameChanged: ✅
 Line.presentationSample: ✅
 Line.rotationUpdated: ✅
-Line.sharedTransition: ✅
+Line.sharedPresentation: ✅
 Line.swipeDirections: ✅
 Line.swipeThreshold: ✅
 Line.swiped: ✅
@@ -551,7 +551,7 @@ Link.pointerReleased: ✅
 Link.presentationFrameChanged: ✅
 Link.presentationSample: ✅
 Link.rotationUpdated: ✅
-Link.sharedTransition: ✅
+Link.sharedPresentation: ✅
 Link.swipeDirections: ✅
 Link.swipeThreshold: ✅
 Link.swiped: ✅
@@ -591,7 +591,7 @@ Map.pointerReleased: 🧩
 Map.presentationFrameChanged: 🧩
 Map.presentationSample: 🧩
 Map.rotationUpdated: 🧩
-Map.sharedTransition: 🧩
+Map.sharedPresentation: 🧩
 Map.swipeDirections: 🧩
 Map.swipeThreshold: 🧩
 Map.swiped: 🧩
@@ -631,7 +631,7 @@ MotionLayout.pointerReleased: ✅
 MotionLayout.presentationFrameChanged: ✅
 MotionLayout.presentationSample: ✅
 MotionLayout.rotationUpdated: ✅
-MotionLayout.sharedTransition: ✅
+MotionLayout.sharedPresentation: ✅
 MotionLayout.swipeDirections: ✅
 MotionLayout.swipeThreshold: ✅
 MotionLayout.swiped: ✅
@@ -671,7 +671,7 @@ Path.pointerReleased: ✅
 Path.presentationFrameChanged: ✅
 Path.presentationSample: ✅
 Path.rotationUpdated: ✅
-Path.sharedTransition: ✅
+Path.sharedPresentation: ✅
 Path.swipeDirections: ✅
 Path.swipeThreshold: ✅
 Path.swiped: ✅
@@ -711,7 +711,7 @@ Picker.pointerReleased: – The browser's select opens its list at the user's pr
 Picker.presentationFrameChanged: ✅
 Picker.presentationSample: ✅
 Picker.rotationUpdated: ✅
-Picker.sharedTransition: ✅
+Picker.sharedPresentation: ✅
 Picker.swipeDirections: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no long press, drag or swipe of it, and its release only where it was pressed.
 Picker.swipeThreshold: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no long press, drag or swipe of it, and its release only where it was pressed.
 Picker.swiped: – The browser's select opens its list at the user's press, and the list keeps the pointer until it closes: the page hears no long press, drag or swipe of it, and its release only where it was pressed.
@@ -751,7 +751,7 @@ Polygon.pointerReleased: ✅
 Polygon.presentationFrameChanged: ✅
 Polygon.presentationSample: ✅
 Polygon.rotationUpdated: ✅
-Polygon.sharedTransition: ✅
+Polygon.sharedPresentation: ✅
 Polygon.swipeDirections: ✅
 Polygon.swipeThreshold: ✅
 Polygon.swiped: ✅
@@ -791,7 +791,7 @@ Polyline.pointerReleased: ✅
 Polyline.presentationFrameChanged: ✅
 Polyline.presentationSample: ✅
 Polyline.rotationUpdated: ✅
-Polyline.sharedTransition: ✅
+Polyline.sharedPresentation: ✅
 Polyline.swipeDirections: ✅
 Polyline.swipeThreshold: ✅
 Polyline.swiped: ✅
@@ -831,7 +831,7 @@ ProgressBar.pointerReleased: ✅
 ProgressBar.presentationFrameChanged: ✅
 ProgressBar.presentationSample: ✅
 ProgressBar.rotationUpdated: ✅
-ProgressBar.sharedTransition: ✅
+ProgressBar.sharedPresentation: ✅
 ProgressBar.swipeDirections: ✅
 ProgressBar.swipeThreshold: ✅
 ProgressBar.swiped: ✅
@@ -871,7 +871,7 @@ Rectangle.pointerReleased: ✅
 Rectangle.presentationFrameChanged: ✅
 Rectangle.presentationSample: ✅
 Rectangle.rotationUpdated: ✅
-Rectangle.sharedTransition: ✅
+Rectangle.sharedPresentation: ✅
 Rectangle.swipeDirections: ✅
 Rectangle.swipeThreshold: ✅
 Rectangle.swiped: ✅
@@ -911,7 +911,7 @@ ScrollView.pointerReleased: ✅
 ScrollView.presentationFrameChanged: ✅
 ScrollView.presentationSample: ✅
 ScrollView.rotationUpdated: ✅
-ScrollView.sharedTransition: ✅
+ScrollView.sharedPresentation: ✅
 ScrollView.swipeDirections: ✅
 ScrollView.swipeThreshold: ✅
 ScrollView.swiped: ✅
@@ -951,7 +951,7 @@ SearchField.pointerReleased: ✅
 SearchField.presentationFrameChanged: ✅
 SearchField.presentationSample: ✅
 SearchField.rotationUpdated: ✅
-SearchField.sharedTransition: ✅
+SearchField.sharedPresentation: ✅
 SearchField.swipeDirections: ✅
 SearchField.swipeThreshold: ✅
 SearchField.swiped: ✅
@@ -991,7 +991,7 @@ Separator.pointerReleased: ✅
 Separator.presentationFrameChanged: ✅
 Separator.presentationSample: ✅
 Separator.rotationUpdated: ✅
-Separator.sharedTransition: ✅
+Separator.sharedPresentation: ✅
 Separator.swipeDirections: ✅
 Separator.swipeThreshold: ✅
 Separator.swiped: ✅
@@ -1031,7 +1031,7 @@ Slider.pointerReleased: ✅
 Slider.presentationFrameChanged: ✅
 Slider.presentationSample: ✅
 Slider.rotationUpdated: ✅
-Slider.sharedTransition: ✅
+Slider.sharedPresentation: ✅
 Slider.swipeDirections: ✅
 Slider.swipeThreshold: ✅
 Slider.swiped: ✅
@@ -1071,7 +1071,7 @@ Space.pointerReleased: ✅
 Space.presentationFrameChanged: ✅
 Space.presentationSample: ✅
 Space.rotationUpdated: ✅
-Space.sharedTransition: ✅
+Space.sharedPresentation: ✅
 Space.swipeDirections: ✅
 Space.swipeThreshold: ✅
 Space.swiped: ✅
@@ -1111,7 +1111,7 @@ Spinner.pointerReleased: ✅
 Spinner.presentationFrameChanged: ✅
 Spinner.presentationSample: ✅
 Spinner.rotationUpdated: ✅
-Spinner.sharedTransition: ✅
+Spinner.sharedPresentation: ✅
 Spinner.swipeDirections: ✅
 Spinner.swipeThreshold: ✅
 Spinner.swiped: ✅
@@ -1151,7 +1151,7 @@ Stepper.pointerReleased: ✅
 Stepper.presentationFrameChanged: ✅
 Stepper.presentationSample: ✅
 Stepper.rotationUpdated: ✅
-Stepper.sharedTransition: ✅
+Stepper.sharedPresentation: ✅
 Stepper.swipeDirections: ✅
 Stepper.swipeThreshold: ✅
 Stepper.swiped: ✅
@@ -1191,7 +1191,7 @@ Switch.pointerReleased: ✅
 Switch.presentationFrameChanged: ✅
 Switch.presentationSample: ✅
 Switch.rotationUpdated: ✅
-Switch.sharedTransition: ✅
+Switch.sharedPresentation: ✅
 Switch.swipeDirections: ✅
 Switch.swipeThreshold: ✅
 Switch.swiped: ✅
@@ -1231,7 +1231,7 @@ Text.pointerReleased: ✅
 Text.presentationFrameChanged: ✅
 Text.presentationSample: ✅
 Text.rotationUpdated: ✅
-Text.sharedTransition: ✅
+Text.sharedPresentation: ✅
 Text.swipeDirections: ✅
 Text.swipeThreshold: ✅
 Text.swiped: ✅
@@ -1271,7 +1271,7 @@ TextEditor.pointerReleased: ✅
 TextEditor.presentationFrameChanged: ✅
 TextEditor.presentationSample: ✅
 TextEditor.rotationUpdated: ✅
-TextEditor.sharedTransition: ✅
+TextEditor.sharedPresentation: ✅
 TextEditor.swipeDirections: ✅
 TextEditor.swipeThreshold: ✅
 TextEditor.swiped: ✅
@@ -1311,7 +1311,7 @@ TextField.pointerReleased: ✅
 TextField.presentationFrameChanged: ✅
 TextField.presentationSample: ✅
 TextField.rotationUpdated: ✅
-TextField.sharedTransition: ✅
+TextField.sharedPresentation: ✅
 TextField.swipeDirections: ✅
 TextField.swipeThreshold: ✅
 TextField.swiped: ✅
@@ -1351,7 +1351,7 @@ TimePicker.pointerReleased: ✅
 TimePicker.presentationFrameChanged: ✅
 TimePicker.presentationSample: ✅
 TimePicker.rotationUpdated: ✅
-TimePicker.sharedTransition: ✅
+TimePicker.sharedPresentation: ✅
 TimePicker.swipeDirections: ✅
 TimePicker.swipeThreshold: ✅
 TimePicker.swiped: ✅
@@ -1391,7 +1391,7 @@ VStack.pointerReleased: ✅
 VStack.presentationFrameChanged: ✅
 VStack.presentationSample: ✅
 VStack.rotationUpdated: ✅
-VStack.sharedTransition: ✅
+VStack.sharedPresentation: ✅
 VStack.swipeDirections: ✅
 VStack.swipeThreshold: ✅
 VStack.swiped: ✅
@@ -1431,7 +1431,7 @@ WebView.pointerReleased: ✅
 WebView.presentationFrameChanged: ✅
 WebView.presentationSample: ✅
 WebView.rotationUpdated: ✅
-WebView.sharedTransition: ✅
+WebView.sharedPresentation: ✅
 WebView.swipeDirections: ✅
 WebView.swipeThreshold: ✅
 WebView.swiped: ✅
@@ -1471,7 +1471,7 @@ ZStack.pointerReleased: ✅
 ZStack.presentationFrameChanged: ✅
 ZStack.presentationSample: ✅
 ZStack.rotationUpdated: ✅
-ZStack.sharedTransition: ✅
+ZStack.sharedPresentation: ✅
 ZStack.swipeDirections: ✅
 ZStack.swipeThreshold: ✅
 ZStack.swiped: ✅

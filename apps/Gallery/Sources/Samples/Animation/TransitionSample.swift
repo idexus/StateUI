@@ -149,7 +149,7 @@ struct TransitionSample: SampleContent, ExampleContent {
     }
 }
 
-/// A thumbnail growing into its picture, and back: two views tied by a key.
+/// A thumbnail growing into its picture, and back: two views of one id.
 struct SharedPictures: ExampleContent {
     // listing: SharedPictures
     static let tints: [Color] = [Palette.accent, Palette.brand, AppColors.violetLight]
@@ -159,13 +159,13 @@ struct SharedPictures: ExampleContent {
     var body: some View {
         ZStack {
             if let chosen {
-                // THE PICTURE: another view than its thumbnail, tied to it by
-                // the key - it sets out from where the thumbnail is drawn.
+                // THE PICTURE: another view than its thumbnail, of the same
+                // id - it sets out from where the thumbnail is drawn.
                 Rectangle()
                     .fill(Self.tints[chosen])
                     .cornerRadius(12)
                     .height(150)
-                    .sharedTransition(chosen)
+                    .id(chosen)
                     // Slow enough to see the way.
                     .motion(.eased(.milliseconds(700), curve: .sineInOut))
                     .onTapped { self.chosen = nil }
@@ -178,10 +178,10 @@ struct SharedPictures: ExampleContent {
                             .cornerRadius(6)
                             .width(56)
                             .height(40)
-                            // THE THUMBNAIL wears the same key as its picture;
+                            // THE THUMBNAIL has the same id as its picture;
                             // going back, it sets out from where the picture
                             // is drawn at that moment.
-                            .sharedTransition(item)
+                            .id(item)
                             .motion(.eased(.milliseconds(700), curve: .sineInOut))
                             .onTapped { chosen = item }
                             .accessibilityIdentifier("shared.thumbnail.\(item)")
@@ -192,8 +192,6 @@ struct SharedPictures: ExampleContent {
                 .verticalAlignment(.start)
             }
         }
-        // THE SCOPE: a layout that stands while the views in it come and go.
-        .transitionScope("pictures")
         .height(150)
     }
     // listing: end
@@ -207,7 +205,7 @@ struct SharedPictures: ExampleContent {
     }
 }
 
-/// Tiles tied by their keys, standing as a row or as a grid: each goes from where it is drawn in the one onto its
+/// Tiles of an id each, standing as a row or as a grid: each goes from where it is drawn in the one onto its
 /// place in the other.
 struct SharedTiles: ExampleContent {
     // listing: SharedTiles
@@ -225,7 +223,7 @@ struct SharedTiles: ExampleContent {
 
             VStack {
                 if asGrid {
-                    // THE GRID: the same keys, larger, three to a row.
+                    // THE GRID: the same ids, larger, three to a row.
                     Grid {
                         ForEach(Array(Self.tints.indices)) { tile in
                             Self.tile(tile, corner: 12)
@@ -249,22 +247,19 @@ struct SharedTiles: ExampleContent {
                     .spacing(8)
                 }
             }
-            // THE SCOPE: a tile and the one of its key in the other
-            // arrangement are one to the eye in it.
-            .transitionScope("tiles")
             .height(200)
         }
         .spacing(12)
     }
 
-    /// One tile: its color, its corner, and its key - its number. The tile
-    /// made takes over where the one of its key was drawn, how fast it was
+    /// One tile: its color, its corner, and its id - its number. The tile
+    /// made takes over where the one of its id was drawn, how fast it was
     /// moving and its corner, and goes on from there onto its own place.
     static func tile(_ index: Int, corner: Double) -> some View {
         Rectangle()
             .fill(tints[index])
             .cornerRadius(corner)
-            .sharedTransition(index)
+            .id(index)
             .motion(.spring(response: .milliseconds(480), damping: 0.78))
     }
     // listing: end

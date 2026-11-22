@@ -49,7 +49,7 @@ extension MountedElement {
     /// its speed in `speeds`, its corner is carried on the way by `corner`, and it fades in over a partner drawn
     /// behind it as the two cross over in `crossing`, where one is. How many numbers set out, each telling
     /// `entryLanded` as it ends.
-    /// Design: docs/design/host/motion.md#a-shared-transition
+    /// Design: docs/design/host/motion.md#a-shared-presentation
     func enter(
         from source: Rect, to destination: Rect, on view: some FadingView, speeds: [Prop: Double] = [:],
         corner: (from: Double, to: Double)? = nil, crossing: ClosedRange<Double>? = nil

@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.longPressDuration: ✅
 Button.pointerMoved: ✓ hover on Button: the view's listening handed the recognizer's states, no touch sent
 Button.pointerPressed: ✓ hover on Button: the view's listening handed the recognizer's states, no touch sent
@@ -46,9 +46,10 @@ HStack.gridColumnSpan: ✅
 HStack.gridRowSpan: ✅
 HStack.interaction: ✓ pressDown on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.layoutFrameChanged: ✅
+HStack.sharedPresentation: ✅
 HStack.transition: ✅
 Image.pinchUpdated: ✓ pinch on Image: the view's listening handed the recognizer's states, no touch sent
-Image.sharedTransition: ✅
+Image.sharedPresentation: ✅
 Image.tapped: ✓ pressDown on Image: the view's listening handed the recognizer's states, no touch sent
 ItemsView.longPressDuration: ✅
 ItemsView.pointerMoved: ✓ hover on ItemsView: the view's listening handed the recognizer's states, no touch sent
@@ -85,7 +86,7 @@ Polygon.interaction: ✓ pressDown on Polygon: the view's listening handed the r
 Polygon.layoutFrameChanged: ✅
 Polygon.transition: ✅
 Polyline.pinchUpdated: ✓ pinch on Polyline: the view's listening handed the recognizer's states, no touch sent
-Polyline.sharedTransition: ✅
+Polyline.sharedPresentation: ✅
 Polyline.tapped: ✓ pressDown on Polyline: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.longPressDuration: ✅
 ProgressBar.pointerMoved: ✓ hover on ProgressBar: the view's listening handed the recognizer's states, no touch sent
@@ -123,7 +124,7 @@ Slider.transition: ✅
 Space.longPressed: ✓ longPress on Space: the view's listening handed the recognizer's states, no touch sent
 Space.rotationUpdated: ✓ rotate on Space: the view's listening handed the recognizer's states, no touch sent
 Spinner.pinchUpdated: ✓ pinch on Spinner: the view's listening handed the recognizer's states, no touch sent
-Spinner.sharedTransition: ✅
+Spinner.sharedPresentation: ✅
 Spinner.tapped: ✓ pressDown on Spinner: the view's listening handed the recognizer's states, no touch sent
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the drag and drop interactions' handlers called, no drag session
 Stepper.dragStarting: ✓ dragAndDrop on Stepper: the drag and drop interactions' handlers called, no drag session
@@ -153,7 +154,7 @@ TextField.interaction: ✓ pressDown on TextField: the view's listening handed t
 TextField.layoutFrameChanged: ✅
 TextField.transition: ✅
 TimePicker.pinchUpdated: ✓ pinch on TimePicker: the view's listening handed the recognizer's states, no touch sent
-TimePicker.sharedTransition: ✅
+TimePicker.sharedPresentation: ✅
 TimePicker.tapped: ✓ pressDown on TimePicker: the view's listening handed the recognizer's states, no touch sent
 VStack.longPressDuration: ✅
 VStack.pointerMoved: ✓ hover on VStack: the view's listening handed the recognizer's states, no touch sent
@@ -169,5 +170,5 @@ ZStack.horizontalAlignment: ✅
 ZStack.interaction: ✓ pressDown on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.layoutBody: ✅
 ZStack.layoutFrameChanged: ✅
-ZStack.tapped: ✓ pressDown on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.sharedPresentation: ✅
 ZStack.verticalAlignment: ✅

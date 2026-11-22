@@ -116,7 +116,7 @@ A runtime answers for everything it keeps for what it shows and moves
               places a layout's motion seats           LayoutMotion
   channels    state channels, what stands beside them  StateChannels
   changes     presentation changes open or waiting,    PresentationChanges,
-              views a shared transition noted          SharedTransitions
+              views a shared presentation noted        SharedTransitions
   hands       numbers a hand holds, wheels open,       InteractionSessions,
               sidebars sliding                         HandPace, SidebarSlide
   followers   scrollers and frame reporters served     FrameFollowers

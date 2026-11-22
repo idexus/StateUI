@@ -442,7 +442,7 @@ it stands the children by it and draws them in its order at once.
 The trap is a room of nothing. A program shows no place in it, so the
 children stand as a stack stands them, across the room, until the program
 is asked in a room of some size - and a view made with the layout is no
-partner of a [shared transition](motion.md#a-shared-transition).
+partner of a [shared presentation](motion.md#a-shared-presentation).
 
 ## A view its toolkit sized anew
 
@@ -572,7 +572,7 @@ A host draws what a layout presents in the order `DrawingOrder` gives, back
 to front: its children by a placing run's ranks where the layout runs one,
 the tree's order otherwise; each view kept as it leaves after the view it
 stood after ([a view kept as it leaves](tree.md#a-view-kept-as-it-leaves));
-and last any view a shared transition carries in front, kept or not
+and last any view a shared presentation carries in front, kept or not
 ([drawn in front](motion.md#drawn-in-front)). A host tells the host layer
 every view it presents by its mount, in the order they stand, and which are
 kept (`MountedElement.presentedMounts`, `TravelingPlaces.drawingOrder`), so a

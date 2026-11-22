@@ -205,7 +205,7 @@
 
     /// The shared transition's way it travels, the keyed view going along with it as it enters, and - kept for its
     /// partner - the numbers it stood at, with their speed, as it stopped being the application's.
-    /// Design: docs/design/host/motion.md#a-shared-transition-drawn-by-both
+    /// Design: docs/design/host/motion.md#a-shared-presentation-drawn-by-both
     var way: SharedWay?
     weak var alongside: MountedElement?
     var standsAt: [Prop: (value: Double, velocity: Double)] = [:]
@@ -633,8 +633,10 @@
         if child.type == childPatch.type, !childPatch.replace {
             child.apply(childPatch)
         } else if childPatch.replace {
+            // Another kind of view of the same id: the one it replaces is its partner, kept for it where it can be.
             let presented = presentedChildren
-            child.leave()
+            let keyed = !tree.remakes && tree.shared.dropped(child)
+            if !child.awaitsPartner(in: self, holdingAKey: keyed) { child.leave() }
             let anew = MountedElement(childPatch, tree: tree, parent: self)
             if isSlot { slots[index] = anew } else { children[index] = anew }
             orderPresented(after: presented)

@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.longPressed: ✓ longPress on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.rotationUpdated: ✓ rotate on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the drag source and the window's drop routing told by the driver, no dragging session
@@ -23,7 +23,7 @@ ColorPicker.interaction: ✓ pressDown on ColorPicker: handed to the host's reco
 ColorPicker.layoutFrameChanged: ✅
 ColorPicker.transition: ✅
 DatePicker.pinchUpdated: ✓ pinch on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
-DatePicker.sharedTransition: ✅
+DatePicker.sharedPresentation: ✅
 DatePicker.tapped: ✓ pressDown on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.longPressDuration: ✅
 Ellipse.pointerMoved: ✓ hover on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
@@ -43,6 +43,7 @@ Grid.verticalAlignment: ✅
 HStack.gridColumn: ✅
 HStack.gridRow: ✅
 HStack.layoutFrameChanged: ✅
+HStack.sharedPresentation: ✅
 HStack.tapped: ✓ pressDown on HStack: handed to the host's recognizer or handler, no NSEvent sent
 Image.swipeDirections: ✓ pan on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.swipeThreshold: ✓ pan on Image: handed to the host's recognizer or handler, no NSEvent sent
@@ -62,7 +63,7 @@ Link.interaction: ✓ pressDown on Link: handed to the host's recognizer or hand
 Link.layoutFrameChanged: ✅
 Link.transition: ✅
 Map.pinchUpdated: ✓ pinch on Map: handed to the host's recognizer or handler, no NSEvent sent
-Map.sharedTransition: ✅
+Map.sharedPresentation: ✅
 Map.tapped: ✓ pressDown on Map: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the window's drop routing told the driver's files, no dragging session
 MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the window's drop routing told the driver's files, no dragging session
@@ -117,7 +118,7 @@ Slider.interaction: ✓ pressDown on Slider: handed to the host's recognizer or 
 Slider.layoutFrameChanged: ✅
 Slider.transition: ✅
 Space.pinchUpdated: ✓ pinch on Space: handed to the host's recognizer or handler, no NSEvent sent
-Space.sharedTransition: ✅
+Space.sharedPresentation: ✅
 Space.tapped: ✓ pressDown on Space: handed to the host's recognizer or handler, no NSEvent sent
 Spinner.swipeDirections: ✓ pan on Spinner: handed to the host's recognizer or handler, no NSEvent sent
 Spinner.swipeThreshold: ✓ pan on Spinner: handed to the host's recognizer or handler, no NSEvent sent
@@ -143,7 +144,6 @@ Text.layoutFrameChanged: ✅
 Text.margin: ✅
 Text.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Text.panUpdated: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent
-Text.verticalAlignment: ✅
 TextEditor.horizontalAlignment: ✅
 TextEditor.interaction: ✓ pressDown on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.layoutBody: ✅
@@ -173,3 +173,4 @@ ZStack.droppedFileTypes: ✓ dropFiles on ZStack: the window's drop routing told
 ZStack.filesDropped: ✓ dropFiles on ZStack: the window's drop routing told the driver's files, no dragging session
 ZStack.interaction: ✓ pressDown on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.presentationSample: ✅
+ZStack.sharedPresentation: ✅

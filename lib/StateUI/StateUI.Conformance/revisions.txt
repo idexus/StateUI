@@ -47,7 +47,7 @@ Page 10
 PageElement 7
 IconElement 2
 BackgroundElement 2
-View 43
+View 44
 RefreshElement 2
 VisualElement 32
 Shape 6
@@ -75,9 +75,9 @@ SearchField 6
 Polyline 4
 FilledShape 4
 AutomationElement 8
-Layout 9
+Layout 10
 PaddingElement 3
-MotionLayout 27
+MotionLayout 28
 FocusElement 5
 ScrollView 5
 Slider 5

@@ -1,8 +1,8 @@
-# revision 43.2
+# revision 44.2
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
 Button.layoutFrameChanged: ✅
-Button.sharedTransition: ✅
+Button.sharedPresentation: ✅
 Button.swipeDirections: ✓ pan on Button: the relay's report of the press dragged handed to the host, no pointer sent
 Button.swipeThreshold: ✓ pan on Button: the relay's report of the press dragged handed to the host, no pointer sent
 Button.swiped: ✓ pan on Button: the relay's report of the press dragged handed to the host, no pointer sent
@@ -44,7 +44,7 @@ Grid.longPressDuration: – WinUI's long press comes after the system's own time
 HStack.dismissed: ✓ pressDown on HStack: the relay's report of the press handed to the host, no pointer sent
 HStack.horizontalAlignment: ✅
 HStack.layoutFrameChanged: ✅
-HStack.tapped: ✅
+HStack.sharedPresentation: ✅
 HStack.verticalAlignment: ✅
 Image.rotationUpdated: ✓ rotate on Image: the relay's report of the manipulation handed to the host, no touch sent
 Image.tapped: ✓ pressDown on Image: the relay's report of the press handed to the host, no pointer sent
@@ -66,6 +66,7 @@ MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports 
 MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 MotionLayout.panTouchCount: ✓ pan on MotionLayout: the relay's report of the press dragged handed to the host, no pointer sent
 MotionLayout.panUpdated: ✓ pan on MotionLayout: the relay's report of the press dragged handed to the host, no pointer sent
 Path.droppedFileTypes: ✓ dropFiles on Path: the relay's drop report told the driver's files, no drag WinUI began
@@ -91,11 +92,12 @@ ProgressBar.rotationUpdated: ✓ rotate on ProgressBar: the relay's report of th
 ProgressBar.tapped: ✓ pressDown on ProgressBar: the relay's report of the press handed to the host, no pointer sent
 Rectangle.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Rectangle.layoutBody: ✅
+Rectangle.layoutFrameChanged: ✅
 Rectangle.presentationFrameChanged: ✅
 ScrollView.gridColumnSpan: ✅
 ScrollView.gridRowSpan: ✅
 ScrollView.layoutFrameChanged: ✅
-ScrollView.sharedTransition: ✅
+ScrollView.sharedPresentation: ✅
 ScrollView.swipeDirections: ✓ pan on ScrollView: the relay's report of the press dragged handed to the host, no pointer sent
 ScrollView.swipeThreshold: ✓ pan on ScrollView: the relay's report of the press dragged handed to the host, no pointer sent
 ScrollView.swiped: ✓ pan on ScrollView: the relay's report of the press dragged handed to the host, no pointer sent
@@ -128,7 +130,7 @@ Switch.tapped: ✓ tap on Switch: the relay's report of the tap handed to the ho
 Text.gridColumnSpan: ✅
 Text.gridRowSpan: ✅
 Text.layoutFrameChanged: ✅
-Text.sharedTransition: ✅
+Text.sharedPresentation: ✅
 Text.swipeDirections: ✓ pan on Text: the relay's report of the press dragged handed to the host, no pointer sent
 Text.swipeThreshold: ✓ pan on Text: the relay's report of the press dragged handed to the host, no pointer sent
 Text.swiped: ✓ pan on Text: the relay's report of the press dragged handed to the host, no pointer sent

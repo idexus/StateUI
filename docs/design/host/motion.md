@@ -338,7 +338,7 @@ An element of no transition fades in from nothing under the layout's law,
 where that animates, its view presents opacity and no state owns it; an
 opacity already on its way keeps its motion. One holding a view made with it
 that sets out from its partner comes as it stands
-([a shared transition](#a-shared-transition)).
+([a shared presentation](#a-shared-presentation)).
 
 An element declaring a transition
 ([a transition](../views/transitions.md#a-transition)) comes from its
@@ -381,7 +381,7 @@ view it enters on, the move and the scales by the element's own
 `presentFrame` - in the toolkit's layout pass, not at the display's next
 frame: that one comes after the toolkit has drawn this one, and the view
 would stand a frame whole at its place first. A fade hid it; a move, a
-scale or a shared transition, which fades nothing, did not.
+scale or a shared presentation, which fades nothing, did not.
 
 ## Out of sight
 
@@ -401,11 +401,13 @@ view taken just past its edge stands in the margin around it, still seen,
 and vanishes as its exit ends. So the room is the view that cuts what it
 shows, and the move takes the view past that.
 
-## A shared transition
+## A shared presentation
 
-A view made wearing a key takes over from the one view its patch dropped
-wearing that key: it enters where that one was drawn, as fast as it was moving,
-its corner as it was drawn ([the declaration](../views/transitions.md#a-shared-transition)).
+A view made with an id written by hand - its key - takes over from the one
+view its patch dropped with that id on its page: it enters where that one was
+drawn, as fast as it was moving, its corner as it was drawn
+([the declaration](../views/transitions.md#a-shared-presentation)), whatever
+kind of view either is.
 The host layer keeps what each key's view was drawn as, by its key - the notes
 of one patch (`SharedTransitions`, the tree's `shared`) - and no host adds to it:
 
@@ -439,10 +441,12 @@ the scope, and read back down into the numbers of the view taking it over,
 with all above it standing still. A return during a movement so turns from
 where the view is, as fast as it was going.
 
-A key is the scope's element and the key's number: the scope is the nearest
-layout above the view that says `transitionScope`, found by walking up, so
-two scopes of one identity are two scopes. One commit is one patch - a view
-made by an earlier patch is no partner of one a later patch drops.
+A key is the scope and the number the id crosses as: the scope is the page
+the view stands on (`presentationScope`) - on none, the top of what holds it -
+so two pages showing one id are two keys. One commit is one patch - a view
+made by an earlier patch is no partner of one a later patch drops. A view of
+another kind replacing one of its id among the same siblings is a partner too:
+the one it replaces is dropped and kept for it as any is.
 
 Where the made view stands is worked out from what the tree knows as its
 layout places it: the place its layout gave it, and each place a layout gave
@@ -496,10 +500,10 @@ motion layout made with the view is placed before its own pass asks its
 program, so nothing in it is known to set out yet: it fades in as it joins,
 and the view kept for the partner draws the way over it meanwhile.
 
-## A shared transition drawn by both
+## A shared presentation drawn by both
 
 Where what held the view dropped keeps a view that leaves, the two views of
-a shared transition are drawn as one on the way, the same on every host
+a shared presentation are drawn as one on the way, the same on every host
 (`SharedWay`, `MountedElement+SharedWay`):
 
 ```text

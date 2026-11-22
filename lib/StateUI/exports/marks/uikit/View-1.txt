@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the drop interaction's handler told the driver's files, no drag session
 Button.filesDropped: ✓ dropFiles on Button: the drop interaction's handler told the driver's files, no drag session
 Button.interaction: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
@@ -13,7 +13,7 @@ Capsule.interaction: ✓ pressDown on Capsule: the view's listening handed the r
 Capsule.layoutFrameChanged: ✅
 Capsule.transition: ✅
 CheckBox.pinchUpdated: ✓ pinch on CheckBox: the view's listening handed the recognizer's states, no touch sent
-CheckBox.sharedTransition: ✅
+CheckBox.sharedPresentation: ✅
 CheckBox.tapped: ✓ pressDown on CheckBox: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.longPressDuration: ✅
 ColorPicker.pointerMoved: ✓ hover on ColorPicker: the view's listening handed the recognizer's states, no touch sent
@@ -55,7 +55,7 @@ ItemsView.filesDropped: ✓ dropFiles on ItemsView: the drop interaction's handl
 ItemsView.interaction: ✓ pressDown on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.presentationSample: ✅
 Line.pinchUpdated: ✓ pinch on Line: the view's listening handed the recognizer's states, no touch sent
-Line.sharedTransition: ✅
+Line.sharedPresentation: ✅
 Line.tapped: ✓ pressDown on Line: the view's listening handed the recognizer's states, no touch sent
 Link.longPressDuration: ✅
 Link.pointerMoved: ✓ hover on Link: the view's listening handed the recognizer's states, no touch sent
@@ -71,6 +71,7 @@ MotionLayout.gridColumnSpan: ✅
 MotionLayout.gridRowSpan: ✅
 MotionLayout.interaction: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.layoutFrameChanged: ✅
+MotionLayout.sharedPresentation: ✅
 MotionLayout.transition: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅
@@ -106,7 +107,7 @@ ScrollView.interaction: ✓ pressDown on ScrollView: the view's listening handed
 ScrollView.layoutFrameChanged: ✅
 ScrollView.transition: ✅
 SearchField.pinchUpdated: ✓ pinch on SearchField: the view's listening handed the recognizer's states, no touch sent
-SearchField.sharedTransition: ✅
+SearchField.sharedPresentation: ✅
 SearchField.tapped: ✓ pressDown on SearchField: the view's listening handed the recognizer's states, no touch sent
 Separator.horizontalAlignment: ✅
 Separator.interaction: ✓ pressDown on Separator: the view's listening handed the recognizer's states, no touch sent

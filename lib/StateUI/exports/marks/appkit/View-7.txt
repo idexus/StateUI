@@ -1,6 +1,6 @@
-# revision 43.1
+# revision 44.1
 Button.pinchUpdated: ✓ pinch on Button: handed to the host's recognizer or handler, no NSEvent sent
-Button.sharedTransition: ✅
+Button.sharedPresentation: ✅
 Button.tapped: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.longPressDuration: ✅
 Canvas.pointerMoved: ✓ hover on Canvas: handed to the host's recognizer or handler, no NSEvent sent
@@ -41,6 +41,7 @@ Grid.droppedFileTypes: ✓ dropFiles on Grid: the window's drop routing told the
 Grid.filesDropped: ✓ dropFiles on Grid: the window's drop routing told the driver's files, no dragging session
 Grid.interaction: ✓ pressDown on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.presentationSample: ✅
+Grid.sharedPresentation: ✅
 HStack.area: ✅
 HStack.dismissed: ✓ pressDown on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.layoutFrameChanged: ✅
@@ -51,7 +52,7 @@ Image.interaction: ✓ pressDown on Image: handed to the host's recognizer or ha
 Image.layoutFrameChanged: ✅
 Image.transition: ✅
 ItemsView.pinchUpdated: ✓ pinch on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-ItemsView.sharedTransition: ✅
+ItemsView.sharedPresentation: ✅
 ItemsView.tapped: ✓ pressDown on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 Line.horizontalAlignment: ✅
 Line.interaction: ✓ pressDown on Line: handed to the host's recognizer or handler, no NSEvent sent
@@ -72,7 +73,7 @@ MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the w
 MotionLayout.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 MotionLayout.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 MotionLayout.dropped: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-MotionLayout.interaction: ✓ pinch on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.interaction: ✓ sweep on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.presentationFrameChanged: ✅
 Path.dragEnded: ✓ dragAndDrop on Path: the drag source and the window's drop routing told by the driver, no dragging session
 Path.dragStarting: ✓ dragAndDrop on Path: the drag source and the window's drop routing told by the driver, no dragging session
@@ -96,14 +97,12 @@ Polyline.interaction: ✓ pressDown on Polyline: handed to the host's recognizer
 Polyline.layoutFrameChanged: ✅
 Polyline.transition: ✅
 ProgressBar.pinchUpdated: ✓ pinch on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
-ProgressBar.sharedTransition: ✅
+ProgressBar.sharedPresentation: ✅
 ProgressBar.tapped: ✓ pressDown on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
-Rectangle.layoutFrameChanged: ✅
 Rectangle.longPressDuration: ✅
 Rectangle.pointerMoved: ✓ hover on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.pointerPressed: ✓ hover on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.pointerReleased: ✓ hover on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
-Rectangle.presentationFrameChanged: ✅
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 ScrollView.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 ScrollView.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
@@ -160,7 +159,7 @@ TimePicker.interaction: ✓ pressDown on TimePicker: handed to the host's recogn
 TimePicker.layoutFrameChanged: ✅
 TimePicker.transition: ✅
 VStack.pinchUpdated: ✓ pinch on VStack: handed to the host's recognizer or handler, no NSEvent sent
-VStack.sharedTransition: ✅
+VStack.sharedPresentation: ✅
 VStack.tapped: ✓ pressDown on VStack: handed to the host's recognizer or handler, no NSEvent sent
 WebView.longPressDuration: ✅
 WebView.pointerMoved: ✓ hover on WebView: handed to the host's recognizer or handler, no NSEvent sent
@@ -172,3 +171,4 @@ ZStack.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window'
 ZStack.dropped: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 ZStack.interaction: ✓ sweep on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.presentationFrameChanged: ✅
+ZStack.sharedPresentation: ✅

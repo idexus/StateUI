@@ -55,8 +55,7 @@ extension Registry {
     /// Design: docs/design/host/motion.md#a-view-that-enters
     public func everyElementEntersByItsTransition() {
         everyElementRealizes(ViewContract.transition)
-        everyElementRealizes(ViewContract.sharedTransition)
-        everyElementRealizes(LayoutContract.transitionScope)
+        everyElementRealizes(ViewContract.sharedPresentation)
     }
 
     /// What assistive technology meets of a view, put together by one rule (`MountedElement.accessibilityWords`):

@@ -51,9 +51,8 @@
             ConformanceCase("aViewMadeWithItSetsOutFromItsPartnerOntoItsPlace", proves: [
                 Covered(MotionLayoutContract.self), Covered(MotionLayoutContract.layout),
             ], needs: [
-                Covered(ViewContract.sharedTransition, on: RectangleContract.self),
+                Covered(ViewContract.sharedPresentation, on: RectangleContract.self),
                 Covered(ViewContract.presentationFrameChanged, on: RectangleContract.self),
-                Covered(LayoutContract.transitionScope, on: "VStack"),
                 Covered(ClickElementContract.clicked, on: ButtonContract.self),
             ]) { s in
                 let clock = TestClock()
@@ -65,12 +64,12 @@
                         Button("Back").onClicked { opened.wrappedValue = false }.id("back")
                         VStack {
                             if opened.wrappedValue {
-                                Rectangle().fill(.red).sharedTransition(1).width(100).height(60).motion(way)
+                                Rectangle().fill(.red).id(1).width(100).height(60).motion(way)
                             } else {
                                 MotionLayout([1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { card in
                                     Rectangle()
                                         .fill(.blue)
-                                        .sharedTransition(card)
+                                        .id(card)
                                         .motion(way)
                                         .onEvent(ViewContract.presentationFrameChanged) {
                                             if card == 1 { drawn.values.append($0) }
@@ -82,7 +81,6 @@
                                 .width(120).height(80)
                             }
                         }
-                        .transitionScope("deck")
                         .horizontalAlignment(.start)
                         .verticalAlignment(.start)
                     }

@@ -1,4 +1,4 @@
-# revision 43.2
+# revision 44.2
 Button.rotationUpdated: ✓ rotate on Button: the relay's report of the manipulation handed to the host, no touch sent
 Button.tapped: ✓ pressDown on Button: the relay's report of the press handed to the host, no pointer sent
 Canvas.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
@@ -7,7 +7,7 @@ Canvas.presentationFrameChanged: ✅
 Capsule.gridColumnSpan: ✅
 Capsule.gridRowSpan: ✅
 Capsule.layoutFrameChanged: ✅
-Capsule.sharedTransition: ✅
+Capsule.sharedPresentation: ✅
 Capsule.swipeDirections: ✓ pan on Capsule: the relay's report of the press dragged handed to the host, no pointer sent
 Capsule.swipeThreshold: ✓ pan on Capsule: the relay's report of the press dragged handed to the host, no pointer sent
 Capsule.swiped: ✓ pan on Capsule: the relay's report of the press dragged handed to the host, no pointer sent
@@ -53,7 +53,7 @@ ItemsView.verticalAlignment: ✅
 Line.gridColumnSpan: ✅
 Line.gridRowSpan: ✅
 Line.layoutFrameChanged: ✅
-Line.sharedTransition: ✅
+Line.sharedPresentation: ✅
 Line.swipeDirections: ✓ pan on Line: the relay's report of the press dragged handed to the host, no pointer sent
 Line.swipeThreshold: ✓ pan on Line: the relay's report of the press dragged handed to the host, no pointer sent
 Line.swiped: ✓ pan on Line: the relay's report of the press dragged handed to the host, no pointer sent
@@ -70,6 +70,7 @@ Map.transition: 🧩
 MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 MotionLayout.layoutBody: ✅
 MotionLayout.presentationFrameChanged: ✅
+MotionLayout.sharedPresentation: ✅
 Path.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Path.presentationSample: ✅
 Path.transition: ✅
@@ -107,7 +108,7 @@ Separator.pointerReleased: ✓ hover on Separator: the relay's report of the poi
 Slider.gridColumnSpan: ✅
 Slider.gridRowSpan: ✅
 Slider.layoutFrameChanged: ✅
-Slider.sharedTransition: ✅
+Slider.sharedPresentation: ✅
 Slider.swipeDirections: ✓ pan on Slider: the relay's report of the press dragged handed to the host, no pointer sent
 Slider.swipeThreshold: ✓ pan on Slider: the relay's report of the press dragged handed to the host, no pointer sent
 Slider.swiped: ✓ pan on Slider: the relay's report of the press dragged handed to the host, no pointer sent

@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.dragEnded: ✓ dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session
 Button.dragStarting: ✓ dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session
 Button.dragText: ✓ dragAndDrop on Button: the drag and drop interactions' handlers called, no drag session
@@ -21,7 +21,7 @@ CheckBox.interaction: ✓ pressDown on CheckBox: the view's listening handed the
 CheckBox.layoutFrameChanged: ✅
 CheckBox.transition: ✅
 ColorPicker.pinchUpdated: ✓ pinch on ColorPicker: the view's listening handed the recognizer's states, no touch sent
-ColorPicker.sharedTransition: ✅
+ColorPicker.sharedPresentation: ✅
 ColorPicker.tapped: ✓ pressDown on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.longPressDuration: ✅
 DatePicker.pointerMoved: ✓ hover on DatePicker: the view's listening handed the recognizer's states, no touch sent
@@ -42,11 +42,12 @@ Grid.gridColumn: ✅
 Grid.gridRow: ✅
 Grid.layoutFrameChanged: ✅
 Grid.tapped: ✓ pressDown on Grid: the view's listening handed the recognizer's states, no touch sent
+HStack.sharedPresentation: ✅
 HStack.swipeDirections: ✓ pan on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.swipeThreshold: ✓ pan on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.swiped: ✓ pan on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.tapCount: ✓ tap on HStack: the view's listening handed the recognizer's states, no touch sent
-HStack.tapped: ✓ accessibilityPress on HStack: VoiceOver's activation, else a tap the view's listening is handed, no touch sent
+HStack.tapped: ✓ tap on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.transition: ✅
 Image.longPressed: ✓ longPress on Image: the view's listening handed the recognizer's states, no touch sent
 Image.rotationUpdated: ✓ rotate on Image: the view's listening handed the recognizer's states, no touch sent
@@ -64,7 +65,7 @@ Line.interaction: ✓ pressDown on Line: the view's listening handed the recogni
 Line.layoutFrameChanged: ✅
 Line.transition: ✅
 Link.pinchUpdated: ✓ pinch on Link: the view's listening handed the recognizer's states, no touch sent
-Link.sharedTransition: ✅
+Link.sharedPresentation: ✅
 Link.tapped: ✓ pressDown on Link: the view's listening handed the recognizer's states, no touch sent
 Map.longPressDuration: ✅
 Map.pointerMoved: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
@@ -72,6 +73,7 @@ Map.pointerPressed: ✓ hover on Map: the view's listening handed the recognizer
 Map.pointerReleased: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.area: ✅
 MotionLayout.dismissed: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.interaction: ✓ notch on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.layoutFrameChanged: ✅
 MotionLayout.transition: ✅
 Path.horizontalAlignment: ✅
@@ -119,7 +121,7 @@ Separator.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions'
 Separator.interaction: ✓ sweep on Separator: the view's listening handed the recognizer's states, no touch sent
 Separator.presentationFrameChanged: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: the view's listening handed the recognizer's states, no touch sent
-Slider.sharedTransition: ✅
+Slider.sharedPresentation: ✅
 Slider.tapped: ✓ pressDown on Slider: the view's listening handed the recognizer's states, no touch sent
 Space.longPressDuration: ✅
 Space.pointerMoved: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
@@ -169,4 +171,5 @@ WebView.presentationSample: ✅
 ZStack.area: ✅
 ZStack.dismissed: ✓ pressDown on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.layoutFrameChanged: ✅
+ZStack.sharedPresentation: ✅
 ZStack.transition: ✅

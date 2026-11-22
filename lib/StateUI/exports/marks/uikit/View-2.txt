@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.horizontalAlignment: ✅
 Button.interaction: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
 Button.layoutBody: ✅
@@ -38,7 +38,7 @@ Fill.interaction: ✓ pressDown on Fill: the view's listening handed the recogni
 Fill.layoutFrameChanged: ✅
 Fill.transition: ✅
 Grid.pinchUpdated: ✓ pinch on Grid: the view's listening handed the recognizer's states, no touch sent
-Grid.sharedTransition: ✅
+Grid.sharedPresentation: ✅
 Grid.tapped: ✓ pressDown on Grid: the view's listening handed the recognizer's states, no touch sent
 HStack.longPressDuration: ✅
 HStack.pointerMoved: ✓ hover on HStack: the view's listening handed the recognizer's states, no touch sent
@@ -70,6 +70,7 @@ Map.filesDropped: ✓ dropFiles on Map: the drop interaction's handler told the 
 Map.interaction: ✓ pressDown on Map: the view's listening handed the recognizer's states, no touch sent
 Map.presentationSample: ✅
 MotionLayout.interaction: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.sharedPresentation: ✅
 MotionLayout.swipeDirections: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.swipeThreshold: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.swiped: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
@@ -82,7 +83,7 @@ Path.interaction: ✓ pressDown on Path: the view's listening handed the recogni
 Path.layoutFrameChanged: ✅
 Path.transition: ✅
 Picker.pinchUpdated: ✓ pinch on Picker: the view's listening handed the recognizer's states, no touch sent
-Picker.sharedTransition: ✅
+Picker.sharedPresentation: ✅
 Picker.tapped: ✓ pressDown on Picker: the view's listening handed the recognizer's states, no touch sent
 Polygon.longPressDuration: ✅
 Polygon.pointerMoved: ✓ hover on Polygon: the view's listening handed the recognizer's states, no touch sent
@@ -147,7 +148,7 @@ Text.gridRow: ✅
 Text.layoutFrameChanged: ✅
 Text.tapped: ✓ pressDown on Text: the view's listening handed the recognizer's states, no touch sent
 TextEditor.pinchUpdated: ✓ pinch on TextEditor: the view's listening handed the recognizer's states, no touch sent
-TextEditor.sharedTransition: ✅
+TextEditor.sharedPresentation: ✅
 TextEditor.tapped: ✓ pressDown on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextField.longPressDuration: ✅
 TextField.pointerMoved: ✓ hover on TextField: the view's listening handed the recognizer's states, no touch sent

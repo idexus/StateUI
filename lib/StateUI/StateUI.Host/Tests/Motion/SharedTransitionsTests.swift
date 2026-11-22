@@ -17,16 +17,15 @@ private struct CardBoard: View {
     var body: some View {
         VStack {
             if detailShown.wrappedValue {
-                Text("detail").sharedTransition(5)
+                Text("detail").id(5)
             } else {
                 MotionLayout([5, 6], parameters: State(wrappedValue: 0.0).projectedValue) { card in
-                    Text("card \(card)").sharedTransition(card)
+                    Text("card \(card)").id(card)
                 } placements: { _, _ in
                     [Placement(Rect(x: 40, y: 40, width: 40, height: 40)), Placement(Rect(x: 90, y: 40, width: 40, height: 40))]
                 }
             }
         }
-        .transitionScope("board")
         .aim(cardBoardScope)
     }
 }
@@ -41,15 +40,14 @@ private struct SwappingDeck: View {
         VStack {
             MotionLayout([5], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
                 if itemDetailed.wrappedValue {
-                    Rectangle().sharedTransition(5)
+                    Rectangle().id(5)
                 } else {
-                    Text("small").sharedTransition(5)
+                    Text("small").id(5)
                 }
             } placements: { _, _ in
                 [Placement(Rect(x: 40, y: 40, width: 100, height: 60))]
             }
         }
-        .transitionScope("deck")
     }
 }
 
@@ -103,7 +101,7 @@ private struct GrowingDeckApplication: Application {
 
 /// A shared transition on the host's side: one view dropped and one made in a patch under one key of one scope are
 /// one - the made one enters from where the dropped one was drawn - and anything else is each view's own.
-/// Design: docs/design/host/motion.md#a-shared-transition
+/// Design: docs/design/host/motion.md#a-shared-presentation
 @MainActor
 final class SharedTransitionsTests: XCTestCase {
     /// A scope at (10, 20) in its window showing either a list of thumbnails or a page with a detail, on a clock
@@ -129,7 +127,7 @@ final class SharedTransitionsTests: XCTestCase {
         /// A text of `id` wearing `key`, leaving by a fade where `fades`.
         static func keyed(_ id: String, _ key: Int, fades: Bool = false) -> HostPatch {
             var patch = HostPatch(id: .manual(id), type: .text)
-            patch.properties = [.sharedTransition: .number(Double(key))]
+            patch.properties = [.sharedPresentation: .number(Double(key))]
             if fades { patch.properties[.transition] = Transition(enter: .identity, exit: .opacity).propValue }
             return patch
         }
@@ -144,7 +142,6 @@ final class SharedTransitionsTests: XCTestCase {
         /// Says the scope's children, whole the first time.
         func show(_ children: [HostPatch], complete: Bool = false) {
             var root = HostPatch(id: .manual("root"), type: .vStack)
-            if complete { root.properties = [.transitionScope: .number(1)] }
             root.children = .arranged(children)
             tree.apply(root, complete: complete)
             (self.root.native as? NoView)?.frame = [0, 0, 300, 400, 10, 20, 10, 20]
@@ -166,7 +163,7 @@ final class SharedTransitionsTests: XCTestCase {
             runtime.layoutMotion.place(
                 view, mount: element.mount, at: rect, stated: [], words: .none,
                 natural: { LayoutSize(width: rect.width, height: rect.height) },
-                enter: { entry in element.enter(Shown(), as: entry) },
+                enter: { entry in element.enter(Shown(), as: entry, presentsOpacity: true) },
                 in: Arrangement(law: .eased(.milliseconds(200), curve: .linear), lanes: .all, joins: true), room: nil)
         }
 
@@ -177,7 +174,7 @@ final class SharedTransitionsTests: XCTestCase {
 
         /// What the tree draws of `property` on the element of `id`; nil where it stands as declared.
         func drawn(_ property: Prop, of id: String) -> Double? {
-            element(id).flatMap { tree.presentedPropertyValue(mount: $0.mount, property: property)?.number }
+            element(id).flatMap { $0.value(property)?.number }
         }
     }
 
@@ -232,6 +229,19 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertNil(bench.drawn(.scaleX, of: "detail"))
     }
 
+    /// Where `element` is drawn in the window, standing at `place` with no transform in it: its own transform and
+    /// that of every view holding it, up to the bench's root.
+    private func drawn(_ element: MountedElement, at place: Rect, in bench: Bench) -> Rect {
+        SharedTransitions.drawn(element.drawnTransform.bounds(of: place), above: element, to: bench.root.mount)
+    }
+
+    /// `a` and `b` alike to a hundredth of a point.
+    private func assertAlike(_ a: Rect, _ b: Rect, _ message: String, file: StaticString = #filePath, line: UInt = #line) {
+        for (one, other) in zip([a.x, a.y, a.width, a.height], [b.x, b.y, b.width, b.height]) {
+            XCTAssertEqual(one, other, accuracy: 0.01, "\(message): \(a) against \(b)", file: file, line: line)
+        }
+    }
+
     /// A list of a keyed view at (40, 50) in the window, a hundred square, its thumbnail where `listed` stands it.
     private func standingList(_ bench: Bench, thumbnails: [HostPatch] = [Bench.keyed("thumbnail", 5)]) throws -> MountedElement {
         listed(bench, thumbnails: thumbnails)
@@ -242,22 +252,27 @@ final class SharedTransitionsTests: XCTestCase {
     /// A rectangle of `id` wearing `key`, rounded by `corner`.
     private static func rounded(_ id: String, _ key: Int, corner: Double) -> HostPatch {
         var patch = HostPatch(id: .manual(id), type: .rectangle)
-        patch.properties = [.sharedTransition: .number(Double(key)), .cornerRadius: .number(corner)]
+        patch.properties = [.sharedPresentation: .number(Double(key)), .cornerRadius: .number(corner)]
         return patch
     }
 
     /// A VIEW DROPPED HOLDING A KEY GOES ALONG ONTO WHERE ITS PARTNER LANDS: kept where its holder keeps one, its
-    /// keyed view is taken from where it is drawn onto the partner's place - (50, 60) forty square onto (30, 150)
-    /// two hundred by a hundred, about its own middle - and the kept view is released as it lands.
+    /// keyed view is drawn as one with the partner all the way - (50, 60) forty square onto (30, 150) two hundred by
+    /// a hundred - and the kept view is released as it lands.
     func testAViewKeptForItsPartnerGoesAlongOntoWhereItLands() throws {
         let bench = Bench(keeps: true)
         let list = try standingList(bench)
         let thumbnail = try XCTUnwrap(bench.element("thumbnail"))
         paged(bench)
         XCTAssertEqual(list.lifecycle, .exiting, "kept for its partner")
-        let ends = [.translationX, .translationY, .scaleX, .scaleY].map { thumbnail.exitEnds[$0] }
-        XCTAssertEqual(ends, [60, 120, 5, 2.5], "its middle onto the detail's, 40 onto 200 and 100")
-        XCTAssertEqual(list.exitEnds, [:], "the list stands")
+        let detail = try XCTUnwrap(bench.element("detail"))
+
+        bench.frame(at: 100)
+        let half = Rect(x: 40, y: 105, width: 120, height: 70)
+        assertAlike(drawn(thumbnail, at: Rect(x: 50, y: 60, width: 40, height: 40), in: bench), half, "half way, the thumbnail")
+        assertAlike(drawn(detail, at: Rect(x: 30, y: 150, width: 200, height: 100), in: bench), half, "and the detail with it")
+        let still = list.drawingTransform
+        XCTAssertEqual([still.translationX, still.translationY, still.scaleX, still.scaleY], [0, 0, 1, 1], "the list stands")
 
         bench.frame(at: 250)
         XCTAssertEqual(list.lifecycle, .released, "landed, it is gone")
@@ -282,7 +297,7 @@ final class SharedTransitionsTests: XCTestCase {
         bench.frame(at: 16)
         bench.frame(at: 32)
         bench.frame(at: 100)
-        let fading = bench.tree.presentedPropertyValue(mount: caption.mount, property: .opacity)?.number ?? 1
+        let fading = caption.value(.opacity)?.number ?? 1
         XCTAssertTrue(fading > 0 && fading < 1, "the caption fades where it stands: \(fading)")
         let drawn = list.drawingTransform
         XCTAssertEqual([drawn.translationX, drawn.translationY, drawn.scaleX, drawn.scaleY], [0, 0, 1, 1], "the list stands")
@@ -307,12 +322,17 @@ final class SharedTransitionsTests: XCTestCase {
         bench.place("page", at: Rect(x: 0, y: 100, width: 300, height: 200))
         bench.place("detail", at: Rect(x: 20, y: 30, width: 200, height: 100))
         bench.place("second", at: Rect(x: 20, y: 140, width: 100, height: 50))
-        let ends = thumbnails.map { view in [Prop.translationX, .translationY, .scaleX, .scaleY].map { view.exitEnds[$0] } }
-        XCTAssertEqual(ends, [[60, 120, 5, 2.5], [-40, 205, 2.5, 1.25]], "each onto its own partner's place")
         XCTAssertEqual(bench.drawn(.scaleX, of: "second") ?? .nan, 0.4, accuracy: 0.001, "set out from its own: 40 of 100")
+        let (detail, second) = (try XCTUnwrap(bench.element("detail")), try XCTUnwrap(bench.element("second")))
 
         bench.frame(at: 100)
         XCTAssertEqual(list.lifecycle, .exiting, "on their way")
+        let seconds = drawn(second, at: Rect(x: 30, y: 260, width: 100, height: 50), in: bench)
+        assertAlike(seconds, Rect(x: 65, y: 160, width: 70, height: 45), "half way to its own place")
+        assertAlike(drawn(thumbnails[1], at: Rect(x: 100, y: 60, width: 40, height: 40), in: bench), seconds, "the second with it")
+        assertAlike(
+            drawn(thumbnails[0], at: Rect(x: 50, y: 60, width: 40, height: 40), in: bench),
+            drawn(detail, at: Rect(x: 30, y: 150, width: 200, height: 100), in: bench), "the first with its own")
         bench.frame(at: 250)
         XCTAssertEqual(list.lifecycle, .released, "the last landed, the list goes")
     }
@@ -330,11 +350,15 @@ final class SharedTransitionsTests: XCTestCase {
         bench.stands("list", at: Point(x: 40, y: 50), size: LayoutSize(width: 100, height: 100))
         bench.stands("thumbnail", at: Point(x: 50, y: 60), size: LayoutSize(width: 40, height: 40))
         let thumbnail = try XCTUnwrap(bench.element("thumbnail"))
-        XCTAssertNotNil(thumbnail.way, "on its way in, its corner carried")
+        XCTAssertNotNil(bench.drawn(.scaleX, of: "thumbnail"), "on its way in")
         bench.frame(at: 50)
 
         paged(bench, details: [Self.rounded("detail", 5, corner: 12)])
-        XCTAssertNotNil(thumbnail.exitEnds[.scaleX], "sent along onto the detail made again")
+        let detail = try XCTUnwrap(bench.element("detail"))
+        bench.frame(at: 150)
+        assertAlike(
+            drawn(thumbnail, at: Rect(x: 50, y: 60, width: 40, height: 40), in: bench),
+            drawn(detail, at: Rect(x: 30, y: 150, width: 200, height: 100), in: bench), "drawn as one with the detail made again")
     }
 
     /// A VIEW GOING ALONG ENDS AS ITS PARTNER LEAVES: the detail growing out of a thumbnail is dropped before it
@@ -348,7 +372,10 @@ final class SharedTransitionsTests: XCTestCase {
         let thumbnail = try XCTUnwrap(bench.element("thumbnail"))
         paged(bench)
         bench.frame(at: 50)
-        XCTAssertNotNil(thumbnail.way, "going along with the detail")
+        let detail = try XCTUnwrap(bench.element("detail"))
+        assertAlike(
+            drawn(thumbnail, at: Rect(x: 50, y: 60, width: 40, height: 40), in: bench),
+            drawn(detail, at: Rect(x: 30, y: 150, width: 200, height: 100), in: bench), "going along with the detail")
 
         bench.show([Bench.holder("shelf", [Bench.keyed("again", 5)])])
         XCTAssertEqual(thumbnail.value(.opacity)?.number, 0, "its partner gone, it is drawn no more")
@@ -358,7 +385,7 @@ final class SharedTransitionsTests: XCTestCase {
     }
 
     /// A SPEED IS CARRIED THROUGH WHAT DRAWS IT: a thumbnail growing at 2 a second in a list drawn at half its size is
-    /// drawn growing at 40 points a second; read back into its own numbers, it is the 2 it runs at.
+    /// drawn growing at 40 points a second, about its middle.
     func testASpeedIsCarriedThroughWhatDrawsIt() throws {
         let bench = Bench()
         var list = Bench.holder("list", [Bench.keyed("thumbnail", 5)])
@@ -374,8 +401,22 @@ final class SharedTransitionsTests: XCTestCase {
         let speed = thumbnail.drawnSpeed(to: bench.root.mount)
         XCTAssertEqual(speed.width, 40, accuracy: 0.5, "40 points grown 2 a second, drawn at half")
         XCTAssertEqual(speed.x, 0, accuracy: 0.001, "about its middle")
-        let own = thumbnail.ownSpeed(drawnAt: speed, place: Rect(x: 50, y: 60, width: 40, height: 40), in: bench.root.mount)
-        XCTAssertEqual(own[.scaleX] ?? .nan, 2, accuracy: 0.01, "its own run")
+    }
+
+    /// AN ID WITH NO PARTNER MOVES NOTHING: a view made with an id written by hand, its patch dropping none of that
+    /// id, comes as any view does - it fades in joining where its view draws an opacity, and by no fade where it
+    /// draws none.
+    func testAnIdWithNoPartnerMovesNothing() throws {
+        let law = Motion.eased(.milliseconds(200), curve: .linear)
+        for draws in [false, true] {
+            let bench = Bench()
+            bench.show([Bench.holder("page", [])], complete: true)
+            bench.show([Bench.holder("page", [Bench.keyed("detail", 5)])])
+            let detail = try XCTUnwrap(bench.element("detail"))
+            detail.enter(Shown(), as: .joining(under: law), presentsOpacity: draws)
+            let fading = bench.tree.presentedPropertyValue(mount: detail.mount, property: .opacity)
+            XCTAssertEqual(fading != nil, draws, draws ? "it fades in as any view" : "an id alone fades nothing")
+        }
     }
 
     /// A VIEW DROPPED HOLDING A KEY ITS PATCH MADE NO PARTNER FOR GOES AT ONCE, as the patch is applied whole.
@@ -441,12 +482,12 @@ final class SharedTransitionsTests: XCTestCase {
             motion: .eased(.milliseconds(200), curve: .linear))
         bench.frame(at: 50)
         paged(bench)
-        let speed = bench.runtime.tree.standingProperty(mount: thumbnail.mount, property: .translationX)?.velocity.first
-        XCTAssertEqual(speed ?? .nan, 250, accuracy: 1, "50 points in 200 ms, on its way on")
+        bench.stands("detail", at: Point(x: 30, y: 150), size: LayoutSize(width: 200, height: 100))
         let detail = try XCTUnwrap(bench.element("detail"))
-        let taken = bench.runtime.tree.standingProperty(mount: detail.mount, property: .translationX)?.velocity.first
-        XCTAssertEqual(taken ?? .nan, 250, accuracy: 1, "the detail sets out at it")
-        XCTAssertNil(bench.runtime.tree.standingProperty(mount: list.mount, property: .translationX), "the list stops")
+        let scope = bench.root.mount
+        XCTAssertEqual(thumbnail.drawnSpeed(to: scope).x, 250, accuracy: 1, "50 points in 200 ms, on its way on")
+        XCTAssertEqual(detail.drawnSpeed(to: scope).x, 250, accuracy: 1, "the detail sets out at it")
+        XCTAssertEqual(list.drawnSpeed(to: scope).x, 0, accuracy: 0.001, "the list stops")
         XCTAssertEqual(list.number(.translationX) ?? .nan, 12.5, accuracy: 0.01, "where it is drawn")
     }
 
@@ -486,9 +527,12 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(bench.drawn(.translationY, of: "detail") ?? .nan, -260, accuracy: 0.001, "-60 against 200 down")
         XCTAssertEqual(bench.drawn(.scaleX, of: "detail") ?? .nan, 0.4, accuracy: 0.001, "80 of 200: drawn 40 at half")
         XCTAssertEqual(bench.drawn(.scaleY, of: "detail") ?? .nan, 0.8, accuracy: 0.001, "80 of 100")
-        let ends = [.translationX, .translationY, .scaleX, .scaleY].map { thumbnail.exitEnds[$0] }
-        XCTAssertEqual(ends, [75, 130, 2.5, 1.25], "the thumbnail's middle onto (145, 210), 40 onto 100 and 50")
         XCTAssertEqual(detail.number(.cornerRadius) ?? .nan, 6 / (0.4 * 0.8).squareRoot() / 0.5, accuracy: 0.001)
+
+        bench.frame(at: 100)
+        let half = Rect(x: 72.5, y: 122.5, width: 70, height: 45)
+        assertAlike(drawn(thumbnail, at: Rect(x: 50, y: 60, width: 40, height: 40), in: bench), half, "half way onto (145, 210)")
+        assertAlike(drawn(detail, at: Rect(x: 30, y: 150, width: 200, height: 100), in: bench), half, "the detail with it")
 
         bench.frame(at: 250)
         XCTAssertEqual(detail.number(.cornerRadius), 12, "drawn 6 at half: its own")
@@ -607,9 +651,9 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertNil(another.drawn(.translationX, of: "detail"), "another key")
     }
 
-    /// A VIEW MADE ON ANOTHER PAGE THAN THE ONE DROPPED IS ITS OWN: a page that comes over a page is the
-    /// navigation's to bring, so the made view enters as any view does, by its own transition, and a change
-    /// waiting for the patch hears `.unsupported` - while the same two under one page are one.
+    /// A VIEW MADE ON ANOTHER PAGE THAN THE ONE DROPPED IS ITS OWN: an id shares a presentation on its own page - a
+    /// page that comes over a page is the navigation's to bring - so the made view enters as any view does, by its
+    /// own transition, and a change waiting for the patch settles; the same two on one page are one.
     func testAViewMadeOnAnotherPageIsItsOwn() {
         func page(_ id: String, _ children: [HostPatch]) -> HostPatch {
             var patch = HostPatch(id: .manual(id), type: .page)
@@ -630,7 +674,7 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertNil(across.drawn(.scaleX, of: "detail"))
         across.frame(at: 250)
         across.frame(at: 500)
-        XCTAssertEqual(change.answered.settled, .interrupted([.unsupported]))
+        XCTAssertEqual(change.answered.settled, .settled, "nothing tried across pages")
 
         let within = Bench()
         within.show([page("one", [Bench.holder("list", [Bench.keyed("thumbnail", 5)])])], complete: true)
@@ -661,10 +705,9 @@ final class SharedTransitionsTests: XCTestCase {
         }
         let card = try XCTUnwrap(element("card 5"))
         XCTAssertEqual(card.parent?.parent?.type, .motionLayout, "the card stands in its holder in the layout")
-        var above = card.parent
-        while let each = above, each.value(LayoutContract.transitionScope.token) == nil { above = each.parent }
-        let scope = try XCTUnwrap(above)
-        (scope.native as? NoView)?.frame = [0, 0, 300, 400, 10, 20, 10, 20]
+        let board = try XCTUnwrap(card.parent?.parent?.parent)
+        XCTAssertEqual(board.type, .vStack, "the board holding the deck and its detail")
+        (board.native as? NoView)?.frame = [0, 0, 300, 400, 10, 20, 10, 20]
         (card.native as? NoView)?.frame = [40, 40, 40, 40, 50, 60, 50, 60]
 
         detailShown.wrappedValue = true
@@ -673,10 +716,10 @@ final class SharedTransitionsTests: XCTestCase {
         runtime.layoutMotion.place(
             Placed(), mount: detail.mount, at: Rect(x: 20, y: 30, width: 200, height: 100), stated: [], words: .none,
             natural: { LayoutSize(width: 200, height: 100) },
-            enter: { entry in detail.enter(Shown(), as: entry) },
+            enter: { entry in detail.enter(Shown(), as: entry, presentsOpacity: true) },
             in: Arrangement(law: .eased(.milliseconds(200), curve: .linear), lanes: .all, joins: true), room: nil)
 
-        let drawn = { (property: Prop) in runtime.tree.presentedPropertyValue(mount: detail.mount, property: property)?.number }
+        let drawn = { (property: Prop) in detail.value(property)?.number }
         XCTAssertEqual(drawn(.scaleX) ?? .nan, 0.2, accuracy: 0.001, "40 of 200: it sets out as large as the card")
         XCTAssertEqual(drawn(.translationX) ?? .nan, -60, accuracy: 0.001, "the card's middle, 70, against 130")
     }
@@ -778,10 +821,10 @@ final class SharedTransitionsTests: XCTestCase {
         runtime.layoutMotion.place(
             Placed(), mount: deck.mount, at: Rect(x: 0, y: 0, width: 300, height: height), stated: [], words: .none,
             natural: { LayoutSize(width: 300, height: height) },
-            enter: { entry in deck.enter(Shown(), as: entry) },
+            enter: { entry in deck.enter(Shown(), as: entry, presentsOpacity: true) },
             in: Arrangement(law: .eased(.milliseconds(200), curve: .linear), lanes: .all, joins: true), room: nil)
         XCTAssertEqual(
-            runtime.tree.presentedPropertyValue(mount: deck.mount, property: .opacity)?.number ?? .nan, 0, accuracy: 0.001,
+            deck.value(.opacity)?.number ?? .nan, 0, accuracy: 0.001,
             "nothing in it known to set out before it is laid out: it fades in")
         return (runtime, change, card, holder, deck, deck.placementInRoom(LayoutSize(width: 300, height: height)))
     }
@@ -790,7 +833,7 @@ final class SharedTransitionsTests: XCTestCase {
     private func cardPlaced(_ card: MountedElement, size: LayoutSize, in runtime: HostRuntime) {
         runtime.layoutMotion.place(
             Placed(), mount: card.mount, at: Rect(x: 0, y: 0, width: size.width, height: size.height), stated: [],
-            words: .none, natural: { size }, enter: { entry in card.enter(Shown(), as: entry) },
+            words: .none, natural: { size }, enter: { entry in card.enter(Shown(), as: entry, presentsOpacity: true) },
             in: Arrangement(law: .eased(.milliseconds(200), curve: .linear), lanes: .all, joins: true), room: nil)
     }
 
@@ -807,7 +850,7 @@ final class SharedTransitionsTests: XCTestCase {
         (holder.native as? NoView)?.frame = [40, 40, 40, 40, 50, 60, 50, 60]
         cardPlaced(card, size: LayoutSize(width: 40, height: 40), in: runtime)
 
-        let drawn = { (property: Prop) in runtime.tree.presentedPropertyValue(mount: card.mount, property: property)?.number }
+        let drawn = { (property: Prop) in card.value(property)?.number }
         XCTAssertEqual(drawn(.scaleX) ?? .nan, 5, accuracy: 0.001, "200 of 40: it sets out as large as the detail")
         XCTAssertEqual(drawn(.scaleY) ?? .nan, 2.5, accuracy: 0.001, "100 of 40")
         XCTAssertEqual(drawn(.translationX) ?? .nan, 60, accuracy: 0.001, "the detail's middle, 130, against 70")
@@ -826,7 +869,7 @@ final class SharedTransitionsTests: XCTestCase {
         (holder.native as? NoView)?.frame = [0, 0, 300, 0, 10, 20, 10, 20]
         cardPlaced(card, size: LayoutSize(width: 300, height: 0), in: runtime)
 
-        XCTAssertNil(runtime.tree.presentedPropertyValue(mount: card.mount, property: .scaleY), "no way to a place unknown")
+        XCTAssertNil(card.value(.scaleY), "no way to a place unknown")
         frames(runtime, from: 16, to: 400)
         XCTAssertEqual(change.answered.settled, .interrupted([.unsupported]))
     }
@@ -879,10 +922,10 @@ final class SharedTransitionsTests: XCTestCase {
         runtime.layoutMotion.place(
             Placed(), mount: large.mount, at: Rect(x: 0, y: 0, width: 100, height: 60), stated: [], words: .none,
             natural: { LayoutSize(width: 100, height: 60) },
-            enter: { entry in large.enter(Shown(), as: entry) },
+            enter: { entry in large.enter(Shown(), as: entry, presentsOpacity: true) },
             in: Arrangement(law: .eased(.milliseconds(200), curve: .linear), lanes: .all, joins: true), room: nil)
 
-        let drawn = { (property: Prop) in runtime.tree.presentedPropertyValue(mount: large.mount, property: property)?.number }
+        let drawn = { (property: Prop) in large.value(property)?.number }
         XCTAssertEqual(drawn(.scaleX) ?? .nan, 0.4, accuracy: 0.001, "40 of 100")
         XCTAssertEqual(drawn(.scaleY) ?? .nan, 0.5, accuracy: 0.001, "30 of 60")
         XCTAssertEqual(drawn(.translationX) ?? .nan, -30, accuracy: 0.001, "the small one's middle, 70, against 100")

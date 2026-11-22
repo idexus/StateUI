@@ -1,4 +1,4 @@
-# revision 43.2
+# revision 44.2
 Button.gridColumn: ✅
 Button.gridRow: ✅
 Button.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
@@ -21,7 +21,7 @@ ColorPicker.presentationFrameChanged: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRowSpan: ✅
 DatePicker.layoutFrameChanged: ✅
-DatePicker.sharedTransition: ✅
+DatePicker.sharedPresentation: ✅
 DatePicker.swipeDirections: ✓ pan on DatePicker: the relay's report of the press dragged handed to the host, no pointer sent
 DatePicker.swipeThreshold: ✓ pan on DatePicker: the relay's report of the press dragged handed to the host, no pointer sent
 DatePicker.swiped: ✓ pan on DatePicker: the relay's report of the press dragged handed to the host, no pointer sent
@@ -41,6 +41,7 @@ Grid.pointerPressed: ✓ hover on Grid: the relay's report of the pointer handed
 Grid.pointerReleased: ✓ hover on Grid: the relay's report of the pointer handed to the host, no pointer sent
 HStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 HStack.presentationSample: ✅
+HStack.sharedPresentation: ✅
 HStack.transition: ✅
 Image.pinchUpdated: ✓ pinch on Image: the relay's report of the manipulation handed to the host, no touch sent
 Image.tapCount: ✓ tap on Image: the relay's report of the tap handed to the host, no pointer sent
@@ -62,6 +63,7 @@ Map.presentationFrameChanged: 🧩
 MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.dragStarting: ✓ dragAndDrop on MotionLayout: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.dragText: ✓ dragAndDrop on MotionLayout: the relay's drag reports told by the driver, no drag WinUI began
+MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 MotionLayout.isDraggable: ✓ dragAndDrop on MotionLayout: the relay's drag reports told by the driver, no drag WinUI began
 MotionLayout.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -102,7 +104,7 @@ SearchField.longPressDuration: – WinUI's long press comes after the system's o
 Separator.gridColumnSpan: ✅
 Separator.gridRowSpan: ✅
 Separator.layoutFrameChanged: ✅
-Separator.sharedTransition: ✅
+Separator.sharedPresentation: ✅
 Separator.swipeDirections: ✓ pan on Separator: the relay's report of the press dragged handed to the host, no pointer sent
 Separator.swipeThreshold: ✓ pan on Separator: the relay's report of the press dragged handed to the host, no pointer sent
 Separator.swiped: ✓ pan on Separator: the relay's report of the press dragged handed to the host, no pointer sent
@@ -123,7 +125,7 @@ Stepper.presentationFrameChanged: ✅
 Switch.gridColumnSpan: ✅
 Switch.gridRowSpan: ✅
 Switch.layoutFrameChanged: ✅
-Switch.sharedTransition: ✅
+Switch.sharedPresentation: ✅
 Switch.swipeDirections: ✓ pan on Switch: the relay's report of the press dragged handed to the host, no pointer sent
 Switch.swipeThreshold: ✓ pan on Switch: the relay's report of the press dragged handed to the host, no pointer sent
 Switch.swiped: ✓ pan on Switch: the relay's report of the press dragged handed to the host, no pointer sent
@@ -157,4 +159,4 @@ ZStack.filesDropped: ✓ dropFiles on ZStack: the relay's drop report told the d
 ZStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 ZStack.layoutFrameChanged: ✅
 ZStack.margin: ✅
-ZStack.tapped: ✓ pressDown on ZStack: the relay's report of the press handed to the host, no pointer sent
+ZStack.sharedPresentation: ✅

@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Button.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Button.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -44,7 +44,7 @@ Grid.interaction: ✓ pressDown on Grid: the view's listening handed the recogni
 Grid.layoutFrameChanged: ✅
 Grid.transition: ✅
 HStack.pinchUpdated: ✓ pinch on HStack: the view's listening handed the recognizer's states, no touch sent
-HStack.sharedTransition: ✅
+HStack.sharedPresentation: ✅
 HStack.tapped: ✓ pressDown on HStack: the view's listening handed the recognizer's states, no touch sent
 Image.longPressDuration: ✅
 Image.pointerMoved: ✓ hover on Image: the view's listening handed the recognizer's states, no touch sent
@@ -74,7 +74,7 @@ Map.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other 
 Map.panUpdated: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.gridColumn: ✅
 MotionLayout.gridRow: ✅
-MotionLayout.interaction: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.interaction: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.layoutFrameChanged: ✅
 MotionLayout.tapped: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 Path.area: ✅
@@ -87,7 +87,7 @@ Picker.interaction: ✓ pressDown on Picker: the view's listening handed the rec
 Picker.layoutFrameChanged: ✅
 Picker.transition: ✅
 Polygon.pinchUpdated: ✓ pinch on Polygon: the view's listening handed the recognizer's states, no touch sent
-Polygon.sharedTransition: ✅
+Polygon.sharedPresentation: ✅
 Polygon.tapped: ✓ pressDown on Polygon: the view's listening handed the recognizer's states, no touch sent
 Polyline.longPressDuration: ✅
 Polyline.pointerMoved: ✓ hover on Polyline: the view's listening handed the recognizer's states, no touch sent
@@ -151,7 +151,7 @@ TextEditor.interaction: ✓ pressDown on TextEditor: the view's listening handed
 TextEditor.layoutFrameChanged: ✅
 TextEditor.transition: ✅
 TextField.pinchUpdated: ✓ pinch on TextField: the view's listening handed the recognizer's states, no touch sent
-TextField.sharedTransition: ✅
+TextField.sharedPresentation: ✅
 TextField.tapped: ✓ pressDown on TextField: the view's listening handed the recognizer's states, no touch sent
 TimePicker.longPressDuration: ✅
 TimePicker.pointerMoved: ✓ hover on TimePicker: the view's listening handed the recognizer's states, no touch sent

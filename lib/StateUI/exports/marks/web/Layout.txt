@@ -1,26 +1,21 @@
-# revision 9.1
+# revision 10.1
 Grid.clipsContent: ✅
 Grid.ignoresSafeArea: ✅
 Grid.layoutBodies: ✅
 Grid.letsInputThrough: ✅
-Grid.transitionScope: ✅
 HStack.clipsContent: ✅
 HStack.ignoresSafeArea: ✅
 HStack.layoutBodies: ✅
 HStack.letsInputThrough: ✅
-HStack.transitionScope: ✅
 MotionLayout.clipsContent: ✅
 MotionLayout.ignoresSafeArea: ✅
 MotionLayout.layoutBodies: ✅
 MotionLayout.letsInputThrough: ✅
-MotionLayout.transitionScope: ✅
 VStack.clipsContent: ✅
 VStack.ignoresSafeArea: ✅
 VStack.layoutBodies: ✅
 VStack.letsInputThrough: ✅
-VStack.transitionScope: ✅
 ZStack.clipsContent: ✅
 ZStack.ignoresSafeArea: ✅
 ZStack.layoutBodies: ✅
 ZStack.letsInputThrough: ✅
-ZStack.transitionScope: ✅

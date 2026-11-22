@@ -5,7 +5,7 @@
 
 /// A shared transition drawn by both views, the same on every host: the view leaving kept for its partner, its
 /// keyed view taken along onto where the partner lands, and what each frame works out of how far either has got.
-/// Design: docs/design/host/motion.md#a-shared-transition-drawn-by-both
+/// Design: docs/design/host/motion.md#a-shared-presentation-drawn-by-both
 extension MountedElement {
     /// The numbers a view kept for its partner is drawn with as it stops being the application's.
     static let travelingProperties: [Prop] = [.opacity, .translationX, .translationY, .scale, .scaleX, .scaleY]
@@ -49,11 +49,23 @@ extension MountedElement {
         }
     }
 
-    /// How large the element is drawn in the scope of its shared transitions: by its own scales and those of
-    /// what holds it, up to the scope.
+    /// Where views of one id share their presentation: the page the element stands on, else - on no page - the top
+    /// of what holds it.
+    var presentationScope: MountedElement? {
+        var each = parent
+        while let holder = each {
+            if holder.type == .page || holder.parent == nil { return holder }
+            each = holder.parent
+        }
+        return nil
+    }
+
+    /// How large the element is drawn in the scope of its shared presentation: by its own scales and those of what
+    /// holds it, up to the scope.
     var scaleInScope: Double {
+        let scope = presentationScope
         var (scale, each) = (1.0, Optional(self))
-        while let element = each, element.value(LayoutContract.transitionScope.token) == nil {
+        while let element = each, element !== scope {
             let drawn = element.drawnTransform
             scale *= abs(drawn.scaleX * drawn.scaleY).squareRoot()
             each = element.parent
@@ -74,7 +86,7 @@ extension MountedElement {
         // A view under it ends a way it was entering by: only a keyed view this one sends along travels one now.
         var under = held
         while let each = under.popLast() {
-            if each.value(ViewContract.sharedTransition.token) != nil { each.holdStanding(in: tree) }
+            if each.value(ViewContract.sharedPresentation.token) != nil { each.holdStanding(in: tree) }
             each.endWay()
             under += each.held
         }

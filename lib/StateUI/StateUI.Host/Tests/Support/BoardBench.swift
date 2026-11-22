@@ -17,12 +17,14 @@ private struct BoardPage: View {
             if BoardBench.cardShown.wrappedValue {
                 Text("card")
                     .transition(Transition(enter: .opacity, exit: .opacity.combined(with: .translation(y: 12))))
-                    .sharedTransition("card")
-                    .id(7)
+                    .id("card")
             } else {
-                Text("detail")
-                    .transition(.symmetric(.opacity))
-                    .sharedTransition("card")
+                // In a holder of its own: of one id and one kind among the same siblings, it would be the card itself.
+                HStack {
+                    Text("detail")
+                        .transition(.symmetric(.opacity))
+                        .id("card")
+                }
             }
             MotionLayout([0, 1], parameters: BoardBench.dealt.projectedValue) { Text("item \($0)") } placements: {
                 room, _ in
@@ -30,7 +32,6 @@ private struct BoardPage: View {
             }
             .layoutBodies(.onChange(response: .milliseconds(160)))
         }
-        .transitionScope("board")
         .motion(.eased(.milliseconds(200), curve: .linear))
         .aim(BoardBench.scope)
     }

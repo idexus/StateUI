@@ -137,10 +137,9 @@ extension Differ {
             .flatMap(\.chain)
             .filter { convertedOnce.insert(ObjectIdentifier($0)).inserted }
 
-        // A shared transition's number is worn while the element says it.
-        for property in [Prop.transitionScope, .sharedTransition] {
-            let (said, was) = (node.props[property]?.int, rendered?.props[property]?.int)
-            guard said != was else { continue }
+        // A shared presentation's number is worn while the element says it.
+        let (said, was) = (node.props[.sharedPresentation]?.int, rendered?.props[.sharedPresentation]?.int)
+        if said != was {
             if let was { Renderer.shared.sharedIdentities.unwear(was) }
             if let said { Renderer.shared.sharedIdentities.wear(said) }
         }

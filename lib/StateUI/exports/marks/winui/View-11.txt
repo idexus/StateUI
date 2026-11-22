@@ -1,4 +1,4 @@
-# revision 43.2
+# revision 44.2
 Button.dismissed: ✓ pressDown on Button: the relay's report of the press handed to the host, no pointer sent
 Button.horizontalAlignment: ✅
 Button.layoutFrameChanged: ✅
@@ -11,7 +11,7 @@ Capsule.presentationFrameChanged: ✅
 CheckBox.gridColumnSpan: ✅
 CheckBox.gridRowSpan: ✅
 CheckBox.layoutFrameChanged: ✅
-CheckBox.sharedTransition: ✅
+CheckBox.sharedPresentation: ✅
 CheckBox.swipeDirections: ✓ pan on CheckBox: the relay's report of the press dragged handed to the host, no pointer sent
 CheckBox.swipeThreshold: ✓ pan on CheckBox: the relay's report of the press dragged handed to the host, no pointer sent
 CheckBox.swiped: ✓ pan on CheckBox: the relay's report of the press dragged handed to the host, no pointer sent
@@ -33,6 +33,7 @@ Fill.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layo
 Fill.presentationSample: ✅
 Fill.transition: ✅
 Grid.pinchUpdated: ✓ pinch on Grid: the relay's report of the manipulation handed to the host, no touch sent
+Grid.sharedPresentation: ✅
 Grid.tapCount: ✓ tap on Grid: the relay's report of the tap handed to the host, no pointer sent
 Grid.tapped: ✓ tap on Grid: the relay's report of the tap handed to the host, no pointer sent
 HStack.droppedFileTypes: ✓ dropFiles on HStack: the relay's drop report told the driver's files, no drag WinUI began
@@ -56,7 +57,7 @@ Line.presentationFrameChanged: ✅
 Link.gridColumnSpan: ✅
 Link.gridRowSpan: ✅
 Link.layoutFrameChanged: ✅
-Link.sharedTransition: ✅
+Link.sharedPresentation: ✅
 Link.swipeDirections: ✓ pan on Link: the relay's report of the press dragged handed to the host, no pointer sent
 Link.swipeThreshold: ✓ pan on Link: the relay's report of the press dragged handed to the host, no pointer sent
 Link.swiped: ✓ pan on Link: the relay's report of the press dragged handed to the host, no pointer sent
@@ -93,9 +94,7 @@ Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the relay's drag reports told
 Rectangle.dragStarting: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Rectangle.dragText: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Rectangle.isDraggable: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-Rectangle.layoutFrameChanged: ✅
 Rectangle.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
-Rectangle.presentationFrameChanged: ✅
 ScrollView.dismissed: ✓ pressDown on ScrollView: the relay's report of the press handed to the host, no pointer sent
 ScrollView.horizontalAlignment: ✅
 ScrollView.layoutFrameChanged: ✅
@@ -112,7 +111,7 @@ Slider.presentationFrameChanged: ✅
 Space.gridColumnSpan: ✅
 Space.gridRowSpan: ✅
 Space.layoutFrameChanged: ✅
-Space.sharedTransition: ✅
+Space.sharedPresentation: ✅
 Space.swipeDirections: ✓ pan on Space: the relay's report of the press dragged handed to the host, no pointer sent
 Space.swipeThreshold: ✓ pan on Space: the relay's report of the press dragged handed to the host, no pointer sent
 Space.swiped: ✓ pan on Space: the relay's report of the press dragged handed to the host, no pointer sent
@@ -160,3 +159,4 @@ ZStack.dragStarting: ✓ dragAndDrop on ZStack: the relay's drag reports told by
 ZStack.dragText: ✓ dragAndDrop on ZStack: the relay's drag reports told by the driver, no drag WinUI began
 ZStack.isDraggable: ✓ dragAndDrop on ZStack: the relay's drag reports told by the driver, no drag WinUI began
 ZStack.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
+ZStack.sharedPresentation: ✅

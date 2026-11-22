@@ -1,11 +1,11 @@
-# revision 43.1
+# revision 44.1
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
 Button.interaction: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
 Button.layoutFrameChanged: ✅
 Button.transition: ✅
 Canvas.pinchUpdated: ✓ pinch on Canvas: the view's listening handed the recognizer's states, no touch sent
-Canvas.sharedTransition: ✅
+Canvas.sharedPresentation: ✅
 Canvas.tapped: ✓ pressDown on Canvas: the view's listening handed the recognizer's states, no touch sent
 Capsule.longPressDuration: ✅
 Capsule.pointerMoved: ✓ hover on Capsule: the view's listening handed the recognizer's states, no touch sent
@@ -42,6 +42,7 @@ Grid.layoutFrameChanged: ✅
 Grid.margin: ✅
 Grid.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Grid.panUpdated: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
+Grid.sharedPresentation: ✅
 HStack.droppedFileTypes: ✓ dropFiles on HStack: the drop interaction's handler told the driver's files, no drag session
 HStack.filesDropped: ✓ dropFiles on HStack: the drop interaction's handler told the driver's files, no drag session
 HStack.interaction: ✓ pressDown on HStack: the view's listening handed the recognizer's states, no touch sent
@@ -70,7 +71,6 @@ Map.gridColumn: ✅
 Map.gridRow: ✅
 Map.layoutFrameChanged: ✅
 Map.tapped: ✓ pressDown on Map: the view's listening handed the recognizer's states, no touch sent
-MotionLayout.interaction: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.longPressDuration: ✅
 MotionLayout.pointerMoved: ✓ hover on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.pointerPressed: ✓ hover on MotionLayout: the view's listening handed the recognizer's states, no touch sent
@@ -98,9 +98,8 @@ ProgressBar.gridRowSpan: ✅
 ProgressBar.interaction: ✓ pressDown on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.layoutFrameChanged: ✅
 ProgressBar.transition: ✅
-Rectangle.layoutFrameChanged: ✅
 Rectangle.pinchUpdated: ✓ pinch on Rectangle: the view's listening handed the recognizer's states, no touch sent
-Rectangle.sharedTransition: ✅
+Rectangle.sharedPresentation: ✅
 Rectangle.tapped: ✓ pressDown on Rectangle: the view's listening handed the recognizer's states, no touch sent
 ScrollView.longPressDuration: ✅
 ScrollView.pointerMoved: ✓ hover on ScrollView: the view's listening handed the recognizer's states, no touch sent
@@ -140,7 +139,7 @@ Stepper.transition: ✅
 Switch.longPressed: ✓ longPress on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.rotationUpdated: ✓ rotate on Switch: the view's listening handed the recognizer's states, no touch sent
 Text.pinchUpdated: ✓ pinch on Text: the view's listening handed the recognizer's states, no touch sent
-Text.sharedTransition: ✅
+Text.sharedPresentation: ✅
 Text.tapped: ✓ pressDown on Text: the view's listening handed the recognizer's states, no touch sent
 TextEditor.dragEnded: ✓ dragAndDrop on TextEditor: the drag and drop interactions' handlers called, no drag session
 TextEditor.dragStarting: ✓ dragAndDrop on TextEditor: the drag and drop interactions' handlers called, no drag session
@@ -162,11 +161,13 @@ VStack.gridColumnSpan: ✅
 VStack.gridRowSpan: ✅
 VStack.interaction: ✓ pressDown on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.layoutFrameChanged: ✅
+VStack.sharedPresentation: ✅
 VStack.transition: ✅
 WebView.pinchUpdated: ✓ pinch on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.sharedTransition: ✅
+WebView.sharedPresentation: ✅
 WebView.tapped: ✓ pressDown on WebView: the view's listening handed the recognizer's states, no touch sent
 ZStack.longPressDuration: ✅
 ZStack.pointerMoved: ✓ hover on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.pointerPressed: ✓ hover on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.pointerReleased: ✓ hover on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.tapped: ✓ pressDown on ZStack: the view's listening handed the recognizer's states, no touch sent

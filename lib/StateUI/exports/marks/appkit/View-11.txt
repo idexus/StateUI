@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Button.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Button.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
@@ -44,7 +44,7 @@ Grid.interaction: ✓ pressDown on Grid: handed to the host's recognizer or hand
 Grid.layoutFrameChanged: ✅
 Grid.transition: ✅
 HStack.pinchUpdated: ✓ pinch on HStack: handed to the host's recognizer or handler, no NSEvent sent
-HStack.sharedTransition: ✅
+HStack.sharedPresentation: ✅
 HStack.tapped: ✓ pressDown on HStack: handed to the host's recognizer or handler, no NSEvent sent
 Image.longPressDuration: ✅
 Image.pointerMoved: ✓ hover on Image: handed to the host's recognizer or handler, no NSEvent sent
@@ -74,7 +74,7 @@ Map.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other 
 Map.panUpdated: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.gridColumn: ✅
 MotionLayout.gridRow: ✅
-MotionLayout.interaction: ✓ sweep on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.interaction: ✓ pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.layoutFrameChanged: ✅
 MotionLayout.tapped: ✓ pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 Path.area: ✅
@@ -87,7 +87,7 @@ Picker.interaction: ✓ pressDown on Picker: handed to the host's recognizer or 
 Picker.layoutFrameChanged: ✅
 Picker.transition: ✅
 Polygon.pinchUpdated: ✓ pinch on Polygon: handed to the host's recognizer or handler, no NSEvent sent
-Polygon.sharedTransition: ✅
+Polygon.sharedPresentation: ✅
 Polygon.tapped: ✓ pressDown on Polygon: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.longPressDuration: ✅
 Polyline.pointerMoved: ✓ hover on Polyline: handed to the host's recognizer or handler, no NSEvent sent
@@ -151,7 +151,7 @@ TextEditor.interaction: ✓ pressDown on TextEditor: handed to the host's recogn
 TextEditor.layoutFrameChanged: ✅
 TextEditor.transition: ✅
 TextField.pinchUpdated: ✓ pinch on TextField: handed to the host's recognizer or handler, no NSEvent sent
-TextField.sharedTransition: ✅
+TextField.sharedPresentation: ✅
 TextField.tapped: ✓ pressDown on TextField: handed to the host's recognizer or handler, no NSEvent sent
 TimePicker.longPressDuration: ✅
 TimePicker.pointerMoved: ✓ hover on TimePicker: handed to the host's recognizer or handler, no NSEvent sent

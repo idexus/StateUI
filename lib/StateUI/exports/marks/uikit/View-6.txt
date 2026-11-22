@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.swipeDirections: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Button.swipeThreshold: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Button.swiped: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
@@ -29,7 +29,7 @@ DatePicker.interaction: ✓ pressDown on DatePicker: the view's listening handed
 DatePicker.layoutFrameChanged: ✅
 DatePicker.transition: ✅
 Ellipse.pinchUpdated: ✓ pinch on Ellipse: the view's listening handed the recognizer's states, no touch sent
-Ellipse.sharedTransition: ✅
+Ellipse.sharedPresentation: ✅
 Ellipse.tapped: ✓ pressDown on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Fill.longPressDuration: ✅
 Fill.pointerMoved: ✓ hover on Fill: the view's listening handed the recognizer's states, no touch sent
@@ -41,10 +41,12 @@ Grid.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' h
 Grid.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Grid.interaction: ✓ sweep on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.presentationFrameChanged: ✅
+Grid.sharedPresentation: ✅
 HStack.horizontalAlignment: ✅
 HStack.interaction: ✓ pressDown on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.layoutBody: ✅
 HStack.layoutFrameChanged: ✅
+HStack.tapped: ✓ accessibilityPress on HStack: VoiceOver's activation, else a tap the view's listening is handed, no touch sent
 HStack.verticalAlignment: ✅
 Image.gridColumn: ✅
 Image.gridRow: ✅
@@ -72,7 +74,6 @@ Map.transition: ✅
 MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the drag and drop interactions' handlers called, no drag session
 MotionLayout.dragStarting: ✓ dragAndDrop on MotionLayout: the drag and drop interactions' handlers called, no drag session
 MotionLayout.dragText: ✓ dragAndDrop on MotionLayout: the drag and drop interactions' handlers called, no drag session
-MotionLayout.interaction: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.isDraggable: ✓ dragAndDrop on MotionLayout: the drag and drop interactions' handlers called, no drag session
 MotionLayout.layoutFrameChanged: ✅
 MotionLayout.margin: ✅
@@ -103,7 +104,6 @@ ProgressBar.swiped: ✓ pan on ProgressBar: the view's listening handed the reco
 ProgressBar.tapCount: ✓ tap on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.tapped: ✓ tap on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.transition: ✅
-Rectangle.layoutFrameChanged: ✅
 Rectangle.longPressed: ✓ longPress on Rectangle: the view's listening handed the recognizer's states, no touch sent
 Rectangle.rotationUpdated: ✓ rotate on Rectangle: the view's listening handed the recognizer's states, no touch sent
 ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the drag and drop interactions' handlers called, no drag session
@@ -119,7 +119,7 @@ SearchField.filesDropped: ✓ dropFiles on SearchField: the drop interaction's h
 SearchField.interaction: ✓ pressDown on SearchField: the view's listening handed the recognizer's states, no touch sent
 SearchField.presentationSample: ✅
 Separator.pinchUpdated: ✓ pinch on Separator: the view's listening handed the recognizer's states, no touch sent
-Separator.sharedTransition: ✅
+Separator.sharedPresentation: ✅
 Separator.tapped: ✓ pressDown on Separator: the view's listening handed the recognizer's states, no touch sent
 Slider.area: ✅
 Slider.dismissed: ✓ pressDown on Slider: the view's listening handed the recognizer's states, no touch sent
@@ -135,7 +135,7 @@ Spinner.gridRow: ✅
 Spinner.layoutFrameChanged: ✅
 Spinner.tapped: ✓ pressDown on Spinner: the view's listening handed the recognizer's states, no touch sent
 Stepper.pinchUpdated: ✓ pinch on Stepper: the view's listening handed the recognizer's states, no touch sent
-Stepper.sharedTransition: ✅
+Stepper.sharedPresentation: ✅
 Stepper.tapped: ✓ pressDown on Stepper: the view's listening handed the recognizer's states, no touch sent
 Switch.longPressDuration: ✅
 Switch.pointerMoved: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent
@@ -158,6 +158,7 @@ TimePicker.gridColumn: ✅
 TimePicker.gridRow: ✅
 TimePicker.layoutFrameChanged: ✅
 TimePicker.tapped: ✓ pressDown on TimePicker: the view's listening handed the recognizer's states, no touch sent
+VStack.sharedPresentation: ✅
 VStack.swipeDirections: ✓ pan on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.swipeThreshold: ✓ pan on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.swiped: ✓ pan on VStack: the view's listening handed the recognizer's states, no touch sent

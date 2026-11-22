@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.horizontalAlignment: ✅
 Button.interaction: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.layoutBody: ✅
@@ -38,7 +38,7 @@ Fill.interaction: ✓ pressDown on Fill: handed to the host's recognizer or hand
 Fill.layoutFrameChanged: ✅
 Fill.transition: ✅
 Grid.pinchUpdated: ✓ pinch on Grid: handed to the host's recognizer or handler, no NSEvent sent
-Grid.sharedTransition: ✅
+Grid.sharedPresentation: ✅
 Grid.tapped: ✓ pressDown on Grid: handed to the host's recognizer or handler, no NSEvent sent
 HStack.longPressDuration: ✅
 HStack.pointerMoved: ✓ hover on HStack: handed to the host's recognizer or handler, no NSEvent sent
@@ -70,6 +70,7 @@ Map.filesDropped: ✓ dropFiles on Map: the window's drop routing told the drive
 Map.interaction: ✓ pressDown on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.presentationSample: ✅
 MotionLayout.interaction: ✓ sweep on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.sharedPresentation: ✅
 MotionLayout.swipeDirections: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.swipeThreshold: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.swiped: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
@@ -82,7 +83,7 @@ Path.interaction: ✓ pressDown on Path: handed to the host's recognizer or hand
 Path.layoutFrameChanged: ✅
 Path.transition: ✅
 Picker.pinchUpdated: ✓ pinch on Picker: handed to the host's recognizer or handler, no NSEvent sent
-Picker.sharedTransition: ✅
+Picker.sharedPresentation: ✅
 Picker.tapped: ✓ pressDown on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Polygon.longPressDuration: ✅
 Polygon.pointerMoved: ✓ hover on Polygon: handed to the host's recognizer or handler, no NSEvent sent
@@ -147,7 +148,7 @@ Text.gridRow: ✅
 Text.layoutFrameChanged: ✅
 Text.tapped: ✓ pressDown on Text: handed to the host's recognizer or handler, no NSEvent sent
 TextEditor.pinchUpdated: ✓ pinch on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.sharedTransition: ✅
+TextEditor.sharedPresentation: ✅
 TextEditor.tapped: ✓ pressDown on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
 TextField.longPressDuration: ✅
 TextField.pointerMoved: ✓ hover on TextField: handed to the host's recognizer or handler, no NSEvent sent

@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the window's drop routing told the driver's files, no dragging session
 Button.filesDropped: ✓ dropFiles on Button: the window's drop routing told the driver's files, no dragging session
 Button.interaction: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -13,7 +13,7 @@ Capsule.interaction: ✓ pressDown on Capsule: handed to the host's recognizer o
 Capsule.layoutFrameChanged: ✅
 Capsule.transition: ✅
 CheckBox.pinchUpdated: ✓ pinch on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
-CheckBox.sharedTransition: ✅
+CheckBox.sharedPresentation: ✅
 CheckBox.tapped: ✓ pressDown on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
 ColorPicker.longPressDuration: ✅
 ColorPicker.pointerMoved: ✓ hover on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
@@ -55,7 +55,7 @@ ItemsView.filesDropped: ✓ dropFiles on ItemsView: the window's drop routing to
 ItemsView.interaction: ✓ pressDown on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.presentationSample: ✅
 Line.pinchUpdated: ✓ pinch on Line: handed to the host's recognizer or handler, no NSEvent sent
-Line.sharedTransition: ✅
+Line.sharedPresentation: ✅
 Line.tapped: ✓ pressDown on Line: handed to the host's recognizer or handler, no NSEvent sent
 Link.longPressDuration: ✅
 Link.pointerMoved: ✓ hover on Link: handed to the host's recognizer or handler, no NSEvent sent
@@ -71,6 +71,7 @@ MotionLayout.gridColumnSpan: ✅
 MotionLayout.gridRowSpan: ✅
 MotionLayout.interaction: ✓ pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.layoutFrameChanged: ✅
+MotionLayout.sharedPresentation: ✅
 MotionLayout.transition: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅
@@ -106,7 +107,7 @@ ScrollView.interaction: ✓ pressDown on ScrollView: handed to the host's recogn
 ScrollView.layoutFrameChanged: ✅
 ScrollView.transition: ✅
 SearchField.pinchUpdated: ✓ pinch on SearchField: handed to the host's recognizer or handler, no NSEvent sent
-SearchField.sharedTransition: ✅
+SearchField.sharedPresentation: ✅
 SearchField.tapped: ✓ pressDown on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 Separator.horizontalAlignment: ✅
 Separator.interaction: ✓ pressDown on Separator: handed to the host's recognizer or handler, no NSEvent sent

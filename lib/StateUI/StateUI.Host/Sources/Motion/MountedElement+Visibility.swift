@@ -36,26 +36,27 @@ extension MountedElement {
         lifecycle == .exiting || presented(.ignoresInput)?.bool == true
     }
 
-    /// Whether the element may come moving as it is given its first place: by the transition it declares, else
-    /// fading in where its view `presentsOpacity` and no state owns it.
+    /// Whether the element may come moving as it is given its first place: by the transition it declares, from a
+    /// partner of its id, else fading in where its view `presentsOpacity` and no state owns it.
     public func entersMoving(presentsOpacity: Bool) -> Bool {
-        transition != nil || value(ViewContract.sharedTransition.token) != nil
+        transition != nil || value(ViewContract.sharedPresentation.token) != nil
             || (presentsOpacity && driven[.opacity] == nil)
     }
 
     /// The element enters on `view` as it is given its first place. Declaring a transition, it comes from the
     /// entry's effect under its own motion: as it joins a layout already standing, and as it appears with its
-    /// layout where the transition says so. Declaring none, it fades in under the law of the layout it joins -
-    /// unless a view made with it, under it, sets out from its partner: then it comes as it stands. An element a
-    /// message made again enters by no transition.
+    /// layout where the transition says so. Declaring none, it fades in under the law of the layout it joins where
+    /// its view `presentsOpacity` and no state owns it - unless a view made with it, under it, sets out from its
+    /// partner: then it comes as it stands. An id with no partner moves nothing more. An element a message made
+    /// again enters by no transition.
     /// Design: docs/design/host/motion.md#a-view-that-enters
-    public func enter(_ view: some FadingView, as entry: LayoutEntry) {
+    public func enter(_ view: some FadingView, as entry: LayoutEntry, presentsOpacity: Bool) {
         if let returned {
             self.returned = nil
             return comeBack(as: returned, on: view)
         }
         // One view left wearing the key this one wears: it sets out from where that one was drawn - and that one,
-        // kept for it, goes along onto where it lands. Design: docs/design/host/motion.md#a-shared-transition-drawn-by-both
+        // kept for it, goes along onto where it lands. Design: docs/design/host/motion.md#a-shared-presentation-drawn-by-both
         if !isRemade, let tree, let pair = tree.shared.source(for: self, in: tree) {
             // The larger of the two is drawn in front, and it alone crosses over: the one behind stands whole.
             let corner = pair.corner.flatMap { from in ownCorner.map { (from: from, to: $0 * scaleInScope) } }
@@ -79,7 +80,8 @@ extension MountedElement {
             return drawInFront(under: pair.scope, runs: runs, besides: pair.kept, leads: leads)
         }
         guard let transition = transition?.host else {
-            if case .joining(let law) = entry, law.animates, tree?.shared.holdsAPartner(self) != true {
+            if case .joining(let law) = entry, law.animates, presentsOpacity, driven[.opacity] == nil,
+               tree?.shared.holdsAPartner(self) != true {
                 fadeIn(view, under: law)
             }
             return

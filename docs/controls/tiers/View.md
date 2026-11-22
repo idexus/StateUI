@@ -55,7 +55,7 @@ How each of them realizes these members is on its own page.
 | `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |
 | `presentationSample` | act | `() -> PresentationSample` | stateUI |
 | `onRotationUpdated` (`rotationUpdated`) | event | `(GesturePhase, Double, Double)` | native |
-| `sharedTransition` | property | `Int` | stateUI |
+| `sharedPresentation` | property | `Int` | stateUI |
 | `swipeDirections` | property | `SwipeDirections` | structure |
 | `swipeThreshold` | property | `Double` | structure |
 | `onSwiped` (`swiped`) | event | `SwipeDirection` | native |

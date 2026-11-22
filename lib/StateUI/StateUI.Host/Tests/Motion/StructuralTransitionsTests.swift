@@ -236,7 +236,7 @@ final class StructuralTransitionsTests: XCTestCase {
         XCTAssertEqual(bench.ended.map(\.result), [.interrupted])
         XCTAssertTrue(bench.root.presentedChildren.elementsEqual(bench.root.children, by: ===), "one view of it stands")
 
-        back.enter(Entering(), as: .joining(under: .none))
+        back.enter(Entering(), as: .joining(under: .none), presentsOpacity: true)
         XCTAssertEqual(bench.shown(.opacity, of: back) ?? .nan, 0.5, accuracy: 0.001, "from where the leaving one was drawn")
         XCTAssertEqual(bench.shown(.translationY, of: back) ?? .nan, 6, accuracy: 0.001, "not from its entry's effect")
 

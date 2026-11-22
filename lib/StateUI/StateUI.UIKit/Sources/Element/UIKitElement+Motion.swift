@@ -26,7 +26,7 @@ extension UIKitElement {
     /// Brings the element in as it is given its first place, by the host layer's rule.
     func enter(_ entry: LayoutEntry) {
         guard entersMoving, let drawing else { return }
-        element.enter(drawing, as: entry)
+        element.enter(drawing, as: entry, presentsOpacity: TransitionSurface.presents(.opacity, on: type))
     }
 
     /// Crosses a change of visibility by the host layer's rule; as a fade out ends, the layout closes over it.

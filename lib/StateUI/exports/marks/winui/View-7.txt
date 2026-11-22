@@ -1,4 +1,4 @@
-# revision 43.2
+# revision 44.2
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -46,7 +46,7 @@ Image.presentationFrameChanged: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRowSpan: ✅
 ItemsView.layoutFrameChanged: ✅
-ItemsView.sharedTransition: ✅
+ItemsView.sharedPresentation: ✅
 ItemsView.swipeDirections: ✓ pan on ItemsView: the relay's report of the press dragged handed to the host, no pointer sent
 ItemsView.swipeThreshold: ✓ pan on ItemsView: the relay's report of the press dragged handed to the host, no pointer sent
 ItemsView.swiped: ✓ pan on ItemsView: the relay's report of the press dragged handed to the host, no pointer sent
@@ -61,7 +61,6 @@ Map.pinchUpdated: 🧩
 Map.tapCount: 🧩
 Map.tapped: 🧩
 MotionLayout.area: ✅
-MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 MotionLayout.layoutFrameChanged: ✅
 MotionLayout.tapped: ✓ pressDown on MotionLayout: the relay's report of the press handed to the host, no pointer sent
 MotionLayout.transition: ✅
@@ -87,7 +86,7 @@ ProgressBar.presentationFrameChanged: ✅
 Rectangle.gridColumnSpan: ✅
 Rectangle.gridRowSpan: ✅
 Rectangle.layoutFrameChanged: ✅
-Rectangle.sharedTransition: ✅
+Rectangle.sharedPresentation: ✅
 Rectangle.swipeDirections: ✓ pan on Rectangle: the relay's report of the press dragged handed to the host, no pointer sent
 Rectangle.swipeThreshold: ✓ pan on Rectangle: the relay's report of the press dragged handed to the host, no pointer sent
 Rectangle.swiped: ✓ pan on Rectangle: the relay's report of the press dragged handed to the host, no pointer sent
@@ -116,7 +115,7 @@ Space.transition: ✅
 Spinner.gridColumnSpan: ✅
 Spinner.gridRowSpan: ✅
 Spinner.layoutFrameChanged: ✅
-Spinner.sharedTransition: ✅
+Spinner.sharedPresentation: ✅
 Spinner.swipeDirections: ✓ pan on Spinner: the relay's report of the press dragged handed to the host, no pointer sent
 Spinner.swipeThreshold: ✓ pan on Spinner: the relay's report of the press dragged handed to the host, no pointer sent
 Spinner.swiped: ✓ pan on Spinner: the relay's report of the press dragged handed to the host, no pointer sent
@@ -149,6 +148,7 @@ TimePicker.horizontalAlignment: ✅
 TimePicker.layoutFrameChanged: ✅
 TimePicker.verticalAlignment: ✅
 VStack.rotationUpdated: ✓ rotate on VStack: the relay's report of the manipulation handed to the host, no touch sent
+VStack.sharedPresentation: ✅
 VStack.tapped: ✓ pressDown on VStack: the relay's report of the press handed to the host, no pointer sent
 WebView.interaction: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.layoutBody: ✅
@@ -156,7 +156,8 @@ WebView.presentationFrameChanged: ✅
 ZStack.gridColumnSpan: ✅
 ZStack.gridRowSpan: ✅
 ZStack.layoutFrameChanged: ✅
-ZStack.sharedTransition: ✅
+ZStack.sharedPresentation: ✅
 ZStack.swipeDirections: ✓ pan on ZStack: the relay's report of the press dragged handed to the host, no pointer sent
 ZStack.swipeThreshold: ✓ pan on ZStack: the relay's report of the press dragged handed to the host, no pointer sent
 ZStack.swiped: ✓ pan on ZStack: the relay's report of the press dragged handed to the host, no pointer sent
+ZStack.tapped: ✓ pressDown on ZStack: the relay's report of the press handed to the host, no pointer sent

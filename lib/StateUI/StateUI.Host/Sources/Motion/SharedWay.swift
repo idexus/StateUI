@@ -6,7 +6,7 @@
 /// One view's way in a shared transition drawn by both views - the entering one onto its place, the keyed one leaving
 /// onto where the entering one lands - and what each frame works out of how far it has got: its corner, drawn from
 /// the one partner's to the other's, and its opacity as the two cross over near the smaller.
-/// Design: docs/design/host/motion.md#a-shared-transition-drawn-by-both
+/// Design: docs/design/host/motion.md#a-shared-presentation-drawn-by-both
 struct SharedWay {
     /// Each number the way moves: where it set out and where it lands.
     var spans: [Prop: (from: Double, to: Double)]

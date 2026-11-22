@@ -389,12 +389,12 @@ Hiding a view with `isVisible(_:)` keeps the view and its state, and crosses
 as [visibility](#visibility-and-layout-motion) does, whatever transition the
 view declares.
 
-## A shared transition
+## A shared presentation
 
-A thumbnail and its picture are two views and, to the user, one thing.
-`.sharedTransition(_:)` ties them by a key: as one leaves and the other
-enters in the same change, the entering one sets out from where the leaving
-one is drawn and grows onto its own place.
+A thumbnail and its picture are two views and, to the user, one thing. An
+`.id(_:)` written by hand on each says so: as one leaves and the other comes
+in the same change, anywhere on the page, the one coming sets out from where
+the other is drawn and grows onto its own place.
 
 ```swift
 struct Catalog: View {
@@ -407,7 +407,7 @@ struct Catalog: View {
                     .fill(.indigo)
                     .width(240)
                     .height(160)
-                    .sharedTransition(chosen)
+                    .id(chosen)
                     .onTapped { self.chosen = nil }
             } else {
                 HStack {
@@ -416,52 +416,51 @@ struct Catalog: View {
                             .fill(.indigo)
                             .width(48)
                             .height(32)
-                            .sharedTransition(item)
+                            .id(item)
                             .onTapped { chosen = item }
                     }
                 }
                 .spacing(8)
             }
         }
-        .transitionScope("catalog")
         .motion(.spring(response: .milliseconds(420), damping: 0.8))
     }
 }
 ```
 
-`.transitionScope(_:)` goes on a layout that stands while the views in it
-come and go: the views under it are matched in it, and a view under no
-scope is tied to nothing. Both take any `Hashable`.
-
 The two views stay two views - the picture's state is its own, and nothing
-of the thumbnail's is carried over. The entry moves under the entering
-view's own `.motion(_:)`, else the application's. Where the layout that held
-the leaving view keeps a view that leaves - a stack, a grid, a ZStack - the
-two are drawn as one on the way: the leaving one goes along onto where the
-entering one lands, at the speed it had, so a view the hand throws goes on
-as thrown; they cross over near the smaller of the two, and a rounded corner
-goes from the one's to the other's; only the one in front, the larger, fades,
-so the two never let through what lies under them. What goes along is the
-view wearing the key, with what it holds; anything else that left with it - a
-caption under a picture - stands where it is drawn and fades out there, so a
-view meant to travel whole, an app with its words, wears the key itself.
-Elsewhere the leaving one goes at once.
-Going back during the movement sets out from where the picture is drawn at
-that moment. On its
-way the entering view is drawn in front of what it passes over - every
-sibling in a stack, and what stood before it in a layout that layers its
-children - until it lands; what came in with it keeps its layers, so a
-picture's own caption stays over it. The leaving one, going along, is drawn
-in front so too, and where one layout holds them both, the larger of the two
-is in front there: a picture closing onto its thumbnail is drawn over the
-other thumbnails all the way.
+of the thumbnail's is carried over - and they may be of two kinds: what is
+shared is where each is drawn, its size and its corner. Only an id written by
+hand shares a presentation; a `ForEach`'s items are keyed by their loop and
+share none. Among the same siblings, one id on two views of one kind is one
+view continued, its layout moving it: a picture meant to grow out of its
+thumbnail stands in another holder, as above, or is another kind of view.
 
-A key ties one view before a change to one after it, and one change carries
-as many keys as it holds. A row of tiles laid out again as a grid, each tile
-wearing its own key, sends every tile from where it stands in the row onto
-its cell. The view made takes over from the one of its key - where it was
-drawn, how fast it was moving, its corner - so switching back during the
-movement turns each tile from where it is, as fast as it was going:
+The entry moves under the entering view's own `.motion(_:)`, else the
+application's. Where the layout that held the leaving view keeps a view that
+leaves - a stack, a grid, a ZStack - the two are drawn as one on the way: the
+leaving one goes along onto where the entering one lands, at the speed it
+had, so a view the hand throws goes on as thrown; they cross over near the
+smaller of the two, and a rounded corner goes from the one's to the other's;
+only the one in front, the larger, fades, so the two never let through what
+lies under them. What goes along is the view with the id, with what it holds;
+anything else that left with it - a caption under a picture - stands where it
+is drawn and fades out there, so a view meant to travel whole, an app with
+its words, has the id itself. Elsewhere the leaving one goes at once.
+Going back during the movement sets out from where the picture is drawn at
+that moment. On its way the entering view is drawn in front of what it passes
+over - every sibling in a stack, and what stood before it in a layout that
+layers its children - until it lands; what came in with it keeps its layers,
+so a picture's own caption stays over it. The leaving one, going along, is
+drawn in front so too, and where one layout holds them both, the larger of
+the two is in front there: a picture closing onto its thumbnail is drawn over
+the other thumbnails all the way.
+
+One change carries as many ids as it holds. A row of tiles laid out again as
+a grid, each tile with its own id, sends every tile from where it stands in
+the row onto its cell. The view made takes over from the one of its id -
+where it was drawn, how fast it was moving, its corner - so switching back
+during the movement turns each tile from where it is, as fast as it was going:
 
 ```swift
 struct Tiles: View {
@@ -477,7 +476,7 @@ struct Tiles: View {
                             Rectangle()
                                 .fill(.indigo)
                                 .cornerRadius(12)
-                                .sharedTransition(tile)
+                                .id(tile)
                                 .gridRow(tile / 3)
                                 .gridColumn(tile % 3)
                         }
@@ -492,24 +491,23 @@ struct Tiles: View {
                                 .cornerRadius(20)
                                 .width(40)
                                 .height(40)
-                                .sharedTransition(tile)
+                                .id(tile)
                         }
                     }
                 }
             }
-            .transitionScope("tiles")
             .motion(.spring(response: .milliseconds(480), damping: 0.78))
         }
     }
 }
 ```
 
-One view leaving and one entering under a key, in one window and on one
-page, are tied - a view entering with the `MotionLayout` that places it too:
-the card coming back from its detail travels into its deck. Anything else -
-two views of one key, a partner in another window or on another page, a
-view whose `MotionLayout` is laid out in a room of nothing, which places
-nothing - is not: each view then goes by its own `.transition(_:)`.
+One view leaving and one coming under an id, in one window and on one page,
+are one - a view coming with the `MotionLayout` that places it too: the card
+coming back from its detail travels into its deck. Anything else - two views
+of one id leaving, a partner on another page, a view whose `MotionLayout` is
+laid out in a room of nothing, which places nothing - is not: each view then
+goes by its own `.transition(_:)`.
 
 ## A change and what it started
 

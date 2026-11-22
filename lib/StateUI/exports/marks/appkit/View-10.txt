@@ -1,4 +1,4 @@
-# revision 43.1
+# revision 44.1
 Button.dragEnded: ✓ dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session
 Button.dragStarting: ✓ dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session
 Button.dragText: ✓ dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session
@@ -21,7 +21,7 @@ CheckBox.interaction: ✓ pressDown on CheckBox: handed to the host's recognizer
 CheckBox.layoutFrameChanged: ✅
 CheckBox.transition: ✅
 ColorPicker.pinchUpdated: ✓ pinch on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
-ColorPicker.sharedTransition: ✅
+ColorPicker.sharedPresentation: ✅
 ColorPicker.tapped: ✓ pressDown on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.longPressDuration: ✅
 DatePicker.pointerMoved: ✓ hover on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
@@ -42,11 +42,12 @@ Grid.gridColumn: ✅
 Grid.gridRow: ✅
 Grid.layoutFrameChanged: ✅
 Grid.tapped: ✓ pressDown on Grid: handed to the host's recognizer or handler, no NSEvent sent
+HStack.sharedPresentation: ✅
 HStack.swipeDirections: ✓ pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.swipeThreshold: ✓ pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.swiped: ✓ pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.tapCount: ✓ tap on HStack: handed to the host's recognizer or handler, no NSEvent sent
-HStack.tapped: ✅
+HStack.tapped: ✓ tap on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.transition: ✅
 Image.longPressed: ✓ longPress on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.rotationUpdated: ✓ rotate on Image: handed to the host's recognizer or handler, no NSEvent sent
@@ -64,7 +65,7 @@ Line.interaction: ✓ pressDown on Line: handed to the host's recognizer or hand
 Line.layoutFrameChanged: ✅
 Line.transition: ✅
 Link.pinchUpdated: ✓ pinch on Link: handed to the host's recognizer or handler, no NSEvent sent
-Link.sharedTransition: ✅
+Link.sharedPresentation: ✅
 Link.tapped: ✓ pressDown on Link: handed to the host's recognizer or handler, no NSEvent sent
 Map.longPressDuration: ✅
 Map.pointerMoved: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
@@ -72,6 +73,7 @@ Map.pointerPressed: ✓ hover on Map: handed to the host's recognizer or handler
 Map.pointerReleased: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.area: ✅
 MotionLayout.dismissed: ✓ pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.interaction: ✓ notch on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.layoutFrameChanged: ✅
 MotionLayout.transition: ✅
 Path.horizontalAlignment: ✅
@@ -119,7 +121,7 @@ Separator.dropped: ✓ dragAndDrop on Rectangle: the drag source and the window'
 Separator.interaction: ✓ sweep on Separator: handed to the host's recognizer or handler, no NSEvent sent
 Separator.presentationFrameChanged: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: handed to the host's recognizer or handler, no NSEvent sent
-Slider.sharedTransition: ✅
+Slider.sharedPresentation: ✅
 Slider.tapped: ✓ pressDown on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Space.longPressDuration: ✅
 Space.pointerMoved: ✓ hover on Space: handed to the host's recognizer or handler, no NSEvent sent
@@ -169,4 +171,5 @@ WebView.presentationSample: ✅
 ZStack.area: ✅
 ZStack.dismissed: ✓ pressDown on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.layoutFrameChanged: ✅
+ZStack.sharedPresentation: ✅
 ZStack.transition: ✅

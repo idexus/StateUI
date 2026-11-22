@@ -41,8 +41,8 @@ struct CommonBoardSample: SampleContent, ExampleContent {
     /// What was done last, and how what it started ended.
     @State private var said = "Throw the cards"
 
-    /// THE BOARD the changes are aimed at: the scope the card and its detail
-    /// are tied in.
+    /// THE BOARD the changes are aimed at: what holds the card and its
+    /// detail.
     @Aim(VStack.self) private var board
     // listing: end
 
@@ -72,8 +72,6 @@ struct CommonBoardSample: SampleContent, ExampleContent {
                     deck
                 }
             }
-            // THE SCOPE: the card and its detail are one to the eye in it.
-            .transitionScope("board")
             .aim(board)
             .height(300)
 
@@ -204,7 +202,8 @@ struct CommonBoardSample: SampleContent, ExampleContent {
                     .fill(card.color)
                     .cornerRadius(16)
                     .height(200)
-                    .sharedTransition(card.name)
+                    // THE CARD'S OWN ID: the detail and its card are drawn as one.
+                    .id(card.name)
                     // Slow enough to see the way.
                     .motion(.eased(.milliseconds(600), curve: .sineInOut))
                     .onPanUpdated { pan in pulled(pan) }
@@ -329,9 +328,9 @@ struct CommonBoardSample: SampleContent, ExampleContent {
                     .horizontalAlignment(.center)
                     .verticalAlignment(.center)
             }
-            // TIED TO ITS DETAIL by its name: opened, the detail grows from it;
-            // back, the detail shrinks into it as its deck comes.
-            .sharedTransition(card.name)
+            // ONE ID WITH ITS DETAIL, its name: opened, the detail grows from
+            // it; back, the detail shrinks into it as its deck comes.
+            .id(card.name)
             .motion(.eased(.milliseconds(600), curve: .sineInOut))
             .scale(held ? 1.1 : 1)
             // THE HAND TAKES THE CARD ITSELF once a press has stood still on it.

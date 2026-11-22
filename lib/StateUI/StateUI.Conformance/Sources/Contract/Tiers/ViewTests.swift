@@ -23,6 +23,9 @@
                 tapped(element), pressedAsAButton(element), longPressed(element), longPressedAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), thrown(element), pressTakenAway(element), takenFromTheHand(element), swiped(element), pinched(element), rotated(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element), entered(element), joined(element), left(element), returned(element), shared(element),
             ]
+        } + Specimens.wearing(LayoutContract.self).flatMap { element in
+            [sharedIn(element)] + (SettingOut.kinds.contains(element) ? [drawnInFront(element)] : [])
+                + (SettingOut.keeping.contains(element) ? [keptForItsPartner(element), eachKeyOwn(element)] : [])
         } + [
             scrolledInItsWindow, scrolledInAList, atItsPagesCorner, carriedToItsPlace, onAFirstBaseline, showsItsPress,
             pressedByAScreenReader,
@@ -412,14 +415,14 @@
         }
     }
 
-    /// A view made wearing a key enters from where the one view dropped wearing it was drawn, in the layout that
-    /// is their scope: its first drawn frame is as large as that view was - not its own size, which it grows to.
+    /// A view made with an id written by hand, in another holder than the one view dropped with it, enters from
+    /// where that one was drawn: its first drawn frame is as large as that view was - not its own size, which it
+    /// grows to.
     @MainActor
     static func shared(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aViewMadeEntersFromWhereItsPartnerWasDrawn", proves: [
-            Covered(ViewContract.sharedTransition, on: element),
+            Covered(ViewContract.sharedPresentation, on: element),
         ], needs: [
-            Covered(LayoutContract.transitionScope, on: VStackContract.self),
             Covered(ViewContract.presentationFrameChanged, on: element),
             Covered(ClickElementContract.clicked, on: ButtonContract.self),
         ]) { s in
@@ -430,22 +433,22 @@
                 VStack {
                     Button("Toggle").onClicked { detailed.wrappedValue.toggle() }.id("toggle")
                     if detailed.wrappedValue {
-                        Specimens.view(element, [
-                            Write(VisualElementContract.width, 160), Write(VisualElementContract.height, 80),
-                            Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
-                        ], id: "detail")
-                        .sharedTransition("picture")
-                        .motion(.eased(.milliseconds(600), curve: .linear))
+                        HStack {
+                            Specimens.view(element, [
+                                Write(VisualElementContract.width, 160), Write(VisualElementContract.height, 80),
+                                Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
+                            ], id: "picture")
+                            .motion(.eased(.milliseconds(600), curve: .linear))
+                        }
+                        .id("detail")
                     } else {
                         Specimens.view(element, [
                             Write(VisualElementContract.width, 40), Write(VisualElementContract.height, 40),
-                        ], id: "thumbnail")
-                        .sharedTransition("picture")
+                        ], id: "picture")
                     }
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
-                .transitionScope("scope")
             }
             s.frames(of: clock, until: 200)
 
