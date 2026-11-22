@@ -246,6 +246,15 @@ stand twice, nor jump (`MountedElement.takeBack`):
                                 its move from where the old one stood, should its layout place it elsewhere
 ```
 
+The trap is a view drawn from a shared presentation
+([a shared presentation drawn by both](motion.md#a-shared-presentation-drawn-by-both)).
+An icon's square kept as its app grows out of it, and made again in its tile as
+the app closes before it lands, would be taken back - comes back by its own
+numbers, asks no partner - and the app, its partner, would wait for one that
+never comes and go at once. So a leaving view drawn from a presentation is
+never taken back: the new one meets it through the presentation, which is sent
+on from where it is (`SharedTransitionsTests.testAViewClosedAsItOpensGoesBackAlong`).
+
 A view is known by the id its render says it returns as, else by its own
 (`MountedElement.returnID`, read off `MountedTree.returnsAs` as the element
 is made): a name is the same id in every life, and for any other authored

@@ -121,14 +121,17 @@ extension MountedElement {
 
     /// A child that comes as the one it returns as - of the id it is known by, and its type - is leaving takes
     /// that one's place in the drawing: the leaving one ends, interrupted, and the new one - another life, with
-    /// handlers of its own - is handed how that one was drawn. Nothing is guessed by position.
+    /// handlers of its own - is handed how that one was drawn. Nothing is guessed by position. One drawn from a
+    /// shared presentation is met through it instead.
     /// Design: docs/design/host/tree.md#the-same-view-coming-back
     func takeBack(_ children: [MountedElement], heldBefore before: [MountedElement]) {
         guard !keptExits.isEmpty, let tree else { return }
 
         for child in children where !before.contains(where: { $0 === child }) {
             let known = child.returnID
-            guard let leaving = keptExits.first(where: { $0.returnID == known && $0.type == child.type && !$0.isAbsorbed })
+            guard let leaving = keptExits.first(where: {
+                $0.returnID == known && $0.type == child.type && !$0.isAbsorbed && $0.presentation == nil
+            })
             else { continue }
 
             var returned = Returned(place: leaving.exitPlace)

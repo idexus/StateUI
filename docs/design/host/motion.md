@@ -575,6 +575,12 @@ so the two never let through what stands under them. An app closing onto its
 icon is the app nearly all the way and the icon only as it lands; an icon
 opening is the app nearly at once.
 
+The trap is a presentation sent on while the two cross. Each crossing counted
+from the start would draw an app closed as it opens - a tenth of the way in,
+half seen - whole at once, and only then fading. So as the run is sent on, each
+of the two drawn keeps the share of its opacity it was drawn with, and crosses
+from there onto its new end.
+
 A view rounded by one corner - a rectangle's, a layout's rounded outline -
 carries it: from the corner the leaving one is drawn with to the one the
 entering one is drawn with as it lands, straight as the run goes. Each frame

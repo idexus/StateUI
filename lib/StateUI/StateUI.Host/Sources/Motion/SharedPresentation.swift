@@ -47,6 +47,10 @@ final class SharedPresentation {
     private var crossing: ClosedRange<Double> = 0...1
     private(set) var comingCrosses = true
 
+    /// The share of its opacity each of the two drawn was drawn with as the run was last sent on, by its element:
+    /// each crosses from there.
+    private var setOutShares: [ObjectIdentifier: Double] = [:]
+
     /// How many times the run was sent: a run sent on ends the one before, and only the last one's landing counts.
     private var sends = 0
     private var finished = false
@@ -71,6 +75,12 @@ final class SharedPresentation {
         let runs = tree.standingProperty(mount: runMount, property: .area) != nil
         let setsOut = runs ? drawn : source
         let cornerNow = runs ? corner.map { $0.from + ($0.to - $0.from) * progress } : cornerFrom
+        setOutShares = [:]
+        if runs {
+            for each in [coming, leaving.last].compactMap({ $0?.element }) {
+                setOutShares[ObjectIdentifier(each)] = opacity(of: each)
+            }
+        }
         if let keyed { leaving.append(keyed) }
         coming = new
         from = Self.lanes(setsOut)
@@ -187,14 +197,19 @@ final class SharedPresentation {
     }
 
     /// The share of its opacity `element` is drawn with: the one in front crosses over, the one behind stands whole,
-    /// and a view that left before the newest is drawn no more.
+    /// and a view that left before the newest is drawn no more. Each of the two goes there from the share it was
+    /// drawn with as the run was sent on - a view coming back while it crosses goes on from where it stood.
     private func opacity(of element: MountedElement) -> Double {
         let length = crossing.upperBound - crossing.lowerBound
         let part = length > 0 ? min(max((progress - crossing.lowerBound) / length, 0), 1) : (progress < 1 ? 0 : 1)
         let crossed = part * part * (3 - 2 * part)
-        if coming?.element === element { return comingCrosses ? crossed : 1 }
-        if leaving.last?.element === element { return comingCrosses ? 1 : 1 - crossed }
-        return 0
+        let isComing = coming?.element === element
+        guard isComing || leaving.last?.element === element else { return 0 }
+
+        let crossesIn = isComing && comingCrosses
+        let end = isComing || comingCrosses ? 1.0 : 0
+        let start = setOutShares[ObjectIdentifier(element)] ?? (crossesIn ? 0 : 1)
+        return start + (end - start) * crossed
     }
 
     // MARK: - Lanes and crossing

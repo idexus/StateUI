@@ -281,6 +281,42 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(bench.runtime.tree.shared.entries, 0, "its patch's notes let go, nothing of the pair is held")
     }
 
+    /// A VIEW CLOSED AS IT OPENS GOES BACK ALONG: an icon's square grows into its app, and the app is closed before
+    /// it lands - the square made again in its tile, where the one it grew from still leaves. The new square meets
+    /// the app through their presentation, never taking the leaving one back: the app goes along onto it and stays
+    /// until it lands.
+    func testAViewClosedAsItOpensGoesBackAlong() throws {
+        let bench = Bench(keeps: true)
+        bench.show([Bench.holder("tile", [Bench.keyed("square", 5)])], complete: true)
+        bench.stands("tile", at: Point(x: 40, y: 50), size: LayoutSize(width: 100, height: 100))
+        bench.stands("square", at: Point(x: 50, y: 60), size: LayoutSize(width: 40, height: 40))
+        let first = try XCTUnwrap(bench.element("square"))
+
+        bench.show([Bench.holder("tile", []), Bench.holder("app", [Bench.keyed("screen", 5)])])
+        bench.place("app", at: Rect(x: 0, y: 100, width: 300, height: 200))
+        bench.place("screen", at: Rect(x: 20, y: 30, width: 200, height: 100))
+        bench.stands("screen", at: Point(x: 30, y: 150), size: LayoutSize(width: 200, height: 100))
+        let screen = try XCTUnwrap(bench.element("screen"))
+        let app = try XCTUnwrap(bench.element("app"))
+        let opening = try XCTUnwrap(screen.presentation, "the app grows out of the square")
+        bench.frame(at: 50)
+        let shown = try XCTUnwrap(screen.value(.opacity)?.number)
+        XCTAssertTrue(shown > 0.1 && shown < 0.9, "the app still crossing in: \(shown)")
+
+        bench.show([Bench.holder("tile", [Bench.keyed("square", 5)])])
+        bench.place("square", at: Rect(x: 10, y: 10, width: 40, height: 40))
+        let square = try XCTUnwrap(bench.element("square"))
+        XCTAssertFalse(square === first, "a new square")
+        XCTAssertTrue(square.presentation === opening, "it meets the app through their presentation")
+        XCTAssertTrue(screen.presentation === opening, "the app goes along onto it")
+        XCTAssertEqual(screen.value(.opacity)?.number ?? .nan, shown, accuracy: 0.01, "as opaque as it was drawn")
+        bench.frame(at: 66)
+        bench.frame(at: 82)
+        XCTAssertEqual(app.lifecycle, .exiting, "the app stays until the run lands")
+        bench.frame(at: 400)
+        XCTAssertEqual(app.lifecycle, .released, "and goes as it lands")
+    }
+
     /// A VIEW LEAVING ENTERS NO MORE: its toolkit laying the kept list out again places the thumbnail going along as
     /// a view joining - and nothing of an entry begins on it: no fade from nothing, its opacity the presentation's.
     func testAViewLeavingEntersNoMore() throws {
