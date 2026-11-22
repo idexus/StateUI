@@ -1,4 +1,4 @@
-# revision 45.2
+# revision 46.2
 Button.gridColumn: ✅
 Button.gridRow: ✅
 Button.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
@@ -39,9 +39,9 @@ Grid.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse 
 Grid.pointerMoved: ✓ hover on Grid: the relay's report of the pointer handed to the host, no pointer sent
 Grid.pointerPressed: ✓ hover on Grid: the relay's report of the pointer handed to the host, no pointer sent
 Grid.pointerReleased: ✓ hover on Grid: the relay's report of the pointer handed to the host, no pointer sent
+Grid.sharedPresentation: ✅
 HStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 HStack.presentationSample: ✅
-HStack.sharedPresentation: ✅
 HStack.transition: ✅
 Image.pinchUpdated: ✓ pinch on Image: the relay's report of the manipulation handed to the host, no touch sent
 Image.tapCount: ✓ tap on Image: the relay's report of the tap handed to the host, no pointer sent
@@ -150,6 +150,7 @@ TimePicker.pointerPressed: ✓ hover on TimePicker: the relay's report of the po
 TimePicker.pointerReleased: ✓ hover on TimePicker: the relay's report of the pointer handed to the host, no pointer sent
 VStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 VStack.presentationSample: ✅
+VStack.sharedPresentation: ✅
 VStack.transition: ✅
 WebView.pinchUpdated: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.tapCount: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
@@ -159,4 +160,3 @@ ZStack.filesDropped: ✓ dropFiles on ZStack: the relay's drop report told the d
 ZStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 ZStack.layoutFrameChanged: ✅
 ZStack.margin: ✅
-ZStack.sharedPresentation: ✅

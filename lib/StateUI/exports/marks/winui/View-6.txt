@@ -1,4 +1,4 @@
-# revision 45.2
+# revision 46.2
 Button.dragEnded: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragStarting: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragText: ✓ dragAndDrop on Button: the relay's drag reports told by the driver, no drag WinUI began
@@ -38,6 +38,7 @@ Grid.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layo
 Grid.presentationSample: ✅
 Grid.transition: ✅
 HStack.pinchUpdated: ✓ pinch on HStack: the relay's report of the manipulation handed to the host, no touch sent
+HStack.sharedPresentation: ✅
 HStack.tapCount: ✓ tap on HStack: the relay's report of the tap handed to the host, no pointer sent
 HStack.tapped: ✓ tap on HStack: the relay's report of the tap handed to the host, no pointer sent
 Image.droppedFileTypes: ✓ dropFiles on Image: the relay's drop report told the driver's files, no drag WinUI began
@@ -66,7 +67,6 @@ MotionLayout.dismissed: ✓ pressDown on MotionLayout: the relay's report of the
 MotionLayout.horizontalAlignment: ✅
 MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 MotionLayout.layoutFrameChanged: ✅
-MotionLayout.sharedPresentation: ✅
 MotionLayout.verticalAlignment: ✅
 Path.area: ✅
 Path.layoutFrameChanged: ✅
@@ -158,4 +158,5 @@ ZStack.gridColumn: ✅
 ZStack.gridRow: ✅
 ZStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 ZStack.layoutFrameChanged: ✅
+ZStack.sharedPresentation: ✅
 ZStack.transition: ✅

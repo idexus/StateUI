@@ -203,6 +203,28 @@ final class AppKitDriver: HostDriver {
         layOutWindows()
     }
 
+    /// Where the element's view is drawn in its window, measured down from the window's top: AppKit's own conversion
+    /// carries no layer transform, so its layer's bounds are carried through every layer above it.
+    func drawnRect(of element: MountedElement) throws -> Rect {
+        layOutWindows()
+        guard let view = (element.native as? AppKitElement)?.view, let layer = view.layer else {
+            throw DriverCannot("read where \(element.type.name) is drawn")
+        }
+        guard let window = view.window, let content = window.contentView else { throw NotPlaced(element) }
+        // The layers take the views' frames as Core Animation commits: committed first, then read through them up
+        // to the highest view that has one, then as AppKit converts that view to its window.
+        window.displayIfNeeded()
+        CATransaction.flush()
+        var highest = view
+        while let above = highest.superview, above.layer != nil { highest = above }
+        guard let root = highest.layer else { throw NotPlaced(element) }
+        // A layer counts up from its bottom where the view it backs counts down from its top.
+        var inHighest = layer.convert(layer.bounds, to: root)
+        if highest.isFlipped { inHighest.origin.y = highest.bounds.height - inHighest.maxY }
+        let drawn = highest.convert(inHighest, to: nil)
+        return Rect(x: drawn.minX, y: content.bounds.height - drawn.maxY, width: drawn.width, height: drawn.height)
+    }
+
     /// Where the element's view stands in its window, as AppKit placed it - measured down from the window's top.
     func place(of element: MountedElement) throws -> Rect {
         layOutWindows()

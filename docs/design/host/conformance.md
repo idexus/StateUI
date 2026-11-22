@@ -116,7 +116,9 @@ by another case - the driver lists apart (`platformHasNone`, or a read's
 `because:`): a case needing it does not apply there. Besides a
 member's value a driver reads a view's menu, a page's bar, whether a view
 holds the keyboard, what a press at a point reaches, where a view stands in
-its window, the order a layout's children are drawn in as its native view
+its window, where it is drawn there - every transform on it and above it in,
+a view leaving included, as its toolkit converts its bounds (`drawnRect`) -
+the order a layout's children are drawn in as its native view
 holds them, whether assistive technology meets a view as a heading, the
 question and the file dialog the window shows, what the screen reader was
 told, the theme the application shows in, what the host handed the system to

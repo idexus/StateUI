@@ -3,13 +3,14 @@
 
 package stateui.android.test;
 
+import android.graphics.RectF;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import java.util.Arrays;
 
-/** The order Android draws a group's children in, as its own drawing goes. */
+/** The order Android draws a group's children in, as its own drawing goes, and where it draws a view. */
 public final class TestDrawing {
     private TestDrawing() {}
 
@@ -24,6 +25,22 @@ public final class TestDrawing {
         int[] positions = new int[count];
         for (int index = 0; index < count; index++) positions[index] = order[index];
         return positions;
+    }
+
+    /**
+     * The rectangle around what `view` draws in its window, in pixels - left, top, right, bottom: its bounds carried
+     * through its own matrix and that of every view above it, each where it stands in its parent.
+     */
+    public static int[] drawnBounds(View view) {
+        RectF rect = new RectF(0, 0, view.getWidth(), view.getHeight());
+        for (View current = view; current != null; ) {
+            current.getMatrix().mapRect(rect);
+            rect.offset(current.getLeft(), current.getTop());
+            ViewParent parent = current.getParent();
+            current = parent instanceof View ? (View) parent : null;
+            if (current != null) rect.offset(-current.getScrollX(), -current.getScrollY());
+        }
+        return new int[] {Math.round(rect.left), Math.round(rect.top), Math.round(rect.right), Math.round(rect.bottom)};
     }
 
     /** Whether `view` is `holder` or stands in it. */

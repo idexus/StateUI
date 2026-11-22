@@ -1,4 +1,4 @@
-# revision 45.1
+# revision 46.1
 Button.area: ✅
 Button.dismissed: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
 Button.layoutFrameChanged: ✅
@@ -46,6 +46,7 @@ HStack.layoutFrameChanged: ✅
 HStack.margin: ✅
 HStack.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 HStack.panUpdated: ✓ pan on HStack: the view's listening handed the recognizer's states, no touch sent
+HStack.sharedPresentation: ✅
 Image.droppedFileTypes: ✓ dropFiles on Image: the drop interaction's handler told the driver's files, no drag session
 Image.filesDropped: ✓ dropFiles on Image: the drop interaction's handler told the driver's files, no drag session
 Image.interaction: ✓ pressDown on Image: the view's listening handed the recognizer's states, no touch sent
@@ -69,7 +70,6 @@ Map.interaction: ✓ pressDown on Map: the view's listening handed the recognize
 Map.layoutBody: ✅
 Map.layoutFrameChanged: ✅
 Map.verticalAlignment: ✅
-MotionLayout.interaction: ✓ notch on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.pinchUpdated: ✓ pinch on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.sharedPresentation: ✅
 MotionLayout.tapped: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent

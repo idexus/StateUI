@@ -1,4 +1,4 @@
-# revision 45.1
+# revision 46.1
 Button.longPressDuration: ✅
 Button.pointerMoved: ✓ hover on Button: the view's listening handed the recognizer's states, no touch sent
 Button.pointerPressed: ✓ hover on Button: the view's listening handed the recognizer's states, no touch sent
@@ -41,12 +41,12 @@ Fill.presentationSample: ✅
 Grid.area: ✅
 Grid.dismissed: ✓ pressDown on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.layoutFrameChanged: ✅
+Grid.sharedPresentation: ✅
 Grid.transition: ✅
 HStack.gridColumnSpan: ✅
 HStack.gridRowSpan: ✅
 HStack.interaction: ✓ pressDown on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.layoutFrameChanged: ✅
-HStack.sharedPresentation: ✅
 HStack.transition: ✅
 Image.pinchUpdated: ✓ pinch on Image: the view's listening handed the recognizer's states, no touch sent
 Image.sharedPresentation: ✅
@@ -97,6 +97,7 @@ Rectangle.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interacti
 Rectangle.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Rectangle.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Rectangle.interaction: ✓ sweep on Rectangle: the view's listening handed the recognizer's states, no touch sent
+Rectangle.layoutFrameChanged: ✅
 Rectangle.presentationFrameChanged: ✅
 ScrollView.horizontalAlignment: ✅
 ScrollView.interaction: ✓ pressDown on ScrollView: the view's listening handed the recognizer's states, no touch sent
@@ -171,5 +172,4 @@ ZStack.horizontalAlignment: ✅
 ZStack.interaction: ✓ pressDown on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.layoutBody: ✅
 ZStack.layoutFrameChanged: ✅
-ZStack.tapped: ✓ pressDown on ZStack: the view's listening handed the recognizer's states, no touch sent
 ZStack.verticalAlignment: ✅

@@ -1,4 +1,4 @@
-# revision 45.1
+# revision 46.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the window's drop routing told the driver's files, no dragging session
 Button.filesDropped: ✓ dropFiles on Button: the window's drop routing told the driver's files, no dragging session
 Button.interaction: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -70,7 +70,7 @@ Map.interaction: ✓ sweep on Map: handed to the host's recognizer or handler, n
 Map.presentationFrameChanged: ✅
 MotionLayout.gridColumnSpan: ✅
 MotionLayout.gridRowSpan: ✅
-MotionLayout.interaction: ✓ pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.interaction: ✓ pinch on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.layoutFrameChanged: ✅
 MotionLayout.transition: ✅
 Path.gridColumn: ✅
@@ -100,6 +100,7 @@ ProgressBar.presentationSample: ✅
 Rectangle.area: ✅
 Rectangle.dismissed: ✓ pressDown on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.layoutFrameChanged: ✅
+Rectangle.presentationFrameChanged: ✅
 Rectangle.transition: ✅
 ScrollView.gridColumnSpan: ✅
 ScrollView.gridRowSpan: ✅
@@ -165,6 +166,7 @@ VStack.droppedFileTypes: ✓ dropFiles on VStack: the window's drop routing told
 VStack.filesDropped: ✓ dropFiles on VStack: the window's drop routing told the driver's files, no dragging session
 VStack.interaction: ✓ pressDown on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.presentationSample: ✅
+VStack.sharedPresentation: ✅
 WebView.area: ✅
 WebView.dismissed: ✓ pressDown on WebView: handed to the host's recognizer or handler, no NSEvent sent
 WebView.layoutFrameChanged: ✅
@@ -173,5 +175,4 @@ ZStack.gridColumnSpan: ✅
 ZStack.gridRowSpan: ✅
 ZStack.interaction: ✓ pressDown on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.layoutFrameChanged: ✅
-ZStack.sharedPresentation: ✅
 ZStack.transition: ✅

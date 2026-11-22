@@ -1,4 +1,4 @@
-# revision 45.1
+# revision 46.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Button.dragEntered: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Button.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
@@ -163,6 +163,7 @@ VStack.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window'
 VStack.dropped: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 VStack.interaction: ✓ sweep on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.presentationFrameChanged: ✅
+VStack.sharedPresentation: ✅
 WebView.horizontalAlignment: ✅
 WebView.interaction: ✓ pressDown on WebView: handed to the host's recognizer or handler, no NSEvent sent
 WebView.layoutBody: ✅
@@ -171,5 +172,4 @@ WebView.verticalAlignment: ✅
 ZStack.gridColumn: ✅
 ZStack.gridRow: ✅
 ZStack.layoutFrameChanged: ✅
-ZStack.sharedPresentation: ✅
 ZStack.tapped: ✓ pressDown on ZStack: handed to the host's recognizer or handler, no NSEvent sent

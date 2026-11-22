@@ -1,4 +1,4 @@
-# revision 45.2
+# revision 46.2
 Button.droppedFileTypes: ✓ dropFiles on Button: the relay's drop report told the driver's files, no drag WinUI began
 Button.filesDropped: ✓ dropFiles on Button: the relay's drop report told the driver's files, no drag WinUI began
 Button.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
@@ -66,6 +66,7 @@ MotionLayout.gridColumn: ✅
 MotionLayout.gridRow: ✅
 MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 MotionLayout.layoutFrameChanged: ✅
+MotionLayout.sharedPresentation: ✅
 MotionLayout.transition: ✅
 Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅
@@ -91,7 +92,6 @@ Polyline.pointerReleased: ✓ hover on Polyline: the relay's report of the point
 ProgressBar.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 ProgressBar.presentationSample: ✅
 ProgressBar.transition: ✅
-Rectangle.layoutFrameChanged: ✅
 Rectangle.pinchUpdated: ✓ pinch on Rectangle: the relay's report of the manipulation handed to the host, no touch sent
 Rectangle.tapCount: ✓ tap on Rectangle: the relay's report of the tap handed to the host, no pointer sent
 Rectangle.tapped: ✓ tap on Rectangle: the relay's report of the tap handed to the host, no pointer sent
@@ -151,10 +151,10 @@ VStack.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mous
 VStack.pointerMoved: ✓ hover on VStack: the relay's report of the pointer handed to the host, no pointer sent
 VStack.pointerPressed: ✓ hover on VStack: the relay's report of the pointer handed to the host, no pointer sent
 VStack.pointerReleased: ✓ hover on VStack: the relay's report of the pointer handed to the host, no pointer sent
-VStack.sharedPresentation: ✅
 WebView.interaction: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.presentationSample: ✅
 WebView.transition: ✅
 ZStack.pinchUpdated: ✓ pinch on ZStack: the relay's report of the manipulation handed to the host, no touch sent
+ZStack.sharedPresentation: ✅
 ZStack.tapCount: ✓ tap on ZStack: the relay's report of the tap handed to the host, no pointer sent
 ZStack.tapped: ✓ tap on ZStack: the relay's report of the tap handed to the host, no pointer sent

@@ -52,6 +52,18 @@ extension WebDriver {
         return view.frame(laidOut: laid) ?? laid
     }
 
+    /// Where the element's view is drawn in the window: the browser's box of its node, every transform on it and
+    /// above it in.
+    func drawnRect(of element: MountedElement) throws -> Rect {
+        guard let view = (element.native as? WebElement)?.view else {
+            throw DriverCannot("read where \(element.type.name) is drawn")
+        }
+        let numbers = try numbers(
+            "((r) => [r.left, r.top, r.width, r.height].join('\\u0000'))(e.getBoundingClientRect())", on: view.node)
+        guard numbers.count == 4 else { throw DriverCannot("read where \(element.type.name) is drawn") }
+        return Rect(x: numbers[0], y: numbers[1], width: numbers[2], height: numbers[3])
+    }
+
     /// The color the window shows at `point` of `element`, where it differs from what shows there without the
     /// element: the page's own picture, a pixel of it read with the element and again with it unseen - which lays
     /// nothing out anew.

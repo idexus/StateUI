@@ -153,6 +153,10 @@
     /// included; `NotPlaced` where its view stands in no window yet.
     func place(of element: MountedElement) throws -> Rect
 
+    /// The rectangle around what `element`'s view draws, in its window, measured down from its top: its own
+    /// transform and that of every view above it in, as its toolkit converts its bounds - a view leaving included.
+    func drawnRect(of element: MountedElement) throws -> Rect
+
     /// What the host wrote to its log, a line a message, since it started.
     func logged() throws -> [String]
 
@@ -298,6 +302,11 @@ extension HostDriver {
     /// None read: the driver has no path for it yet.
     public func place(of element: MountedElement) throws -> Rect {
         throw DriverCannot("read where \(element.type.name) stands")
+    }
+
+    /// None read: the driver has no path for it yet.
+    public func drawnRect(of element: MountedElement) throws -> Rect {
+        throw DriverCannot("read where \(element.type.name) is drawn")
     }
 
     /// None read: the driver has no path for it yet.

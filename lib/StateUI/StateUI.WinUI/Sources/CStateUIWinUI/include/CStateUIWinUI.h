@@ -600,6 +600,10 @@ void stateui_winui_set_opacity(StateUIObjectRef element, double opacity);
 /// Where `element`'s top left corner stands in its window's content, in DIPs, into `origin` (x, y).
 void stateui_winui_origin(StateUIObjectRef element, double *origin);
 
+/// The rectangle around what `element` draws in its window's content, its transform and those above it in: x, y,
+/// width, height, in DIPs, into `bounds`.
+void stateui_winui_drawn_bounds(StateUIObjectRef element, double *bounds);
+
 /// Where WinUI laid the element out in its parent: x, y, width, height, in DIPs.
 void stateui_winui_frame(StateUIObjectRef element, double *frame);
 

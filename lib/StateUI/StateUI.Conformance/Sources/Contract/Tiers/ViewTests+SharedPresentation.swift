@@ -130,6 +130,80 @@ extension ViewTests {
         }
     }
 
+    /// A layout that keeps a view that leaves draws the two views of one presentation as one: on the way, its toolkit
+    /// draws the large one coming and the small one kept for it in one rectangle.
+    @MainActor
+    static func drawnAsOne(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).theTwoViewsOfAPresentationAreDrawnAsOne", proves: [
+            Covered(ViewContract.sharedPresentation, on: element),
+        ], needs: [
+            Covered(ViewContract.sharedPresentation, on: RectangleContract.self),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+        ]) { s in
+            let clock = TestClock()
+            let detailed = State(wrappedValue: false)
+            s.start(clock: clock) {
+                VStack {
+                    Button("Toggle").onClicked { detailed.wrappedValue.toggle() }.id("toggle")
+                    SettingOut.layout(element, detailed: detailed.wrappedValue)
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            try drawnAsOne(s, clock)
+        }
+    }
+
+    /// A view its layout draws smaller goes along as it is drawn: a motion layout drawing its middle card at half its
+    /// size, kept as it leaves, draws that card where the large one coming is drawn, all the way.
+    @MainActor
+    static var drawnAsOneFromAPlaceDrawnSmaller: ConformanceCase {
+        ConformanceCase("MotionLayout.aViewItDrawsSmallerGoesAlongAsItIsDrawn", proves: [
+            Covered(ViewContract.sharedPresentation, on: "MotionLayout"),
+        ], needs: [
+            Covered(ViewContract.sharedPresentation, on: RectangleContract.self),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+        ]) { s in
+            let clock = TestClock()
+            let detailed = State(wrappedValue: false)
+            s.start(clock: clock) {
+                VStack {
+                    Button("Toggle").onClicked { detailed.wrappedValue.toggle() }.id("toggle")
+                    SettingOut.halved(detailed: detailed.wrappedValue)
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            try drawnAsOne(s, clock)
+        }
+    }
+
+    /// Opens the large picture out of the small one in the layout of id "layout", and reads, three times on the
+    /// way, that its toolkit draws the two in one rectangle.
+    @MainActor
+    private static func drawnAsOne(_ s: Session, _ clock: TestClock) throws {
+        s.frames(of: clock, until: 200)
+        let layout = try s.element("layout")
+        let small = try s.element("picture")
+        try s.perform(.activate, on: s.element("toggle"))
+        s.settle { small.lifecycle != .active }
+        let large = try s.element("picture")
+
+        for time in [350.0, 500, 650] {
+            s.frames(of: clock, until: time)
+            let (leaving, coming) = (try s.drawnRect(of: small), try s.drawnRect(of: large))
+            let apart = zip([leaving.x, leaving.y, leaving.width, leaving.height],
+                            [coming.x, coming.y, coming.width, coming.height]).map { abs($0 - $1) }.max() ?? 0
+            s.expect(apart <= 1, true, "at \(Int(time)) ms in \(layout.type.name), drawn as one: \(leaving), \(coming)")
+        }
+        // Landed, nothing moves it: drawn where its toolkit placed it - the read stands in the window's points.
+        s.frames(of: clock, until: 1_400)
+        let (drawn, placed) = (try s.drawnRect(of: large), try s.place(of: large))
+        let off = zip([drawn.x, drawn.y, drawn.width, drawn.height], [placed.x, placed.y, placed.width, placed.height])
+            .map { abs($0 - $1) }.max() ?? 0
+        s.expect(off <= 1, true, "landed, drawn where it stands: \(drawn), \(placed)")
+    }
+
     /// A layout that keeps a view that leaves keeps the one closed as it opens: the small view made again while the
     /// large one still grows out of it meets it through their presentation - never taking the small one leaving
     /// back - and the large one goes back along onto it, drawn until that run lands, and gone then.
@@ -271,6 +345,27 @@ enum SettingOut {
         default: dressing.dress(VStack { box("before"); picture(detailed); box("after") })
         }
         return AnyView(layout)
+    }
+
+    /// Three cards a motion layout places, the middle one drawn at half its size - or, once `detailed`, the large
+    /// picture in a holder of its own - in a stack that keeps a view leaving it; the two pictures of one id.
+    static func halved(detailed: Bool) -> AnyView {
+        let dressing = Dressing([], id: "layout")
+        return AnyView(dressing.dress(VStack {
+            if detailed {
+                picture(true)
+            } else {
+                MotionLayout([0, 1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { index in
+                    if index == 1 { picture(false) } else { box("box\(index)") }
+                } placements: { _, _ in
+                    (0..<3).map {
+                        Placement(Rect(x: Double($0) * 50, y: 0, width: 40, height: 40), transform: .scale($0 == 1 ? 0.5 : 1))
+                    }
+                }
+                .width(150)
+                .height(40)
+            }
+        }))
     }
 
     /// Two views of two keys in a layout of each kind that keeps a view leaving it, the scope: small side by side in a

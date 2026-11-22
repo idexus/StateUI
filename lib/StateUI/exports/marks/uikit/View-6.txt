@@ -1,4 +1,4 @@
-# revision 45.1
+# revision 46.1
 Button.swipeDirections: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Button.swipeThreshold: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Button.swiped: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
@@ -79,6 +79,7 @@ MotionLayout.layoutFrameChanged: ✅
 MotionLayout.margin: ✅
 MotionLayout.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 MotionLayout.panUpdated: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.sharedPresentation: ✅
 Path.longPressDuration: ✅
 Path.pointerMoved: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
 Path.pointerPressed: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
@@ -104,7 +105,6 @@ ProgressBar.swiped: ✓ pan on ProgressBar: the view's listening handed the reco
 ProgressBar.tapCount: ✓ tap on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.tapped: ✓ tap on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.transition: ✅
-Rectangle.layoutFrameChanged: ✅
 Rectangle.longPressed: ✓ longPress on Rectangle: the view's listening handed the recognizer's states, no touch sent
 Rectangle.rotationUpdated: ✓ rotate on Rectangle: the view's listening handed the recognizer's states, no touch sent
 ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the drag and drop interactions' handlers called, no drag session
@@ -159,7 +159,6 @@ TimePicker.gridColumn: ✅
 TimePicker.gridRow: ✅
 TimePicker.layoutFrameChanged: ✅
 TimePicker.tapped: ✓ pressDown on TimePicker: the view's listening handed the recognizer's states, no touch sent
-VStack.sharedPresentation: ✅
 VStack.swipeDirections: ✓ pan on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.swipeThreshold: ✓ pan on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.swiped: ✓ pan on VStack: the view's listening handed the recognizer's states, no touch sent
@@ -176,3 +175,4 @@ ZStack.layoutFrameChanged: ✅
 ZStack.margin: ✅
 ZStack.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ZStack.panUpdated: ✓ pan on ZStack: the view's listening handed the recognizer's states, no touch sent
+ZStack.sharedPresentation: ✅

@@ -1,4 +1,4 @@
-# revision 45.1
+# revision 46.1
 Button.dragEnded: ✓ dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session
 Button.dragStarting: ✓ dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session
 Button.dragText: ✓ dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session
@@ -47,7 +47,7 @@ HStack.swipeDirections: ✓ pan on HStack: handed to the host's recognizer or ha
 HStack.swipeThreshold: ✓ pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.swiped: ✓ pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.tapCount: ✓ tap on HStack: handed to the host's recognizer or handler, no NSEvent sent
-HStack.tapped: ✅
+HStack.tapped: ✓ tap on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.transition: ✅
 Image.longPressed: ✓ longPress on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.rotationUpdated: ✓ rotate on Image: handed to the host's recognizer or handler, no NSEvent sent
@@ -73,6 +73,7 @@ Map.pointerPressed: ✓ hover on Map: handed to the host's recognizer or handler
 Map.pointerReleased: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.area: ✅
 MotionLayout.dismissed: ✓ pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.interaction: ✓ sweep on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.layoutFrameChanged: ✅
 MotionLayout.transition: ✅
 Path.horizontalAlignment: ✅
@@ -103,6 +104,7 @@ ProgressBar.panUpdated: ✓ pan on ProgressBar: handed to the host's recognizer 
 Rectangle.droppedFileTypes: ✓ dropFiles on Rectangle: the window's drop routing told the driver's files, no dragging session
 Rectangle.filesDropped: ✓ dropFiles on Rectangle: the window's drop routing told the driver's files, no dragging session
 Rectangle.interaction: ✓ pressDown on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
+Rectangle.layoutFrameChanged: ✅
 Rectangle.presentationSample: ✅
 ScrollView.area: ✅
 ScrollView.dismissed: ✓ pressDown on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
@@ -163,6 +165,7 @@ VStack.layoutFrameChanged: ✅
 VStack.margin: ✅
 VStack.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 VStack.panUpdated: ✓ pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
+VStack.sharedPresentation: ✅
 WebView.droppedFileTypes: ✓ dropFiles on WebView: the window's drop routing told the driver's files, no dragging session
 WebView.filesDropped: ✓ dropFiles on WebView: the window's drop routing told the driver's files, no dragging session
 WebView.interaction: ✓ pressDown on WebView: handed to the host's recognizer or handler, no NSEvent sent
@@ -170,5 +173,4 @@ WebView.presentationSample: ✅
 ZStack.area: ✅
 ZStack.dismissed: ✓ pressDown on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.layoutFrameChanged: ✅
-ZStack.sharedPresentation: ✅
 ZStack.transition: ✅

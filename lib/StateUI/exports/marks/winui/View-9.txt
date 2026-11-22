@@ -1,4 +1,4 @@
-# revision 45.2
+# revision 46.2
 Button.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Button.layoutBody: ✅
 Button.presentationFrameChanged: ✅
@@ -67,7 +67,7 @@ Map.pointerPressed: 🧩
 Map.pointerReleased: 🧩
 MotionLayout.gridColumnSpan: ✅
 MotionLayout.gridRowSpan: ✅
-MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
+MotionLayout.interaction: does not apply - notch on MotionLayout - A wheel reaches the layout as WinUI's own scroller takes it, its tracker's: the tracker tells no notch
 MotionLayout.layoutFrameChanged: ✅
 MotionLayout.sharedPresentation: ✅
 MotionLayout.swipeDirections: ✓ pan on MotionLayout: the relay's report of the press dragged handed to the host, no pointer sent
@@ -95,8 +95,6 @@ ProgressBar.dismissed: ✓ pressDown on ProgressBar: the relay's report of the p
 ProgressBar.horizontalAlignment: ✅
 ProgressBar.layoutFrameChanged: ✅
 ProgressBar.verticalAlignment: ✅
-Rectangle.layoutFrameChanged: ✅
-Rectangle.presentationFrameChanged: ✅
 Rectangle.rotationUpdated: ✓ rotate on Rectangle: the relay's report of the manipulation handed to the host, no touch sent
 Rectangle.tapped: ✓ pressDown on Rectangle: the relay's report of the press handed to the host, no pointer sent
 ScrollView.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
@@ -152,10 +150,10 @@ VStack.dragStarting: ✓ dragAndDrop on VStack: the relay's drag reports told by
 VStack.dragText: ✓ dragAndDrop on VStack: the relay's drag reports told by the driver, no drag WinUI began
 VStack.isDraggable: ✓ dragAndDrop on VStack: the relay's drag reports told by the driver, no drag WinUI began
 VStack.longPressDuration: – WinUI's long press comes after the system's own time: a view keeps no time of its own.
-VStack.sharedPresentation: ✅
 WebView.dismissed: waits on WebView.interaction
 WebView.horizontalAlignment: ✅
 WebView.layoutFrameChanged: ✅
 WebView.verticalAlignment: ✅
 ZStack.rotationUpdated: ✓ rotate on ZStack: the relay's report of the manipulation handed to the host, no touch sent
+ZStack.sharedPresentation: ✅
 ZStack.tapped: ✓ pressDown on ZStack: the relay's report of the press handed to the host, no pointer sent

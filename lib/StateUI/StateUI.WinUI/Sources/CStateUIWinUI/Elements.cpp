@@ -167,6 +167,22 @@ extern "C" void stateui_winui_origin(StateUIObjectRef handle, double *origin) {
     }
 }
 
+extern "C" void stateui_winui_drawn_bounds(StateUIObjectRef handle, double *bounds) {
+    bounds[0] = bounds[1] = bounds[2] = bounds[3] = 0;
+    try {
+        auto element = as<xaml::UIElement>(handle);
+        if (!element.XamlRoot()) return;
+        auto size = element.ActualSize();
+        auto drawn = element.TransformToVisual(nullptr).TransformBounds(Rect{0, 0, size.x, size.y});
+        bounds[0] = drawn.X;
+        bounds[1] = drawn.Y;
+        bounds[2] = drawn.Width;
+        bounds[3] = drawn.Height;
+    } catch (...) {
+        report("finding where an element is drawn in its window");
+    }
+}
+
 extern "C" void stateui_winui_invalidate_arrange(StateUIObjectRef handle) {
     try {
         as<xaml::UIElement>(handle).InvalidateArrange();

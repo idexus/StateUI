@@ -1,4 +1,4 @@
-# revision 45.1
+# revision 46.1
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
 Button.interaction: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -76,6 +76,7 @@ MotionLayout.longPressDuration: ✅
 MotionLayout.pointerMoved: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.pointerPressed: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.pointerReleased: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.sharedPresentation: ✅
 Path.longPressed: ✓ longPress on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.rotationUpdated: ✓ rotate on Path: handed to the host's recognizer or handler, no NSEvent sent
 Picker.dragEnded: ✓ dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session
@@ -99,7 +100,6 @@ ProgressBar.gridRowSpan: ✅
 ProgressBar.interaction: ✓ pressDown on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.layoutFrameChanged: ✅
 ProgressBar.transition: ✅
-Rectangle.layoutFrameChanged: ✅
 Rectangle.pinchUpdated: ✓ pinch on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.sharedPresentation: ✅
 Rectangle.tapped: ✓ pressDown on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
@@ -163,7 +163,6 @@ VStack.gridColumnSpan: ✅
 VStack.gridRowSpan: ✅
 VStack.interaction: ✓ pressDown on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.layoutFrameChanged: ✅
-VStack.sharedPresentation: ✅
 VStack.transition: ✅
 WebView.pinchUpdated: ✓ pinch on WebView: handed to the host's recognizer or handler, no NSEvent sent
 WebView.sharedPresentation: ✅
@@ -172,3 +171,4 @@ ZStack.longPressDuration: ✅
 ZStack.pointerMoved: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.pointerPressed: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.pointerReleased: ✓ hover on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.sharedPresentation: ✅

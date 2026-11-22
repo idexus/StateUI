@@ -1,4 +1,4 @@
-# revision 45.1
+# revision 46.1
 Button.longPressed: ✓ longPress on Button: the view's listening handed the recognizer's states, no touch sent
 Button.rotationUpdated: ✓ rotate on Button: the view's listening handed the recognizer's states, no touch sent
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the drag and drop interactions' handlers called, no drag session
@@ -67,8 +67,9 @@ Map.sharedPresentation: ✅
 Map.tapped: ✓ pressDown on Map: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the drop interaction's handler told the driver's files, no drag session
 MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the drop interaction's handler told the driver's files, no drag session
-MotionLayout.interaction: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.interaction: ✓ notch on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.presentationSample: ✅
+MotionLayout.sharedPresentation: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Path.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Path.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -144,7 +145,6 @@ Text.layoutFrameChanged: ✅
 Text.margin: ✅
 Text.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Text.panUpdated: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent
-Text.verticalAlignment: ✅
 TextEditor.horizontalAlignment: ✅
 TextEditor.interaction: ✓ pressDown on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.layoutBody: ✅

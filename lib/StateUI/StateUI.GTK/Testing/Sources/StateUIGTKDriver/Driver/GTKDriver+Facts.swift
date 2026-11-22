@@ -75,6 +75,23 @@ extension GTKDriver {
             height: Double(bounds.size.height))
     }
 
+    /// GTK's bounds of the view in its window carry the transform its allocation draws it with, and those above it.
+    func drawnRect(of element: MountedElement) throws -> Rect {
+        guard let view = (element.native as? GTKElement)?.view else {
+            throw DriverCannot("read where \(element.type.name) is drawn")
+        }
+        guard let root = gtk_widget_get_root(view.widget) else { throw NotPlaced(element) }
+        renderer?.layOut()
+        var bounds = graphene_rect_t()
+        let window = UnsafeMutableRawPointer(root).assumingMemoryBound(to: GtkWidget.self)
+        guard gtk_widget_compute_bounds(view.widget, window, &bounds) != 0 else {
+            throw DriverCannot("read where \(element.type.name) is drawn")
+        }
+        return Rect(
+            x: Double(bounds.origin.x), y: Double(bounds.origin.y), width: Double(bounds.size.width),
+            height: Double(bounds.size.height))
+    }
+
     func question(over element: MountedElement) throws -> Question? {
         let window = try? self.window(of: element)
         guard let dialog = renderer?.visibleDialog(over: window),

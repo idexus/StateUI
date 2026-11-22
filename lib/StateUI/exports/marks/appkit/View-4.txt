@@ -1,4 +1,4 @@
-# revision 45.1
+# revision 46.1
 Button.gridColumn: ✅
 Button.gridRow: ✅
 Button.layoutFrameChanged: ✅
@@ -46,6 +46,8 @@ HStack.dragExited: ✓ dragAndDrop on Rectangle: the drag source and the window'
 HStack.dropped: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 HStack.interaction: ✓ sweep on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.presentationFrameChanged: ✅
+HStack.sharedPresentation: ✅
+HStack.tapped: ✅
 Image.horizontalAlignment: ✅
 Image.interaction: ✓ pressDown on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.layoutBody: ✅
@@ -71,10 +73,8 @@ Map.area: ✅
 Map.dismissed: ✓ pressDown on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.layoutFrameChanged: ✅
 Map.transition: ✅
-MotionLayout.interaction: ✓ pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.longPressed: ✓ longPress on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.rotationUpdated: ✓ rotate on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
-MotionLayout.sharedPresentation: ✅
 Path.pinchUpdated: ✓ pinch on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.sharedPresentation: ✅
 Path.tapped: ✓ pressDown on Path: handed to the host's recognizer or handler, no NSEvent sent
@@ -97,7 +97,6 @@ ProgressBar.gridColumn: ✅
 ProgressBar.gridRow: ✅
 ProgressBar.layoutFrameChanged: ✅
 ProgressBar.tapped: ✓ pressDown on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
-Rectangle.layoutFrameChanged: ✅
 Rectangle.swipeDirections: ✓ pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.swipeThreshold: ✓ pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.swiped: ✓ pan on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
@@ -173,3 +172,4 @@ WebView.tapped: ✓ tap on WebView: handed to the host's recognizer or handler, 
 WebView.transition: ✅
 ZStack.longPressed: ✓ longPress on ZStack: handed to the host's recognizer or handler, no NSEvent sent
 ZStack.rotationUpdated: ✓ rotate on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.sharedPresentation: ✅

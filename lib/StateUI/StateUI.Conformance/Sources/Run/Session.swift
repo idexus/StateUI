@@ -340,6 +340,12 @@
         return try driven { try driver.place(of: element) }
     }
 
+    /// The rectangle around what `element`'s view draws in its window, every transform on it and above it in.
+    public func drawnRect(of element: MountedElement) throws -> Rect {
+        note("read where \(element.type.name) is drawn", element: element.type.name)
+        return try driven { try driver.drawnRect(of: element) }
+    }
+
     /// What the host wrote to its log.
     public func logged() throws -> [String] {
         note("read the log")

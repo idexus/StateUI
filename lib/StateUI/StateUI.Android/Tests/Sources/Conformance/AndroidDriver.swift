@@ -342,6 +342,22 @@ final class AndroidDriver: HostDriver {
             x: corner.x, y: corner.y, width: Double(size.width) / view.density, height: Double(size.height) / view.density)
     }
 
+    func drawnRect(of element: MountedElement) throws -> Rect {
+        guard let view = (element.native as? AndroidElement)?.view else {
+            throw DriverCannot("read where \(element.type.name) is drawn")
+        }
+        let pixels: [Int32] = Java.frame {
+            guard let bounds = Java.callStaticObject(Self.testDrawing, Self.drawnBoundsOf, .object(view.outermost))
+            else { return [] }
+            return Java.intsOf(bounds)
+        }
+        guard pixels.count == 4 else { throw DriverCannot("read where \(element.type.name) is drawn") }
+        let density = view.density
+        return Rect(
+            x: Double(pixels[0]) / density, y: Double(pixels[1]) / density,
+            width: Double(pixels[2] - pixels[0]) / density, height: Double(pixels[3] - pixels[1]) / density)
+    }
+
     func focused(_ element: MountedElement) throws -> Bool {
         guard let view = (element.native as? AndroidElement)?.view else {
             throw DriverCannot("read the focus of \(element.type.name)")
@@ -365,6 +381,7 @@ final class AndroidDriver: HostDriver {
     static let isAccessibilityHeading = Java.method(JavaAPI.view, "isAccessibilityHeading", "()Z")
     static let testDrawing = Java.findClass("stateui/android/test/TestDrawing")
     static let drawingOrderOf = Java.staticMethod(testDrawing, "drawingOrder", "(Landroid/view/ViewGroup;)[I")
+    static let drawnBoundsOf = Java.staticMethod(testDrawing, "drawnBounds", "(Landroid/view/View;)[I")
     static let isWithin = Java.staticMethod(
         testDrawing, "isWithin", "(Landroid/view/View;Landroid/view/View;)Z")
     static let emptied = Java.staticMethod(testFiles, "emptied", "(Landroid/content/Context;)Ljava/lang/String;")

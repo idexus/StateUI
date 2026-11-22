@@ -1,4 +1,4 @@
-# revision 45.1
+# revision 46.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Button.dragEntered: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Button.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -163,6 +163,7 @@ VStack.dragExited: ✓ dragAndDrop on Rectangle: the drag and drop interactions'
 VStack.dropped: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 VStack.interaction: ✓ sweep on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.presentationFrameChanged: ✅
+VStack.sharedPresentation: ✅
 WebView.horizontalAlignment: ✅
 WebView.interaction: ✓ pressDown on WebView: the view's listening handed the recognizer's states, no touch sent
 WebView.layoutBody: ✅
@@ -171,5 +172,4 @@ WebView.verticalAlignment: ✅
 ZStack.gridColumn: ✅
 ZStack.gridRow: ✅
 ZStack.layoutFrameChanged: ✅
-ZStack.sharedPresentation: ✅
 ZStack.tapped: ✓ pressDown on ZStack: the view's listening handed the recognizer's states, no touch sent

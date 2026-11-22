@@ -1,4 +1,4 @@
-# revision 45.2
+# revision 46.2
 Button.area: ✅
 Button.layoutFrameChanged: ✅
 Button.tapped: ✓ pressDown on Button: the relay's report of the press handed to the host, no pointer sent
@@ -38,7 +38,6 @@ Grid.tapped: ✓ pressDown on Grid: the relay's report of the press handed to th
 HStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 HStack.layoutBody: ✅
 HStack.presentationFrameChanged: ✅
-HStack.tapped: ✅
 Image.gridColumnSpan: ✅
 Image.gridRowSpan: ✅
 Image.layoutFrameChanged: ✅
@@ -63,6 +62,7 @@ Map.filesDropped: 🧩
 Map.interaction: 🧩
 Map.layoutFrameChanged: 🧩
 Map.margin: 🧩
+MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 MotionLayout.longPressed: ☑️ WinUI tells a long press of a finger or a pen: a mouse button held is no long press.
 MotionLayout.pointerMoved: ✓ hover on MotionLayout: the relay's report of the pointer handed to the host, no pointer sent
 MotionLayout.pointerPressed: ✓ hover on MotionLayout: the relay's report of the pointer handed to the host, no pointer sent
@@ -92,6 +92,7 @@ Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports tol
 Rectangle.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Rectangle.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Rectangle.dropped: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+Rectangle.layoutFrameChanged: ✅
 Rectangle.panTouchCount: ✓ pan on Rectangle: the relay's report of the press dragged handed to the host, no pointer sent
 Rectangle.panUpdated: ✓ pan on Rectangle: the relay's report of the press dragged handed to the host, no pointer sent
 ScrollView.area: ✅

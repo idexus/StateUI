@@ -1,4 +1,4 @@
-# revision 45.2
+# revision 46.2
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragEntered: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Button.dragExited: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -39,6 +39,7 @@ Grid.horizontalAlignment: ✅
 Grid.layoutFrameChanged: ✅
 Grid.verticalAlignment: ✅
 HStack.rotationUpdated: ✓ rotate on HStack: the relay's report of the manipulation handed to the host, no touch sent
+HStack.sharedPresentation: ✅
 HStack.tapped: ✓ pressDown on HStack: the relay's report of the press handed to the host, no pointer sent
 Image.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Image.layoutBody: ✅
@@ -63,7 +64,6 @@ Map.tapped: 🧩
 MotionLayout.area: ✅
 MotionLayout.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 MotionLayout.layoutFrameChanged: ✅
-MotionLayout.sharedPresentation: ✅
 MotionLayout.tapped: ✓ pressDown on MotionLayout: the relay's report of the press handed to the host, no pointer sent
 MotionLayout.transition: ✅
 Path.gridColumn: ✅

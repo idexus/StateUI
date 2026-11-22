@@ -1,4 +1,4 @@
-# revision 45.1
+# revision 46.1
 Button.horizontalAlignment: ✅
 Button.interaction: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
 Button.layoutBody: ✅
@@ -70,7 +70,7 @@ Map.droppedFileTypes: ✓ dropFiles on Map: the drop interaction's handler told 
 Map.filesDropped: ✓ dropFiles on Map: the drop interaction's handler told the driver's files, no drag session
 Map.interaction: ✓ pressDown on Map: the view's listening handed the recognizer's states, no touch sent
 Map.presentationSample: ✅
-MotionLayout.interaction: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.interaction: ✓ rotate on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.swipeDirections: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.swipeThreshold: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.swiped: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
@@ -147,6 +147,7 @@ Text.gridColumn: ✅
 Text.gridRow: ✅
 Text.layoutFrameChanged: ✅
 Text.tapped: ✓ pressDown on Text: the view's listening handed the recognizer's states, no touch sent
+Text.verticalAlignment: ✅
 TextEditor.pinchUpdated: ✓ pinch on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.sharedPresentation: ✅
 TextEditor.tapped: ✓ pressDown on TextEditor: the view's listening handed the recognizer's states, no touch sent

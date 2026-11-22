@@ -472,6 +472,16 @@ final class UIKitDriver: HostDriver {
         return Rect(x: frame.minX, y: frame.minY, width: frame.width, height: frame.height)
     }
 
+    func drawnRect(of element: MountedElement) throws -> Rect {
+        renderer?.layOut()
+        guard let view = (element.native as? UIKitElement)?.view else {
+            throw DriverCannot("read where \(element.type.name) is drawn")
+        }
+        guard let window = view.window else { throw NotPlaced(element) }
+        let drawn = view.convert(view.bounds, to: window)
+        return Rect(x: drawn.minX, y: drawn.minY, width: drawn.width, height: drawn.height)
+    }
+
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .window { return try windowHolds(property, element) }
         if property == .language, let view = (element.native as? UIKitElement)?.view {

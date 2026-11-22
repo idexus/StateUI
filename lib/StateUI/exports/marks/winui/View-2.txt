@@ -1,4 +1,4 @@
-# revision 45.2
+# revision 46.2
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
 Button.layoutFrameChanged: ✅
@@ -92,6 +92,7 @@ ProgressBar.rotationUpdated: ✓ rotate on ProgressBar: the relay's report of th
 ProgressBar.tapped: ✓ pressDown on ProgressBar: the relay's report of the press handed to the host, no pointer sent
 Rectangle.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 Rectangle.layoutBody: ✅
+Rectangle.layoutFrameChanged: ✅
 Rectangle.presentationFrameChanged: ✅
 ScrollView.gridColumnSpan: ✅
 ScrollView.gridRowSpan: ✅
@@ -151,10 +152,10 @@ TimePicker.longPressDuration: – WinUI's long press comes after the system's ow
 VStack.dismissed: ✓ pressDown on VStack: the relay's report of the press handed to the host, no pointer sent
 VStack.horizontalAlignment: ✅
 VStack.layoutFrameChanged: ✅
+VStack.sharedPresentation: ✅
 VStack.verticalAlignment: ✅
 WebView.rotationUpdated: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 WebView.tapped: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
 ZStack.interaction: ☑️ A wheel's notch steps nothing: a wheel reaches the layout as WinUI's own scroller takes it, its tracker's - a notch goes as far as the platform scrolls for it, and the tracker tells no notch.
 ZStack.layoutBody: ✅
 ZStack.presentationFrameChanged: ✅
-ZStack.sharedPresentation: ✅

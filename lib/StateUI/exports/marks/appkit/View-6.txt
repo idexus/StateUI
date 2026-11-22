@@ -1,4 +1,4 @@
-# revision 45.1
+# revision 46.1
 Button.swipeDirections: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.swipeThreshold: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.swiped: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -79,6 +79,7 @@ MotionLayout.layoutFrameChanged: ✅
 MotionLayout.margin: ✅
 MotionLayout.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 MotionLayout.panUpdated: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.sharedPresentation: ✅
 Path.longPressDuration: ✅
 Path.pointerMoved: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.pointerPressed: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
@@ -104,7 +105,6 @@ ProgressBar.swiped: ✓ pan on ProgressBar: handed to the host's recognizer or h
 ProgressBar.tapCount: ✓ tap on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.tapped: ✓ tap on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 ProgressBar.transition: ✅
-Rectangle.layoutFrameChanged: ✅
 Rectangle.longPressed: ✓ longPress on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.rotationUpdated: ✓ rotate on Rectangle: handed to the host's recognizer or handler, no NSEvent sent
 ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the drag source and the window's drop routing told by the driver, no dragging session
@@ -159,7 +159,6 @@ TimePicker.gridColumn: ✅
 TimePicker.gridRow: ✅
 TimePicker.layoutFrameChanged: ✅
 TimePicker.tapped: ✓ pressDown on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
-VStack.sharedPresentation: ✅
 VStack.swipeDirections: ✓ pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.swipeThreshold: ✓ pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
 VStack.swiped: ✓ pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
@@ -176,3 +175,4 @@ ZStack.layoutFrameChanged: ✅
 ZStack.margin: ✅
 ZStack.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ZStack.panUpdated: ✓ pan on ZStack: handed to the host's recognizer or handler, no NSEvent sent
+ZStack.sharedPresentation: ✅

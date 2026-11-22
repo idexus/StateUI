@@ -310,6 +310,15 @@ final class WinUIDriver: HostDriver {
         return Rect(x: corner.x, y: corner.y, width: size.width, height: size.height)
     }
 
+    func drawnRect(of element: MountedElement) throws -> Rect {
+        guard let view = (element.native as? WinUIElement)?.view else {
+            throw DriverCannot("read where \(element.type.name) is drawn")
+        }
+        var bounds = [Double](repeating: 0, count: 4)
+        stateui_winui_drawn_bounds(view.handle, &bounds)
+        return Rect(x: bounds[0], y: bounds[1], width: bounds[2], height: bounds[3])
+    }
+
     /// The sheet `element` stands in, on its window.
     func sheet(of element: MountedElement) throws -> WinUISheetView {
         guard let presented = element.enclosing(type: .sheet)?.children.first,
