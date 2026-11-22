@@ -200,6 +200,7 @@ final class AppKitDriver: HostDriver {
 
     func frame() {
         renderer?.displayFrameForTesting()
+        layOutWindows()
     }
 
     /// Where the element's view stands in its window, as AppKit placed it - measured down from the window's top.

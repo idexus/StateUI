@@ -238,6 +238,7 @@ final class UIKitDriver: HostDriver {
 
     func frame() {
         renderer?.frame()
+        renderer?.layOut()
     }
 
     /// Does `act`, what UIKit autoreleases on the way let go as it ends.
