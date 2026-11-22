@@ -48,13 +48,14 @@ extension MountedElement {
     /// layout where the transition says so. Declaring none, it fades in under the law of the layout it joins where
     /// its view `presentsOpacity` and no state owns it - unless a view made with it, under it, sets out from its
     /// partner: then it comes as it stands. An id with no partner moves nothing more. An element a message made
-    /// again enters by no transition.
+    /// again enters by no transition, and one leaving by none: what its toolkit places again is drawn as it leaves.
     /// Design: docs/design/host/motion.md#a-view-that-enters
     public func enter(_ view: some FadingView, as entry: LayoutEntry, presentsOpacity: Bool) {
         if let returned {
             self.returned = nil
             return comeBack(as: returned, on: view)
         }
+        guard lifecycle == .active else { return }
         // One view left wearing the id this one wears: the two are drawn from one presentation, onto this one's place.
         // Design: docs/design/host/motion.md#a-shared-presentation-drawn-by-both
         if !isRemade, let tree, let pair = tree.shared.source(for: self, in: tree) {

@@ -340,6 +340,14 @@ opacity already on its way keeps its motion. One holding a view made with it
 that sets out from its partner comes as it stands
 ([a shared presentation](#a-shared-presentation)).
 
+The trap is a view leaving. Kept as it leaves, it is out of its layout's
+motion, and a toolkit laying the kept view out again gives its children a
+first place once more - as children joining, where the pass animates. Entered
+then, a keyed view going along with its partner would fade in from nothing and
+vanish at the start of its way: an app closing onto its icon was gone at once.
+So only an active element enters; one leaving is drawn as it leaves
+(`SharedTransitionsTests.testAViewLeavingEntersNoMore`).
+
 An element declaring a transition
 ([a transition](../views/transitions.md#a-transition)) comes from its
 entry's effect: each number the effect touches is stood where the effect

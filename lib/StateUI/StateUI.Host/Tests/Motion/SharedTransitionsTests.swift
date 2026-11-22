@@ -281,6 +281,26 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(bench.runtime.tree.shared.entries, 0, "its patch's notes let go, nothing of the pair is held")
     }
 
+    /// A VIEW LEAVING ENTERS NO MORE: its toolkit laying the kept list out again places the thumbnail going along as
+    /// a view joining - and nothing of an entry begins on it: no fade from nothing, its opacity the presentation's.
+    func testAViewLeavingEntersNoMore() throws {
+        let bench = Bench(keeps: true)
+        _ = try standingList(bench)
+        let thumbnail = try XCTUnwrap(bench.element("thumbnail"))
+        paged(bench)
+        XCTAssertEqual(thumbnail.lifecycle, .exiting, "kept for its partner")
+        let drawn = thumbnail.value(.opacity)?.number
+
+        bench.runtime.layoutMotion.place(
+            Placed(), mount: thumbnail.mount, at: Rect(x: 10, y: 10, width: 40, height: 40), stated: [], words: .none,
+            natural: { LayoutSize(width: 40, height: 40) },
+            enter: { entry in thumbnail.enter(Shown(), as: entry, presentsOpacity: true) },
+            in: Arrangement(law: .eased(.milliseconds(200), curve: .linear), lanes: .all, joins: true), room: nil)
+
+        XCTAssertNil(bench.runtime.tree.presentedPropertyValue(mount: thumbnail.mount, property: .opacity), "no fade begins")
+        XCTAssertEqual(thumbnail.value(.opacity)?.number, drawn, "drawn as the presentation draws it")
+    }
+
     /// ONLY ITS KEYED VIEW GOES ALONG: what else the view kept for its partner holds - a caption under its thumbnail
     /// - stands where it is drawn, never moved nor stretched, and fades there, while the thumbnail alone travels onto
     /// the detail's place, each frame drawing it there; the list goes as the thumbnail lands.
