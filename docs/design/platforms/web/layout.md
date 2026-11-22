@@ -273,6 +273,15 @@ place already come to beside a corner still on its way. The host layer makes
 the two rectangles of a place and a corner read at one moment
 ([two rectangles](../../host/runtime.md#two-rectangles)).
 
+The trap is a view a run stands ([a placing run](#a-placing-run)). The
+browser lays it out at its layout's corner and draws its place as a move, so
+its box in the layout says nothing of the place: read so, a card a deck draws
+at half its size, kept as it leaves, was drawn from a shared presentation as
+far off as its place - fifty points
+(`View/MotionLayout.aViewItDrawsSmallerGoesAlongAsItIsDrawn`). A view a run
+stands left to right says the run's place; one it stands right to left, its
+box as laid out.
+
 A view observes its size once (`WebDOMView.followSize`): its box drawn again
 where a gradient is in it, its drawing - a shape's, a canvas's - and its
 frame read all follow that one observer, for the page keeps one an element,
