@@ -18,6 +18,7 @@ final class AndroidGestureTests: XCTestCase {
             ("testThePointerPressesMovesReleasesAndHovers", testThePointerPressesMovesReleasesAndHovers),
             ("testAPressOnAViewInFrontIsNotHeardBehindIt", testAPressOnAViewInFrontIsNotHeardBehindIt),
             ("testASecondFingerIsTheViewsItLandsOn", testASecondFingerIsTheViewsItLandsOn),
+            ("testAFingerHeldStandsWhereItIsWhileASecondPresses", testAFingerHeldStandsWhereItIsWhileASecondPresses),
             ("testTwoFingersThroughALayoutAreOnePinchOfTheViewTheyBeganOn", testTwoFingersThroughALayoutAreOnePinchOfTheViewTheyBeganOn),
             ("testAHandOnACardThatAnswersATapMovesTheRun", testAHandOnACardThatAnswersATapMovesTheRun),
             ("testAHandOnAScrollerStaysTakenAsItMoves", testAHandOnAScrollerStaysTakenAsItMoves),
@@ -228,6 +229,40 @@ final class AndroidGestureTests: XCTestCase {
             TestTouches.held(host.root, at: (100, 100), pressing: (100, 300), moved: 120, cancelled: true)
             settled()
             XCTAssertEqual(heard.values, ["pan began", "pan cancelled"])
+        }
+    }
+
+    /// A FINGER HELD STANDS WHERE IT IS on the screen while a second presses the view beside it, in a layout lower
+    /// on the screen than the window's top: the pan goes only across, as the held finger does.
+    func testAFingerHeldStandsWhereItIsWhileASecondPresses() throws {
+        try onMainActor {
+            let down = Received<Int>(), tapped = Received<String>()
+            let host = AndroidRenderer.running {
+                VStack {
+                    Rectangle().fill(.green).height(20)
+                    VStack {
+                        Rectangle()
+                            .fill(.red)
+                            .onPanUpdated { down.values.append(Int($0.total.y.rounded())) }
+                            .height(100)
+                        Rectangle()
+                            .fill(.blue)
+                            .onTapped { tapped.values.append("tapped") }
+                            .height(100)
+                    }
+                    .spacing(0)
+                }
+                .spacing(0).width(200).horizontalAlignment(.start).verticalAlignment(.start)
+            }
+            host.layOut()
+            Java.call(TestContext.window.reference, AndroidDriver.setContentView, .object(host.root.reference))
+
+            TestTouches.held(host.root, at: (100, 200), pressing: (100, 430), moved: 120)
+            TestWindow.run(for: 50)
+            host.runtime.pump.turn()
+            XCTAssertEqual(tapped.values, ["tapped"])
+            XCTAssertFalse(down.values.isEmpty)
+            XCTAssertEqual(Set(down.values), [0], "the pan went down by \(down.values)")
         }
     }
 

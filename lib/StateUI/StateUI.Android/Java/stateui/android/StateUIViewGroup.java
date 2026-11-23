@@ -229,8 +229,9 @@ class StateUIViewGroup extends ViewGroup {
     }
 
     /**
-     * `event` as the fingers `fingers` alone see it, its history kept: another finger coming or going is a move of
-     * theirs, and one of theirs is the touch's first or last where it is the only one.
+     * `event` as the fingers `fingers` alone see it, its history and where they stand on the screen kept: another
+     * finger coming or going is a move of theirs, and one of theirs is the touch's first or last where it is the
+     * only one.
      */
     private static MotionEvent split(MotionEvent event, int fingers) {
         int kept = Integer.bitCount(fingers);
@@ -253,12 +254,17 @@ class StateUIViewGroup extends ViewGroup {
             else if (action == MotionEvent.ACTION_POINTER_DOWN) action = MotionEvent.ACTION_DOWN;
             else action = MotionEvent.ACTION_UP;
         }
+        // A made event's raw points are its points: they are made on the screen, then moved into the layout.
+        // Design: docs/design/platforms/android/controls.md#gestures
+        float screenX = event.getRawX() - event.getX(), screenY = event.getRawY() - event.getY();
         MotionEvent made = null;
         int history = event.getHistorySize();
         for (int step = 0; step <= history; step++) {
             for (int at = 0; at < kept; at++) {
                 if (step < history) event.getHistoricalPointerCoords(indices[at], step, coords[at]);
                 else event.getPointerCoords(indices[at], coords[at]);
+                coords[at].x += screenX;
+                coords[at].y += screenY;
             }
             long time = step < history ? event.getHistoricalEventTime(step) : event.getEventTime();
             if (made == null) {
@@ -269,6 +275,7 @@ class StateUIViewGroup extends ViewGroup {
                 made.addBatch(time, coords, event.getMetaState());
             }
         }
+        made.offsetLocation(-screenX, -screenY);
         return made;
     }
 

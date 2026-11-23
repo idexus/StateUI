@@ -472,6 +472,14 @@ touch to the child its first finger lands on gives it every later finger too
 - a second finger on a button beside a held view pinches the view and
 presses nothing.
 
+A view's fingers are told where they stand on the screen as well as in the
+view, by the raw points the hand reads. An event made of some fingers alone
+has its raw points where its points are made, so they are made on the
+screen and moved into the layout. The trap: made in the layout, the held
+finger stands, for as long as the other is down, as far from where it is as
+the layout stands from the screen's corner - the table under the hand jumps
+while a button beside it is pressed, and comes back as it lifts.
+
 A view made of parts - a stepper's two buttons, a web view's page - would hand
 its listener only what no part takes, so its gestures see the touches and the
 hovering first, before the parts do (`StateUIWatch`): a drag or a pinch under
