@@ -78,18 +78,19 @@ final class AppKitPanRecognizer: NSPanGestureRecognizer {
         recognized(recognizer.state, at: recognizer.location(in: nil), moved: recognizer.translation(in: nil))
     }
 
-    /// AppKit's drag at `state`, the press at `now` of the window, having moved by `moved` there since it began.
+    /// AppKit's drag at `state`, the press at `now` of the window, having moved by `moved` there since it began: told
+    /// as the window measures it, which the view the drag moves does not move, from where it began in the view.
+    /// Design: docs/design/platforms/appkit/input.md#a-press-dragged
     func recognized(_ state: NSGestureRecognizer.State, at now: NSPoint, moved: NSPoint) {
         guard let phase = GesturePhase(state), let view, gesture.tells(phase) else { return }
-        // Where the press is now and where it began, each where the view is drawn, from the view's top left.
-        guard let at = view.drawnPoint(fromWindow: now).map(view.topLeft),
+        guard view.drawnPoint(fromWindow: now) != nil,
               let from = view.drawnPoint(fromWindow: NSPoint(x: now.x - moved.x, y: now.y - moved.y)).map(view.topLeft)
         else {
             // The view is flattened under the drag: the drag under way, if one, is taken away.
             if gesture.takeAway(at: phase) { dragged(.cancelled, x: 0, y: 0, from: .zero) }
             return
         }
-        dragged(phase, x: at.x - from.x, y: at.y - from.y, from: from)
+        dragged(phase, x: Double(moved.x), y: Double(-moved.y), from: from)
     }
 }
 

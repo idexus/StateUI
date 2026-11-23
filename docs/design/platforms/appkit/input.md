@@ -149,6 +149,18 @@ are the host layer's (`MountedElement.hearing`, `hear`), and so is the one
 pointer a drag is heard from: an element asking a pan of more gets no drag
 recognizer.
 
+## A press dragged
+
+AppKit's pan recognizer tells how far the press came on the window, which
+the view the drag moves does not move, and the host hands that on as the
+drag's totals; the press's beginning, its `from`, is where it went down in
+the view's own points, where the view is drawn. The trap: totals read as two
+points of the view, where it is drawn now, are divided by every scale above
+it - a view its handler draws at 0.4 hears a press that came 300 points as
+750, gives that to its translation, and runs from the press faster the
+smaller it is drawn; and the host layer, which knows the view by what it was
+told, sets a shared presentation out from where the view never stood.
+
 ## A press as a button takes it
 
 A view that hears taps follows its press with a recognizer of its own

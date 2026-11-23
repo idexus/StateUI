@@ -248,6 +248,29 @@ final class AppKitDrawnInputTests: XCTestCase {
         }
     }
 
+    /// A drag tells how far the press came on the window, which the view it moves does not move: a view drawn at half
+    /// its size hears ten points as ten, so a handler giving the total to a translation keeps the view under the
+    /// press however it is drawn - and its `from` is in the view's own points.
+    func testADragOnAViewDrawnSmallerTellsHowFarThePressCameOnTheWindow() throws {
+        let stage = ViewToFlatten()
+        defer { stage.window.orderOut(nil) }
+        var half = HostDrawingTransform.identity
+        (half.scaleX, half.scaleY) = (0.5, 0.5)
+        stage.drawing.own = half
+        var heard: [(x: Double, y: Double, from: Point)] = []
+        let pan = AppKitPanRecognizer { if case .drag(_, let x, let y, let from) = $0 { heard.append((x, y, from)) } }
+        stage.view.addGestureRecognizer(pan)
+
+        pan.recognized(.began, at: stage.middle, moved: .zero)
+        pan.recognized(.changed, at: NSPoint(x: stage.middle.x + 10, y: stage.middle.y - 10), moved: NSPoint(x: 10, y: -10))
+
+        let last = try XCTUnwrap(heard.last)
+        XCTAssertEqual(last.x, 10, accuracy: 0.001, "across, as the window measures it")
+        XCTAssertEqual(last.y, 10, accuracy: 0.001, "down, as the window measures it")
+        XCTAssertEqual(last.from.x, 20, accuracy: 0.001, "the press began at the view's middle, in its own points")
+        XCTAssertEqual(last.from.y, 20, accuracy: 0.001)
+    }
+
     /// A gesture taken away from a view flattened under it - as it begins or as it goes on - tells nothing more of
     /// AppKit's gesture, the view drawn whole again, to its end; the next is heard whole. A drag, a pinch, a rotation
     /// and the hand alike.
