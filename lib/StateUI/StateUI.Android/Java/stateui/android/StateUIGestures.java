@@ -271,7 +271,13 @@ final class StateUIGestures implements ScaleGestureDetector.OnScaleGestureListen
             if (handSpeed != null) handSpeed.recycle();
             handSpeed = VelocityTracker.obtain();
         }
-        if (handSpeed != null) handSpeed.addMovement(event);
+        if (handSpeed != null) {
+            // The speed is read where the finger stands on the screen: a view the hand moves moves under it.
+            MotionEvent onScreen = MotionEvent.obtain(event);
+            onScreen.offsetLocation(event.getRawX() - event.getX(), event.getRawY() - event.getY());
+            handSpeed.addMovement(onScreen);
+            onScreen.recycle();
+        }
         boolean had = handTaking;
         switch (action) {
             case MotionEvent.ACTION_DOWN:

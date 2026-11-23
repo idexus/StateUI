@@ -19,6 +19,7 @@ final class AndroidGestureTests: XCTestCase {
             ("testAPressOnAViewInFrontIsNotHeardBehindIt", testAPressOnAViewInFrontIsNotHeardBehindIt),
             ("testAHandOnACardThatAnswersATapMovesTheRun", testAHandOnACardThatAnswersATapMovesTheRun),
             ("testAHandOnAScrollerStaysTakenAsItMoves", testAHandOnAScrollerStaysTakenAsItMoves),
+            ("testAViewThrownShortAndFastIsDismissed", testAViewThrownShortAndFastIsDismissed),
         ]
     }
 
@@ -222,6 +223,43 @@ final class AndroidGestureTests: XCTestCase {
             layout.touch(1, x: -200, y: 100, at: 140)
             host.runtime.pump.turn()
             XCTAssertEqual(tapped.values, [], "a hand is no tap")
+        }
+    }
+
+    /// A VIEW THROWN AWAY GOES AT THE FINGER'S SPEED: the view follows the finger, so its own points move with it,
+    /// and a speed read there says the finger stood or went back - the throw is read where the finger stands on the
+    /// screen, and a short fast one carries the view past its threshold.
+    func testAViewThrownShortAndFastIsDismissed() throws {
+        try onMainActor {
+            let dismissed = Received<Int>()
+            let host = AndroidRenderer.running {
+                ZStack {
+                    Rectangle()
+                        .fill(.red)
+                        .width(100)
+                        .height(100)
+                        .interaction(.drag(.vertical).dismissal(directions: .up, threshold: 120))
+                        .onDismissed { _ in dismissed.values.append(1) }
+                }
+                .height(600)
+            }
+            host.layOut()
+            let room = try XCTUnwrap(host.views(AndroidZStackView.self).first)
+            let (x, y, point) = (Float(540), Float(300 * room.density), Float(room.density))
+
+            // 90 points up in 60 milliseconds, the view drawn after the finger at each step.
+            room.touch(0, x: x, y: y, at: 0)
+            for step in 1...6 {
+                room.touch(2, x: x, y: y - Float(step) * 15 * point, at: Int64(step) * 10)
+                host.frame()
+            }
+            room.touch(1, x: x, y: y - 90 * point, at: 70)
+            host.settle {
+                host.frame()
+                return !dismissed.values.isEmpty
+            }
+
+            XCTAssertEqual(dismissed.values, [1], "thrown at 1500 points a second, the view is carried past 120")
         }
     }
 

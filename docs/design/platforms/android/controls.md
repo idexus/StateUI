@@ -29,7 +29,12 @@ where the fingers' middle went down): a finger down decides nothing and
 leaves the parent free to intercept; the first move past the slop claims the
 hand along the layout's axis or leaves it - claimed, the layout takes the
 rest of the touch and forbids its parent to intercept; left, a page's
-scroller takes it. At the lift the tracker's speed goes with it. A wheel's notches - Android's scroll
+scroller takes it. At the lift the tracker's speed goes with it, read where
+the finger stands on the screen: the tracker is given each touch moved there
+from the view's own points. The trap: a view the hand takes - a card thrown
+away - follows the finger, so in its own points the finger stands still or
+goes back; a tracker fed those reads a short fast throw as none, or as one
+the other way, and a card the finger threw past its threshold comes back. A wheel's notches - Android's scroll
 axes count them, a part of one for a fine wheel - are told as notches
 (`notched`), each a step of the run to the next target.
 
