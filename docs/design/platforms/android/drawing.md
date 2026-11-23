@@ -41,6 +41,17 @@ padding's work. With `clipsContent` - on a scroll view, with any shape - the
 view clips to the drawable's outline, so a picture in a rounded card has
 rounded corners; without it nothing is cut, the shape drawn all the same.
 
+## A faded layout
+
+A layout fades as a whole: what it holds is drawn at its opacity together,
+as one picture, wherever it stands - a view a transition carries past the
+layout's edge, or one a move stands outside it, fades with it. Android
+draws a faded view through a layer as large as its bounds, which would cut
+whatever a layout draws past them, as every layout may; so a layout draws
+its own opacity (`StateUIViewGroup.onSetAlpha`), through a layer as large as
+what it may draw. The trap: tiles switched from a grid back to a row
+mid-way stood cut flat at the leaving layout's bottom for three frames.
+
 ## A placed child
 
 A motion layout's placement run stands each child of a ZStack at a

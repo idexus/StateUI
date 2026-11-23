@@ -4,6 +4,7 @@
 package stateui.android;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,6 +26,8 @@ class StateUIViewGroup extends ViewGroup {
         this.view = view;
         setClipChildren(false);
         setClipToPadding(false);
+        // It draws its own opacity: Android calls draw even with no box of its own to paint.
+        setWillNotDraw(false);
     }
 
     /** The number the Swift view answers to. */
@@ -271,6 +274,33 @@ class StateUIViewGroup extends ViewGroup {
     @Override
     public boolean shouldDelayChildPressedState() {
         return false;
+    }
+
+    /** The opacity the layout draws itself at, out of 255. */
+    private int opacity = 255;
+
+    /**
+     * The layout draws its own opacity: Android's layer for a faded view ends at the view's bounds, and would cut
+     * what the layout draws past them.
+     * Design: docs/design/platforms/android/drawing.md#a-faded-layout
+     */
+    @Override
+    protected boolean onSetAlpha(int alpha) {
+        opacity = alpha;
+        return true;
+    }
+
+    /** Faded, the whole layout as one picture, through a layer as large as what it may draw past its edges. */
+    @Override
+    public void draw(Canvas canvas) {
+        if (opacity >= 255) {
+            super.draw(canvas);
+            return;
+        }
+        if (opacity <= 0) return;
+        int saved = canvas.saveLayerAlpha(null, opacity);
+        super.draw(canvas);
+        canvas.restoreToCount(saved);
     }
 
     /**
