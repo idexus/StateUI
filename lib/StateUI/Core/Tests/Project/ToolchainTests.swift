@@ -21,10 +21,10 @@ final class ToolchainTests: XCTestCase {
         let repository = SourceTree.repository
         let kinds: Set<String> = ["swift", "md", "yml", "yaml", "sh", "ps1", "json", "kts", "ts"]
 
-        // What a build writes, and the pages rendered from the contracts -
-        // none of them names a toolchain.
+        // What a build and the tool's runs write, and the pages rendered from
+        // the contracts - none of them names a toolchain.
         let skipped: Set<String> = [
-            ".build", ".git", ".gradle", "artifacts", "bin", "obj", "node_modules", "out",
+            ".build", ".git", ".gradle", ".stateui", "artifacts", "bin", "obj", "node_modules", "out",
             "docs/controls",
         ]
 
