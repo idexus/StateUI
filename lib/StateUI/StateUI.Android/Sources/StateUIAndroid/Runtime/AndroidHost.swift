@@ -296,6 +296,10 @@ enum JavaNatives {
                     failure: failure.map { Java.text($0) })
             }
         }
+        let pictureRead: @convention(c) (Environment, jclass?, jlong, jobject?) -> Void = { _, _, ticket, bitmap in
+            nonisolated(unsafe) let bitmap = bitmap
+            MainActor.assumeIsolated { AndroidPictures.landed(ticket: ticket, bitmap: bitmap.map { JavaObject($0) }) }
+        }
         let dragHeard: @convention(c) (Environment, jclass?, jlong, jint, jstring?) -> Void = { _, _, number, kind, words in
             nonisolated(unsafe) let words = words
             MainActor.assumeIsolated { AndroidView.find(number)?.heardDrag(kind: kind, words: words.map { Java.text($0) }) }
@@ -452,6 +456,7 @@ enum JavaNatives {
             ("fileRead", "(J[BLjava/lang/String;)V", unsafeBitCast(fileRead, to: UnsafeMutableRawPointer.self)),
             ("requestAnswered", "(JI[Ljava/lang/String;[BLjava/lang/String;)V",
              unsafeBitCast(requestAnswered, to: UnsafeMutableRawPointer.self)),
+            ("pictureRead", "(JLandroid/graphics/Bitmap;)V", unsafeBitCast(pictureRead, to: UnsafeMutableRawPointer.self)),
             ("launched", "(JZ)V", unsafeBitCast(launched, to: UnsafeMutableRawPointer.self)),
             ("dragHeard", "(JILjava/lang/String;)V", unsafeBitCast(dragHeard, to: UnsafeMutableRawPointer.self)),
             ("filesDragged", "(J[Ljava/lang/String;[Ljava/lang/String;)V",

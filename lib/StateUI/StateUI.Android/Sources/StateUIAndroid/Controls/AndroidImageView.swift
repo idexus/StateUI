@@ -23,6 +23,9 @@ final class AndroidImageView: AndroidView {
     private var sample: Int32 = 0
     private var held: AndroidPictures.Held?
 
+    /// The thinning of a reading on its way to the view; 0 while none is.
+    private var awaited: Int32 = 0
+
     init() {
         super.init { _ in Java.new(JavaAPI.imageView, JavaAPI.newImageView, .object(AndroidRenderer.context)) }
         Java.call(reference, JavaAPI.setCropToPadding, .bool(true))
@@ -73,16 +76,29 @@ final class AndroidImageView: AndroidView {
         super.layout(place)
     }
 
-    /// Holds the picture at the fewest pixels a view `shown` big needs, reading it again only for more:
-    /// a size in motion does not read it every frame.
+    /// Holds the picture at the fewest pixels a view `shown` big needs: read at once the first time, then again only
+    /// for more, beside the UI thread while the view shows what it holds - a size in motion never waits on it.
     /// Design: docs/design/platforms/android/drawing.md#pictures
     private func show(at shown: (width: Int32, height: Int32)) {
         guard let picture, pictureSize.width > 0, shown.width > 0, shown.height > 0 else { return }
 
         let needed = aspect == .center ? 1 : AndroidPictures.sample(picture, size: pictureSize, shown: shown)
-        guard sample == 0 || needed < sample else { return }
+        if sample == 0 {
+            hold(AndroidPictures.take(picture, sample: needed), at: needed)
+        } else if needed < (awaited == 0 ? sample : awaited) {
+            awaited = needed
+            if let taken = AndroidPictures.takeLater(picture, sample: needed, for: self) { hold(taken, at: needed) }
+        }
+    }
 
-        let taken = AndroidPictures.take(picture, sample: needed)
+    /// A reading of the view's picture landed: shown where the view still waits for it.
+    func landed(_ reading: AndroidPictures.Reading) {
+        guard reading.picture == picture, reading.sample == awaited else { return }
+        hold(AndroidPictures.take(reading.picture, sample: reading.sample), at: reading.sample)
+    }
+
+    /// Shows `taken`, read at one pixel in `sample`, and lets go of what the view held.
+    private func hold(_ taken: AndroidPictures.Held?, at sample: Int32) {
         let bitmap = taken?.bitmap
         // Drawn at the host's density, as the picture was read and measured, not at the system's; an icon in the
         // theme's color.
@@ -97,13 +113,13 @@ final class AndroidImageView: AndroidView {
             Java.call(reference, JavaAPI.setImageDrawable, .object(drawable))
         }
         letGoOfPicture()
-        (held, sample) = (taken, needed)
+        (held, self.sample) = (taken, sample)
     }
 
-    /// Lets go of the picture the view holds.
+    /// Lets go of the picture the view holds, and of any reading on its way to it.
     private func letGoOfPicture() {
         if let held { AndroidPictures.letGo(held) }
-        (held, sample) = (nil, 0)
+        (held, sample, awaited) = (nil, 0, 0)
     }
 
     override func detach() {

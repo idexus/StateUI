@@ -61,6 +61,19 @@ enum AndroidPictures {
     /// How many bitmaps are kept.
     static var keptCount: Int { kept.count }
 
+    /// A view waiting for a reading, held weakly: one that left takes nothing.
+    private struct Waiting {
+        weak var view: AndroidImageView?
+    }
+
+    /// The readings on their way beside the UI thread, by ticket, and the views waiting for each.
+    private static var onTheirWay: [Int64: Reading] = [:]
+    private static var waiting: [Reading: [Waiting]] = [:]
+    private static var lastTicket: Int64 = 0
+
+    /// How many readings are on their way.
+    static var readingsOnTheirWay: Int { onTheirWay.count }
+
     /// The files in the APK's `images` assets.
     private static let files: Set<String> = Java.frame {
         let assets = Java.callObject(AndroidRenderer.context, JavaAPI.getAssets)!
@@ -125,6 +138,35 @@ enum AndroidPictures {
         return Held(reading: reading, bitmap: bitmap)
     }
 
+    /// `picture` read at one pixel in `sample` for `view`: held at once where it is kept or drawn, else read
+    /// beside the UI thread and told to `view` as it lands - nil until then.
+    /// Design: docs/design/platforms/android/drawing.md#pictures
+    static func takeLater(_ picture: HostPicture, sample: Int32, for view: AndroidImageView) -> Held? {
+        let reading = Reading(picture: picture, sample: sample, density: displayDensity)
+        guard kept[reading] == nil, let found = encoded(picture) else { return take(picture, sample: sample) }
+
+        if waiting[reading] == nil {
+            lastTicket += 1
+            onTheirWay[lastTicket] = reading
+            read(found.encoded, density: found.density, sample: sample, later: lastTicket)
+        }
+        waiting[reading, default: []].append(Waiting(view: view))
+        return nil
+    }
+
+    /// The reading under `ticket` landed, its bitmap nil where none was read: each view still waiting for it takes
+    /// it, and one no view takes is let go.
+    static func landed(ticket: Int64, bitmap: JavaObject?) {
+        guard let reading = onTheirWay.removeValue(forKey: ticket) else { return }
+
+        let views = waiting.removeValue(forKey: reading) ?? []
+        guard let bitmap, reading.density == displayDensity else { return }
+
+        if kept[reading] == nil { kept[reading] = Kept(bitmap: bitmap, holders: 0) }
+        for view in views.compactMap(\.view) { view.landed(reading) }
+        if kept[reading]?.holders == 0 { kept[reading] = nil }
+    }
+
     /// One view no longer shows the picture it took; the last to let go of a reading lets its bitmap go.
     static func letGo(_ held: Held) {
         guard let kept = kept[held.reading] else { return }
@@ -142,10 +184,17 @@ enum AndroidPictures {
 
     /// `picture` read at one pixel in `sample`; nil where there is no such picture.
     private static func decode(_ picture: HostPicture, sample: Int32) -> JavaObject? {
+        if case .icon(let icon) = picture { return drawn(icon) }
+        return encoded(picture).flatMap { read($0.encoded, density: $0.density, sample: sample) }
+    }
+
+    /// Where `picture`'s encoded pixels are, and the density it is drawn at; nil for an icon, which is drawn, and
+    /// for no such file.
+    private static func encoded(_ picture: HostPicture) -> (encoded: Encoded, density: Int32)? {
         switch picture {
-        case .file(let name): asset(named: name).flatMap { decode(.asset($0.path), density: $0.density, sample: sample) }
-        case .bytes(let bytes): decode(.bytes(bytes), density: onePixelAPoint, sample: sample)
-        case .icon(let icon): drawn(icon)
+        case .file(let name): asset(named: name).map { (.asset($0.path), $0.density) }
+        case .bytes(let bytes): (.bytes(bytes), onePixelAPoint)
+        case .icon: nil
         }
     }
 
@@ -182,58 +231,45 @@ enum AndroidPictures {
 
     /// The pixels `encoded` holds, read from its header.
     private static func bounds(_ encoded: Encoded) -> (width: Int32, height: Int32)? {
-        read(encoded, configure: { options in
-            Java.set(options, JavaAPI.inJustDecodeBounds, true)
-        }, finish: { options, _ in
-            let size = (width: Java.int(options, JavaAPI.outWidth), height: Java.int(options, JavaAPI.outHeight))
-            return size.width > 0 && size.height > 0 ? size : nil
-        })
+        Java.frame {
+            let from = source(encoded)
+            guard let size = Java.callStaticObject(
+                JavaAPI.pictures, JavaAPI.pictureSize, .object(from.assets), .object(from.path), .object(from.bytes))
+            else { return nil }
+
+            let pixels = Java.intsOf(size)
+            return (pixels[0], pixels[1])
+        }
     }
 
     /// `encoded`, drawn at `density`, read at one pixel in `sample` and scaled to the display's density as it is
     /// read.
-    private static func decode(_ encoded: Encoded, density: Int32, sample: Int32) -> JavaObject? {
-        read(encoded, configure: { options in
-            Java.set(options, JavaAPI.inSampleSize, sample)
-            Java.set(options, JavaAPI.inDensity, density)
-            Java.set(options, JavaAPI.inTargetDensity, displayDensity)
-            Java.set(options, JavaAPI.inScaled, true)
-        }, finish: { _, bitmap in
-            guard let bitmap else { return nil }
-            // The bitmap says the density a whole one would have, so it is drawn at the picture's own size.
-            Java.call(bitmap, JavaAPI.setBitmapDensity, .int(max(1, displayDensity / sample)))
-            return JavaObject(bitmap)
-        })
+    private static func read(_ encoded: Encoded, density: Int32, sample: Int32) -> JavaObject? {
+        Java.frame {
+            let from = source(encoded)
+            return Java.callStaticObject(
+                JavaAPI.pictures, JavaAPI.readPicture, .object(from.assets), .object(from.path), .object(from.bytes),
+                .int(sample), .int(density), .int(displayDensity)
+            ).map { JavaObject($0) }
+        }
     }
 
-    /// Reads `encoded` with the options `configure` sets, and hands them and the bitmap - nil when only the bounds
-    /// were asked for - to `finish`.
-    private static func read<Result>(
-        _ encoded: Encoded, configure: (jobject) -> Void, finish: (jobject, jobject?) -> Result?
-    ) -> Result? {
+    /// The same reading beside the UI thread, landing under `ticket`.
+    private static func read(_ encoded: Encoded, density: Int32, sample: Int32, later ticket: Int64) {
         Java.frame {
-            let options = Java.new(JavaAPI.bitmapOptions, JavaAPI.newBitmapOptions)
-            return withExtendedLifetime(options) {
-                configure(options.reference)
-                switch encoded {
-                case .asset(let path):
-                    let assets = Java.callObject(AndroidRenderer.context, JavaAPI.getAssets)!
-                    guard let stream = Java.callObject(assets, JavaAPI.openAsset, .object(Java.string(path))) else {
-                        return nil
-                    }
+            let from = source(encoded)
+            Java.callStatic(
+                JavaAPI.pictures, JavaAPI.readPictureLater, .long(ticket), .object(from.assets), .object(from.path),
+                .object(from.bytes), .int(sample), .int(density), .int(displayDensity))
+        }
+    }
 
-                    let bitmap = Java.callStaticObject(
-                        JavaAPI.bitmapFactory, JavaAPI.decodeStream,
-                        .object(stream), .object(nil), .object(options.reference))
-                    Java.call(stream, JavaAPI.close)
-                    return finish(options.reference, bitmap)
-                case .bytes(let bytes):
-                    let bitmap = Java.callStaticObject(
-                        JavaAPI.bitmapFactory, JavaAPI.decodeByteArray,
-                        .object(Java.bytes(bytes)), .int(0), .int(Int32(bytes.count)), .object(options.reference))
-                    return finish(options.reference, bitmap)
-                }
-            }
+    /// `encoded` as `StateUIPictures` reads it: the assets, and a file's path or the bytes.
+    private static func source(_ encoded: Encoded) -> (assets: jobject?, path: jstring?, bytes: jbyteArray?) {
+        let assets = Java.callObject(AndroidRenderer.context, JavaAPI.getAssets)
+        switch encoded {
+        case .asset(let path): return (assets, Java.string(path), nil)
+        case .bytes(let bytes): return (assets, nil, Java.bytes(bytes))
         }
     }
 

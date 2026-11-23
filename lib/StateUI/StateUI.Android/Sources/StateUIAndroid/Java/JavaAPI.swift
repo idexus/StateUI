@@ -353,21 +353,13 @@ enum JavaAPI {
     static let bitmapWidth = Java.method(bitmap, "getWidth", "()I")
     static let bitmapHeight = Java.method(bitmap, "getHeight", "()I")
     static let setBitmapDensity = Java.method(bitmap, "setDensity", "(I)V")
-    static let bitmapFactory = Java.findClass("android/graphics/BitmapFactory")
-    static let decodeStream = Java.staticMethod(
-        bitmapFactory, "decodeStream",
-        "(Ljava/io/InputStream;Landroid/graphics/Rect;Landroid/graphics/BitmapFactory$Options;)Landroid/graphics/Bitmap;")
-    static let decodeByteArray = Java.staticMethod(
-        bitmapFactory, "decodeByteArray", "([BIILandroid/graphics/BitmapFactory$Options;)Landroid/graphics/Bitmap;")
-    static let bitmapOptions = Java.findClass("android/graphics/BitmapFactory$Options")
-    static let newBitmapOptions = Java.method(bitmapOptions, "<init>", "()V")
-    static let inDensity = Java.field(bitmapOptions, "inDensity", "I")
-    static let inTargetDensity = Java.field(bitmapOptions, "inTargetDensity", "I")
-    static let inScaled = Java.field(bitmapOptions, "inScaled", "Z")
-    static let inSampleSize = Java.field(bitmapOptions, "inSampleSize", "I")
-    static let inJustDecodeBounds = Java.field(bitmapOptions, "inJustDecodeBounds", "Z")
-    static let outWidth = Java.field(bitmapOptions, "outWidth", "I")
-    static let outHeight = Java.field(bitmapOptions, "outHeight", "I")
+    static let pictures = Java.findClass("stateui/android/StateUIPictures")
+    static let pictureSize = Java.staticMethod(
+        pictures, "size", "(Landroid/content/res/AssetManager;Ljava/lang/String;[B)[I")
+    static let readPicture = Java.staticMethod(
+        pictures, "read", "(Landroid/content/res/AssetManager;Ljava/lang/String;[BIII)Landroid/graphics/Bitmap;")
+    static let readPictureLater = Java.staticMethod(
+        pictures, "readLater", "(JLandroid/content/res/AssetManager;Ljava/lang/String;[BIII)V")
 
     static let linearLayout = Java.findClass("android/widget/LinearLayout")
     static let newLinearLayout = Java.method(linearLayout, "<init>", "(Landroid/content/Context;)V")
@@ -423,10 +415,7 @@ enum JavaAPI {
     static let applyDimension = Java.staticMethod(typedValue, "applyDimension", "(IFLandroid/util/DisplayMetrics;)F")
     static let getAssets = Java.method(contextClass, "getAssets", "()Landroid/content/res/AssetManager;")
     static let assetManager = Java.findClass("android/content/res/AssetManager")
-    static let openAsset = Java.method(assetManager, "open", "(Ljava/lang/String;)Ljava/io/InputStream;")
     static let listAssets = Java.method(assetManager, "list", "(Ljava/lang/String;)[Ljava/lang/String;")
-    static let inputStream = Java.findClass("java/io/InputStream")
-    static let close = Java.method(inputStream, "close", "()V")
 
     // MARK: - android.animation
 

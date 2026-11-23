@@ -407,6 +407,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   pressed with another did nothing: a layout gave every finger of the touch to the view the first landed on, which
   took the second for a pinch.
 
+- **On Android a picture growing under the fingers no longer stops them.** A picture shown larger was read again at
+  more pixels on the UI thread - a ring of cards spread past a step stood still for half a second on a phone. A
+  later reading is now made beside the UI thread while the view shows what it holds.
+
 - **A program's write ends only the gesture holding what it writes.** A write of a number two fingers held also took
   from the hand the numbers it moved on the same view - a zoom sent while a light table was spread and panned
   stopped the pan.

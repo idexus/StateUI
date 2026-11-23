@@ -4,6 +4,7 @@
 package stateui.android;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.view.Menu;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -123,6 +124,9 @@ final class StateUIHost {
 
     /** A request was answered - its status, its headers as names and values in turn, its body - or failed, why. */
     static native void requestAnswered(long ticket, int status, String[] headers, byte[] body, String failure);
+
+    /** The picture read under `ticket` beside the UI thread: its bitmap, or null where none was read. */
+    static native void pictureRead(long ticket, Bitmap bitmap);
 
     /** A drag between views told the view: `StateUIDrags`'s kind, and the words a drop carried. */
     static native void dragHeard(long view, int kind, String words);

@@ -14,6 +14,8 @@ final class AndroidImageViewTests: XCTestCase {
             ("testAPictureShownSmallIsReadAtFewerPixels", testAPictureShownSmallIsReadAtFewerPixels),
             ("testAPictureShownSmallKeepsAsManyOfItsPixelsAsTheViewShows", testAPictureShownSmallKeepsAsManyOfItsPixelsAsTheViewShows),
             ("testAPictureNoViewShowsIsLetGo", testAPictureNoViewShowsIsLetGo),
+            ("testAPictureNeededLargerIsReadBesideTheUIThread", testAPictureNeededLargerIsReadBesideTheUIThread),
+            ("testAReadingLandingForAViewThatLeftIsLetGo", testAReadingLandingForAViewThatLeftIsLetGo),
             ("testEveryIconIsADrawableOfTheApplications", testEveryIconIsADrawableOfTheApplications),
             ("testAnIconIsDrawnInTheWordsColor", testAnIconIsDrawnInTheWordsColor),
             ("testAPictureThatArrivesIsPlacedAgainByTheLayoutMeasuringIt", testAPictureThatArrivesIsPlacedAgainByTheLayoutMeasuringIt),
@@ -157,6 +159,74 @@ final class AndroidImageViewTests: XCTestCase {
             flip.click()
             host.layOut()
             XCTAssertEqual(AndroidPictures.keptCount, before, "and let go when the view leaves")
+        }
+    }
+
+    /// A VIEW PLACED LARGER KEEPS WHAT IT SHOWS while more of its picture's pixels are read beside the UI thread,
+    /// and shows them once read: a card growing under the fingers never waits on a reading.
+    /// Design: docs/design/platforms/android/drawing.md#pictures
+    func testAPictureNeededLargerIsReadBesideTheUIThread() throws {
+        try onMainActor {
+            // 160 bytes' pixels, a picture no other view keeps, shown at 10 points on two pixels a point: one in 8.
+            let bytes = Java.frame { Java.bytesOf(Java.callStaticObject(TestJava.testPictures, TestJava.square, .int(160))) }
+            let side = State(wrappedValue: 10.0)
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                VStack {
+                    Image(ImageSource(bytes: bytes)).width(side.wrappedValue).height(side.wrappedValue)
+                    Button("Grow").onClicked { side.wrappedValue = 20 }
+                }
+            }
+            host.layOut()
+            let image = try XCTUnwrap(host.views(AndroidImageView.self).first)
+            XCTAssertTrue(image.bitmapSize.map { $0 == (40, 40) } == true, "\(String(describing: image.bitmapSize))")
+
+            try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
+            host.layOut()
+            XCTAssertTrue(
+                image.bitmapSize.map { $0 == (40, 40) } == true,
+                "the UI thread read the picture again: \(String(describing: image.bitmapSize))")
+            XCTAssertEqual(AndroidPictures.readingsOnTheirWay, 1)
+
+            Self.waitForReadings()
+            XCTAssertTrue(image.bitmapSize.map { $0 == (80, 80) } == true, "\(String(describing: image.bitmapSize))")
+        }
+    }
+
+    /// A VIEW THAT LEAVES WHILE MORE OF ITS PIXELS ARE ON THEIR WAY TAKES NONE: the reading lands for no view and is
+    /// let go.
+    func testAReadingLandingForAViewThatLeftIsLetGo() {
+        onMainActor {
+            let bytes = Java.frame { Java.bytesOf(Java.callStaticObject(TestJava.testPictures, TestJava.square, .int(192))) }
+            let side = State(wrappedValue: 10.0), shown = State(wrappedValue: true)
+            let before = AndroidPictures.keptCount
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                VStack {
+                    if shown.wrappedValue {
+                        Image(ImageSource(bytes: bytes)).width(side.wrappedValue).height(side.wrappedValue)
+                    }
+                    Button("Grow").onClicked { side.wrappedValue = 20 }
+                    Button("Hide").onClicked { shown.wrappedValue = false }
+                }
+            }
+            host.layOut()
+            let buttons = host.views(AndroidButtonView.self)
+            XCTAssertEqual(buttons.count, 2)
+
+            buttons[0].click()
+            host.layOut()
+            XCTAssertEqual(AndroidPictures.readingsOnTheirWay, 1)
+            buttons[1].click()
+            host.layOut()
+            Self.waitForReadings()
+            XCTAssertEqual(AndroidPictures.readingsOnTheirWay, 0)
+            XCTAssertEqual(AndroidPictures.keptCount, before)
+        }
+    }
+
+    /// Turns the UI thread until the readings on their way have landed.
+    @MainActor private static func waitForReadings() {
+        for _ in 0..<100 where AndroidPictures.readingsOnTheirWay > 0 {
+            TestWindow.run(for: 20)
         }
     }
 

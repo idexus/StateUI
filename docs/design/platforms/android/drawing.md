@@ -109,6 +109,17 @@ shown centered, at its own size, is read whole. Views showing the same
 picture at the same thinning share one bitmap, and the last to leave lets it
 go; only a bar's and a tab's icons are kept for as long as the host runs.
 
+A view's first reading is made at once, so it shows its picture with its
+first frame. Every later one, for more pixels, is made beside the UI thread
+while the view shows what it holds, scaled up: one reading of a picture at
+a thinning, however many views wait for it, told to each still waiting as
+it lands. A view that leaves, or comes to show another picture, takes
+nothing, and a reading no view takes is let go at once. The trap: a PNG is
+inflated whole however thinly it is read - some fifty milliseconds for a
+card 1200 pixels across on a phone - so a ring of eight cards growing past
+a thinning under two fingers, read on the UI thread, stopped the pinch for
+half a second.
+
 ## Icons
 
 An icon is its Material Symbols drawable - the icons of Android's own
