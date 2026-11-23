@@ -75,7 +75,7 @@ LayoutKeyframesSample.swift 953421f71fd68a9a
 LayoutParametersSample.swift 1b725250b87a571e
 LifecycleSample.swift 200bd806c526531f
 LifetimeSample.swift 388647e356facd79
-LightTableSample.swift aa08fb9a914d3ca1
+LightTableSample.swift 4f245343a5503da8
 LinkSample.swift cc33621097f3922b
 LinksSample.swift b2d6ace242ac6f8c
 LivingLayoutSample.swift 98c03556776524ba

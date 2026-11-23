@@ -7425,17 +7425,11 @@ enum Listings {
                 .gridRow(0)
                 .clipsContent(true)
 
+                // SNAPS ARE THE HAND'S: switched on, the table stays where it
+                // stands - a finger on it holds on - and the next move or throw
+                // comes to rest on a photo and a quarter turn.
                 SwitchRow("Snap", $snaps)
-                    .onToggled { snapping in
-                        // SNAPPING AGAIN, the table travels to the photo and the
-                        // quarter turn nearest where it was left.
-                        if snapping {
-                            table.x = table.x.rounded()
-                            table.y = table.y.rounded()
-                            table.turn = (table.turn * 4).rounded() / 4
-                        }
-                    }
-                .horizontalAlignment(.center)
+                    .horizontalAlignment(.center)
                 .gridRow(1)
 
                 // THE PROGRAM MOVES ONE COORDINATE: the zoom travels, the pan and
