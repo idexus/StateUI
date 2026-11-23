@@ -10,6 +10,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
 import java.util.WeakHashMap;
@@ -94,9 +95,19 @@ class StateUIViewGroup extends ViewGroup {
     /** The listener hearing the touches no child takes, where the layout's element listens after its children. */
     private View.OnTouchListener ownListener;
 
-    /** Where the touch under way goes: the child it landed on, or the layout itself. */
-    private View touched;
-    private boolean touchedItself;
+    /** A view the touch under way goes to - a child, or the layout itself as null - and its fingers' ids, as bits. */
+    private static final class Target {
+        final View child;
+        int fingers;
+
+        Target(View child, int fingers) {
+            this.child = child;
+            this.fingers = fingers;
+        }
+    }
+
+    /** Where the touch under way goes, in the order its views were first touched. */
+    private final ArrayList<Target> targets = new ArrayList<>();
 
     /** Whether the layout keeps a touch under way nothing in it took, from a parent of Android's own. */
     private boolean keeps;
@@ -152,25 +163,113 @@ class StateUIViewGroup extends ViewGroup {
     }
 
     /**
-     * Hands a touch to the frontmost child under it alone, and to the layout's own handling where that child takes
-     * none - never to a child behind it - as every platform hands a touch to the view under it and those around it.
-     * Where it lands on no child, the layout's own area has it, unless it lets input through.
+     * Hands each finger to the frontmost child under it alone, and the first to the layout's own handling where
+     * that child takes none - never to a child behind it. Each view hears its own fingers only; a finger no child
+     * takes joins the view the touch first went to.
+     * Design: docs/design/platforms/android/controls.md#gestures
      */
     private boolean reach(MotionEvent event) {
         int action = event.getActionMasked();
-        if (action == MotionEvent.ACTION_DOWN) {
-            touched = frontChildUnder(event.getX(), event.getY());
-            if (touched != null && toChild(touched, event)) return true;
-            touched = null;
-            touchedItself = ownTouch(event);
-            return touchedItself;
+        if (action == MotionEvent.ACTION_DOWN) targets.clear();
+        Target fresh = null;
+        boolean taken = false;
+        if (action == MotionEvent.ACTION_DOWN || action == MotionEvent.ACTION_POINTER_DOWN) {
+            int index = event.getActionIndex();
+            int finger = 1 << event.getPointerId(index);
+            View child = frontChildUnder(event.getX(index), event.getY(index));
+            Target landed = targetOf(child);
+            if (landed != null) {
+                landed.fingers |= finger;
+            } else {
+                fresh = new Target(child, finger);
+                taken = child != null && handTo(fresh, event);
+                if (!taken && targets.isEmpty()) {
+                    fresh = new Target(null, finger);
+                    taken = handTo(fresh, event);
+                }
+                if (taken) {
+                    targets.add(fresh);
+                } else {
+                    fresh = null;
+                    if (!targets.isEmpty()) targets.get(0).fingers |= finger;
+                }
+            }
         }
-        boolean taken = touched != null ? toChild(touched, event) : touchedItself && ownTouch(event);
+        for (int each = 0; each < targets.size(); each++) {
+            Target target = targets.get(each);
+            if (target != fresh) taken |= handTo(target, event);
+        }
         if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-            touched = null;
-            touchedItself = false;
+            targets.clear();
+        } else if (action == MotionEvent.ACTION_POINTER_UP) {
+            int finger = 1 << event.getPointerId(event.getActionIndex());
+            for (int each = targets.size() - 1; each >= 0; each--) {
+                targets.get(each).fingers &= ~finger;
+                if (targets.get(each).fingers == 0) targets.remove(each);
+            }
         }
         return taken;
+    }
+
+    /** The target the touch under way has in `child` - the layout itself for null; null where it has none. */
+    private Target targetOf(View child) {
+        for (Target target : targets) if (target.child == child) return target;
+        return null;
+    }
+
+    /** Hands `event` to `target` as its fingers alone see it; whether it takes it. */
+    private boolean handTo(Target target, MotionEvent event) {
+        int all = 0;
+        for (int index = 0; index < event.getPointerCount(); index++) all |= 1 << event.getPointerId(index);
+        if ((target.fingers & all) == 0) return false;
+        MotionEvent seen = (target.fingers & all) == all ? event : split(event, target.fingers & all);
+        boolean taken = target.child != null ? toChild(target.child, seen) : ownTouch(seen);
+        if (seen != event) seen.recycle();
+        return taken;
+    }
+
+    /**
+     * `event` as the fingers `fingers` alone see it, its history kept: another finger coming or going is a move of
+     * theirs, and one of theirs is the touch's first or last where it is the only one.
+     */
+    private static MotionEvent split(MotionEvent event, int fingers) {
+        int kept = Integer.bitCount(fingers);
+        MotionEvent.PointerProperties[] properties = new MotionEvent.PointerProperties[kept];
+        MotionEvent.PointerCoords[] coords = new MotionEvent.PointerCoords[kept];
+        int[] indices = new int[kept];
+        int acting = -1;
+        for (int index = 0, at = 0; index < event.getPointerCount(); index++) {
+            if ((fingers & (1 << event.getPointerId(index))) == 0) continue;
+            properties[at] = new MotionEvent.PointerProperties();
+            event.getPointerProperties(index, properties[at]);
+            coords[at] = new MotionEvent.PointerCoords();
+            if (index == event.getActionIndex()) acting = at;
+            indices[at++] = index;
+        }
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_POINTER_DOWN || action == MotionEvent.ACTION_POINTER_UP) {
+            if (acting < 0) action = MotionEvent.ACTION_MOVE;
+            else if (kept > 1) action |= acting << MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+            else if (action == MotionEvent.ACTION_POINTER_DOWN) action = MotionEvent.ACTION_DOWN;
+            else action = MotionEvent.ACTION_UP;
+        }
+        MotionEvent made = null;
+        int history = event.getHistorySize();
+        for (int step = 0; step <= history; step++) {
+            for (int at = 0; at < kept; at++) {
+                if (step < history) event.getHistoricalPointerCoords(indices[at], step, coords[at]);
+                else event.getPointerCoords(indices[at], coords[at]);
+            }
+            long time = step < history ? event.getHistoricalEventTime(step) : event.getEventTime();
+            if (made == null) {
+                made = MotionEvent.obtain(event.getDownTime(), time, action, kept, properties, coords,
+                        event.getMetaState(), event.getButtonState(), event.getXPrecision(), event.getYPrecision(),
+                        event.getDeviceId(), event.getEdgeFlags(), event.getSource(), event.getFlags());
+            } else {
+                made.addBatch(time, coords, event.getMetaState());
+            }
+        }
+        return made;
     }
 
     /** Whether a touch at `x`, `y` of the layout lands on it: on a child that takes it there, or its own area. */

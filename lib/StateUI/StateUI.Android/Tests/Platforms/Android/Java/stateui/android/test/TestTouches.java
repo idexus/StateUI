@@ -87,6 +87,47 @@ public final class TestTouches {
         turned(view, time + 10, MotionEvent.ACTION_UP, 1, x, y, degrees);
     }
 
+    /**
+     * A finger put down at (`hx`, `hy`) pixels of the view and dragged `moved` pixels right in steps, while a second
+     * finger goes down at (`tx`, `ty`) and - `cancelled` false - lifts there; `cancelled`, the touch is cancelled
+     * with both fingers down.
+     */
+    public static void heldAndPressed(View view, float hx, float hy, float tx, float ty, float moved, boolean cancelled) {
+        int second = MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+        points(view, 0, MotionEvent.ACTION_DOWN, hx, hy);
+        points(view, 10, MotionEvent.ACTION_MOVE, hx + moved / 3, hy);
+        points(view, 20, MotionEvent.ACTION_POINTER_DOWN | (1 << second), hx + moved / 3, hy, tx, ty);
+        points(view, 40, MotionEvent.ACTION_MOVE, hx + moved * 2 / 3, hy, tx, ty);
+        if (cancelled) {
+            points(view, 60, MotionEvent.ACTION_CANCEL, hx + moved * 2 / 3, hy, tx, ty);
+            return;
+        }
+        points(view, 60, MotionEvent.ACTION_POINTER_UP | (1 << second), hx + moved * 2 / 3, hy, tx, ty);
+        points(view, 80, MotionEvent.ACTION_MOVE, hx + moved, hy);
+        points(view, 100, MotionEvent.ACTION_UP, hx + moved, hy);
+    }
+
+    /** Fingers numbered from 0 at the pixels `xy` gives in pairs, doing `action` at `time`. */
+    private static void points(View view, long time, int action, float... xy) {
+        int fingers = xy.length / 2;
+        MotionEvent.PointerProperties[] properties = new MotionEvent.PointerProperties[fingers];
+        MotionEvent.PointerCoords[] coords = new MotionEvent.PointerCoords[fingers];
+        for (int finger = 0; finger < fingers; finger++) {
+            properties[finger] = new MotionEvent.PointerProperties();
+            properties[finger].id = finger;
+            properties[finger].toolType = MotionEvent.TOOL_TYPE_FINGER;
+            coords[finger] = new MotionEvent.PointerCoords();
+            coords[finger].x = xy[finger * 2];
+            coords[finger].y = xy[finger * 2 + 1];
+            coords[finger].pressure = 1;
+            coords[finger].size = 1;
+        }
+        MotionEvent event = MotionEvent.obtain(0, time, action, fingers, properties, coords, 0, 0, 1, 1, 0, 0,
+                InputDevice.SOURCE_TOUCHSCREEN, 0);
+        view.dispatchTouchEvent(event);
+        event.recycle();
+    }
+
     /** Two fingers 600 pixels apart about (`x`, `y`), the line between them turned clockwise `degrees` from across. */
     private static void turned(View view, long time, int action, int fingers, float x, float y, float degrees) {
         double angle = Math.toRadians(degrees);

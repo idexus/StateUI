@@ -17,6 +17,8 @@ final class AndroidGestureTests: XCTestCase {
             ("testAPinchIsNoTapAndACancelledOneIsCancelled", testAPinchIsNoTapAndACancelledOneIsCancelled),
             ("testThePointerPressesMovesReleasesAndHovers", testThePointerPressesMovesReleasesAndHovers),
             ("testAPressOnAViewInFrontIsNotHeardBehindIt", testAPressOnAViewInFrontIsNotHeardBehindIt),
+            ("testASecondFingerIsTheViewsItLandsOn", testASecondFingerIsTheViewsItLandsOn),
+            ("testTwoFingersThroughALayoutAreOnePinchOfTheViewTheyBeganOn", testTwoFingersThroughALayoutAreOnePinchOfTheViewTheyBeganOn),
             ("testAHandOnACardThatAnswersATapMovesTheRun", testAHandOnACardThatAnswersATapMovesTheRun),
             ("testAHandOnAScrollerStaysTakenAsItMoves", testAHandOnAScrollerStaysTakenAsItMoves),
             ("testAViewThrownShortAndFastIsDismissed", testAViewThrownShortAndFastIsDismissed),
@@ -190,6 +192,71 @@ final class AndroidGestureTests: XCTestCase {
         }
     }
 
+    /// A SECOND FINGER IS THE VIEW'S IT LANDS ON, as Android hands a user's touches down a window: a finger dragging
+    /// one view while a second presses the view beside it - the second is tapped, and the first pans with its one
+    /// finger, pinched by none; the touch cancelled with both down cancels the pan and taps nothing.
+    func testASecondFingerIsTheViewsItLandsOn() throws {
+        try onMainActor {
+            let heard = Received<String>()
+            let host = AndroidRenderer.running {
+                VStack {
+                    Rectangle()
+                        .fill(.red)
+                        .onPanUpdated { if $0.phase != .changed { heard.values.append("pan \($0.phase)") } }
+                        .onPinchUpdated { heard.values.append("pinch \($0.phase)") }
+                        .height(100)
+                    Rectangle()
+                        .fill(.blue)
+                        .onTapped { heard.values.append("tapped") }
+                        .height(100)
+                }
+                .spacing(0).width(200).horizontalAlignment(.start).verticalAlignment(.start)
+            }
+            host.layOut()
+            // A view's own click comes in a message of the UI thread's own, posted to a view in a window.
+            Java.call(TestContext.window.reference, AndroidDriver.setContentView, .object(host.root.reference))
+            @MainActor func settled() {
+                TestWindow.run(for: 50)
+                host.runtime.pump.turn()
+            }
+
+            TestTouches.held(host.root, at: (100, 100), pressing: (100, 300), moved: 120)
+            settled()
+            XCTAssertEqual(heard.values, ["pan began", "tapped", "pan ended"])
+
+            heard.values = []
+            TestTouches.held(host.root, at: (100, 100), pressing: (100, 300), moved: 120, cancelled: true)
+            settled()
+            XCTAssertEqual(heard.values, ["pan began", "pan cancelled"])
+        }
+    }
+
+    /// TWO FINGERS ON ONE VIEW ARE ONE PINCH through the layouts above it - the second landing on the view, or past
+    /// it where no view of the layout stands, as Android gives a finger no view takes to the view the touch has.
+    func testTwoFingersThroughALayoutAreOnePinchOfTheViewTheyBeganOn() throws {
+        try onMainActor {
+            let heard = Received<String>()
+            let host = AndroidRenderer.running {
+                VStack {
+                    Rectangle()
+                        .fill(.red)
+                        .onPinchUpdated { if $0.phase != .changed { heard.values.append("\($0.phase)") } }
+                        .width(400).height(200)
+                        .horizontalAlignment(.start)
+                }
+                .width(540).horizontalAlignment(.start).verticalAlignment(.start)
+            }
+            host.layOut()
+
+            // Both on the view, 800 pixels wide; then the second past its edge, on the layout alone.
+            TestTouches.pinch(host.root, x: 400, y: 200, from: 600, to: 760)
+            TestTouches.pinch(host.root, x: 500, y: 200, from: 600, to: 700)
+            host.runtime.pump.turn()
+
+            XCTAssertEqual(heard.values, ["began", "ended", "began", "ended"])
+        }
+    }
+
     /// A HAND ON A CARD THAT ANSWERS A TAP MOVES THE RUN: the layout sees the finger before the card does, so a
     /// finger put down on the card and dragged along the run is the layout's - and no tap of the card.
     func testAHandOnACardThatAnswersATapMovesTheRun() throws {
@@ -358,5 +425,23 @@ enum TestTouches {
     /// A mouse entering at (`x`, `y`) pixels, moving 10 pixels right, and leaving.
     static func hover(_ view: AndroidView, x: Float, y: Float) {
         Java.callStatic(owner, hovering, .object(view.reference), .float(x), .float(y))
+    }
+
+    private static let holdingAndPressing = Java.staticMethod(owner, "heldAndPressed", "(Landroid/view/View;FFFFFZ)V")
+
+    /// A finger at `held` pixels dragged `moved` right while a second goes down at `pressed` and lifts there - or,
+    /// `cancelled`, the touch is cancelled with both down.
+    static func held(
+        _ view: JavaObject, at held: (x: Float, y: Float), pressing pressed: (x: Float, y: Float), moved: Float,
+        cancelled: Bool = false
+    ) {
+        Java.callStatic(
+            owner, holdingAndPressing, .object(view.reference), .float(held.x), .float(held.y), .float(pressed.x),
+            .float(pressed.y), .float(moved), .bool(cancelled))
+    }
+
+    /// Two fingers either side of (`x`, `y`) pixels of a window's root, `from` pixels apart moving to `to`, lifted.
+    static func pinch(_ root: JavaObject, x: Float, y: Float, from: Float, to: Float) {
+        Java.callStatic(owner, pinching, .object(root.reference), .float(x), .float(y), .float(from), .float(to))
     }
 }

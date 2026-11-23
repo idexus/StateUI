@@ -403,6 +403,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - **On GTK an app no longer crashes when a gesture's release removes the view it was on.** Pulling an app closed on a
   home screen freed a controller GTK was still dispatching the release to.
 
+- **On Android a second finger reaches the view it lands on.** While one finger held a view, a switch or a button
+  pressed with another did nothing: a layout gave every finger of the touch to the view the first landed on, which
+  took the second for a pinch.
+
 - **A program's write ends only the gesture holding what it writes.** A write of a number two fingers held also took
   from the hand the numbers it moved on the same view - a zoom sent while a light table was spread and panned
   stopped the pan.

@@ -460,6 +460,18 @@ the layout were not there, and the touch goes on to whatever stands behind
 it. An overlay lets a touch beside what it holds through to the page under
 it.
 
+Each finger is its own: one going down while others are held lands by the
+same rule on the view under it, and every view hears its own fingers alone -
+the first as the touch's beginning, the last as its end, another's coming and
+going as a move of its own - so a switch pressed beside a view the hand
+drags is pressed, and the dragged view is pinched by no finger of the
+switch's. A finger landing where no child takes it joins the view the touch
+first went to, as Android's own dispatch splits a touch; two fingers on one
+view are one stream, its pinch. The trap: a layout that hands the whole
+touch to the child its first finger lands on gives it every later finger too
+- a second finger on a button beside a held view pinches the view and
+presses nothing.
+
 A view made of parts - a stepper's two buttons, a web view's page - would hand
 its listener only what no part takes, so its gestures see the touches and the
 hovering first, before the parts do (`StateUIWatch`): a drag or a pinch under
