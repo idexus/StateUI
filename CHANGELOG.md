@@ -234,7 +234,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   kind is one view continued. One change carries as many ids as it holds: a row of tiles laid out again as a grid
   sends each tile onto its own cell, with no `MotionLayout`. Where no single partner is found - none, two of one
   id, another window or page, a view coming with a `MotionLayout` laid out in a room of nothing, which places
-  nothing - each goes by its own `.transition(_:)`; a view coming with the `MotionLayout` that places it - a card
+  nothing - each goes by its own `.transition(_:)`; an id standing on more than one view of the page as the change
+  runs - two leaving, two coming, or one staying beside them - is said once on the standard output, or where
+  `Complaints.route` sends it; a view coming with the `MotionLayout` that places it - a card
   coming back from its detail into its deck - is one with its partner. A host compares no value: the core hands
   it numbers. On its way the entering view is drawn in front of what it passes over - every sibling in a stack,
   what stood before it in a layout that layers its children - until it lands. Where the layout that held the

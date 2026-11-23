@@ -436,6 +436,12 @@ share none. Among the same siblings, one id on two views of one kind is one
 view continued, its layout moving it: a picture meant to grow out of its
 thumbnail stands in another holder, as above, or is another kind of view.
 
+One view leaves and one comes: where the id stands on more than one view of
+the page as the change runs - two leaving, two coming, or another one staying
+- none takes over from another. Each comes by its own transition, and StateUI
+says once, on the standard output or where `Complaints.route` sends it, which
+id it was.
+
 The entry moves under the entering view's own `.motion(_:)`, else the
 application's. Where the layout that held the leaving view keeps a view that
 leaves - a stack, a grid, a ZStack - the two are drawn as one on the way: the

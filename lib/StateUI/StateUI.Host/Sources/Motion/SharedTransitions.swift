@@ -184,6 +184,7 @@
             for each in left {
                 if let kept = keptHolding(each.element), kept.exitsRunning == 0 { release(kept.mount) }
             }
+            if left.count > 1 || wearers(of: key, from: element) > 1 { Complaints.sayRepeatedID(key.number) }
             refused?(element)
             return nil
         }
@@ -226,7 +227,21 @@
             if standsUnknown(view) { return nil }
             above = view.parent
         }
-        return source
+        // The made view alone wears the key in its scope: one staying beside it makes the key no single view's.
+        return wearers(of: key, from: element) == 1 ? source : nil
+    }
+
+    /// How many views of the scope `key` is worn in, `element` among them, wear it and are the application's.
+    /// Design: docs/design/host/motion.md#a-shared-presentation
+    private func wearers(of key: Key, from element: MountedElement) -> Int {
+        var scope: MountedElement? = element
+        while let view = scope, view.mount != key.scope { scope = view.parent }
+        var (count, walked) = (0, scope.map { [$0] } ?? [])
+        while let view = walked.popLast() {
+            if view.lifecycle == .active, Self.key(of: view) == key { count += 1 }
+            walked.append(contentsOf: view.children)
+        }
+        return count
     }
 
     /// A display frame ended: the notes of a patch laid out by now are let go.

@@ -760,6 +760,53 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertNil(another.drawn(.translationX, of: "detail"), "another key")
     }
 
+    /// What the library said, as a test hears it.
+    private final class Heard: @unchecked Sendable {
+        var words: [String] = []
+    }
+
+    /// AN ID ON MORE THAN ONE VIEW OF THE PAGE AS ONE LEAVES AND ANOTHER COMES MAKES NOTHING ONE, AND IS SAID: two
+    /// views made wearing it, two dropped, or one staying beside the two - each made view enters by its own
+    /// transition, and the library says once which id stood on more than one view. One dropped and one made, alone
+    /// on the page, are one, and nothing is said.
+    func testAnIdOnMoreThanOneViewMakesNothingOneAndIsSaid() {
+        let heard = Heard()
+        Complaints.route(to: { heard.words.append($0) })
+        defer { Complaints.route(to: nil) }
+        func key(_ name: String) -> Int { Renderer.shared.sharedIdentities.number(for: ElementIdentity(name)) }
+        func said(_ name: String) -> Bool { heard.words.contains { $0.contains("\"\(name)\" stands on more than one") } }
+
+        let single = Bench(), one = key("alone on its page")
+        listed(single, thumbnails: [Bench.keyed("thumbnail", one)])
+        paged(single, details: [Bench.keyed("detail", one)])
+        XCTAssertNotNil(single.drawn(.translationX, of: "detail"), "one dropped and one made are one")
+        XCTAssertFalse(said("alone on its page"), "and nothing is said")
+
+        let twoMade = Bench(), made = key("made twice")
+        listed(twoMade, thumbnails: [Bench.keyed("thumbnail", made)])
+        paged(twoMade, details: [Bench.keyed("detail", made), Bench.keyed("second", made)])
+        twoMade.place("second", at: Rect(x: 20, y: 140, width: 200, height: 40))
+        XCTAssertNil(twoMade.drawn(.translationX, of: "detail"), "two made: neither takes over")
+        XCTAssertNil(twoMade.drawn(.translationX, of: "second"))
+        XCTAssertTrue(said("made twice"), "\(heard.words)")
+
+        let twoDropped = Bench(), dropped = key("dropped twice")
+        listed(twoDropped, thumbnails: [Bench.keyed("thumbnail", dropped), Bench.keyed("other", dropped)])
+        twoDropped.stands("other", at: Point(x: 100, y: 60), size: LayoutSize(width: 40, height: 40))
+        paged(twoDropped, details: [Bench.keyed("detail", dropped)])
+        XCTAssertNil(twoDropped.drawn(.translationX, of: "detail"), "two dropped: no rectangle is its own")
+        XCTAssertTrue(said("dropped twice"), "\(heard.words)")
+
+        let staying = Bench(), stays = key("worn by one that stays")
+        staying.show([Bench.holder("list", [Bench.keyed("thumbnail", stays)]), Bench.keyed("stays", stays)], complete: true)
+        staying.stands("thumbnail", at: Point(x: 50, y: 60), size: LayoutSize(width: 40, height: 40))
+        staying.show([Bench.holder("page", [Bench.keyed("detail", stays)]), Bench.keyed("stays", stays)])
+        staying.place("page", at: Rect(x: 0, y: 100, width: 300, height: 200))
+        staying.place("detail", at: Rect(x: 20, y: 30, width: 200, height: 100))
+        XCTAssertNil(staying.drawn(.translationX, of: "detail"), "one stays wearing it: the id is no single view's")
+        XCTAssertTrue(said("worn by one that stays"), "\(heard.words)")
+    }
+
     /// A VIEW MADE ON ANOTHER PAGE THAN THE ONE DROPPED IS ITS OWN: an id shares a presentation on its own page - a
     /// page that comes over a page is the navigation's to bring - so the made view enters as any view does, by its
     /// own transition, and a change waiting for the patch settles; the same two on one page are one.

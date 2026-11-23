@@ -113,4 +113,11 @@ final class Said: Sendable {
     public static func say(_ message: String) {
         complain(message)
     }
+
+    /// Says once a process, by the id the application wrote, that the id crossing as `number` stood on more than one
+    /// view of one page as one of them left and another came - none took over from another.
+    /// Design: docs/design/views/transitions.md#a-shared-presentation
+    @MainActor public static func sayRepeatedID(_ number: Int) {
+        complain(Renderer.shared.sharedIdentities.repeated(number))
+    }
 }

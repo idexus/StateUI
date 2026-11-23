@@ -128,6 +128,13 @@ size and its corner.
 The page is where views of one id meet: a page that comes over another is the
 navigation's to bring, and two views of one id on two pages are each their own.
 
+One view goes and one comes: an id that stands on more than one view of the
+page as the change runs - two leaving, two coming, or one staying beside the
+two - makes nothing one. Which of two would the one coming set out from? Each
+coming view enters by its own transition, a change waiting on it hears
+`.unsupported`, and the library says once which id it was
+(`Complaints.sayRepeatedID`, [complaints](../core/diagnostics.md#complaints)).
+
 An id is any `Hashable`, and a host compares none. The modifier asks the core
 for the number the identity crosses as (`SharedIdentities`): the same number
 while an element wears it - so the view a walk drops and the view the same walk

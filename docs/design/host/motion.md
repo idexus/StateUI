@@ -428,7 +428,8 @@ and no host adds to them:
                             grows (`drawnSpeed`), and the corner it is drawn with
   a patch makes a view      wearing a key: noted
   its first place           one view dropped and one made under the key, in that patch, one window
-                            and one page, and both rectangles known: the presentation
+                            and one page, the made one the only view of the scope wearing it
+                            (`wearers`), and both rectangles known: the presentation
                             (`SharedPresentation`) the dropped one was drawn from, else a new one,
                             sends its ONE run - the rectangle drawn, as its middle and its size, in
                             the window - onto where the made one lands as drawn, under the made
@@ -438,7 +439,9 @@ and no host adds to them:
                             dropped one, kept for it, too (drawn by both, below); one still
                             leaving by its own exit ends at once
                             anything else: it enters as any view does, and a change that waits
-                            for the patch hears `.unsupported`
+                            for the patch hears `.unsupported`; where the key stood on more than
+                            one view - two dropped, or one more wearing it now - the core says
+                            the id once (`Complaints.sayRepeatedID`)
   every frame               the run's step draws every view drawn from it: each one's move and
                             scale onto the rectangle drawn, worked out against its own place and
                             what holds it, as they stood when it joined; its opacity and corner

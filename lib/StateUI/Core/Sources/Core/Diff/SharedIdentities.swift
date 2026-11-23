@@ -32,6 +32,13 @@ final class SharedIdentities {
         worn[number]?.count -= 1
     }
 
+    /// What is said of `number` worn by more than one view of one page as one of them leaves and another comes.
+    func repeated(_ number: Int) -> String {
+        let named = worn[number].map { "the id \"\(Node.described($0.identity))\"" } ?? "the id numbered \(number)"
+        return "\(named) stands on more than one view of one page as one leaves and another comes: none takes over "
+            + "from another - give each view its own id."
+    }
+
     /// A walk ended: the numbers nobody wears are forgotten.
     func prune() {
         for (number, entry) in worn where entry.count <= 0 {

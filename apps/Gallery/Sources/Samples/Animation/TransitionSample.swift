@@ -160,12 +160,13 @@ struct SharedPictures: ExampleContent {
         ZStack {
             if let chosen {
                 // THE PICTURE: another view than its thumbnail, of the same
-                // id - it sets out from where the thumbnail is drawn.
+                // id - it sets out from where the thumbnail is drawn. No other
+                // view of the page wears the id: the tiles below have theirs.
                 Rectangle()
                     .fill(Self.tints[chosen])
                     .cornerRadius(12)
                     .height(150)
-                    .id(chosen)
+                    .id("picture \(chosen)")
                     // Slow enough to see the way.
                     .motion(.eased(.milliseconds(700), curve: .sineInOut))
                     .onTapped { self.chosen = nil }
@@ -181,7 +182,7 @@ struct SharedPictures: ExampleContent {
                             // THE THUMBNAIL has the same id as its picture;
                             // going back, it sets out from where the picture
                             // is drawn at that moment.
-                            .id(item)
+                            .id("picture \(item)")
                             .motion(.eased(.milliseconds(700), curve: .sineInOut))
                             .onTapped { chosen = item }
                             .accessibilityIdentifier("shared.thumbnail.\(item)")
