@@ -530,9 +530,10 @@ final class ControlTests: XCTestCase {
                         // The one transform, on the geometry: a matrix with a
                         // lean in it exercises the part only a geometry draws.
                         .geometryTransform(Self.leaned)
-                        // An id written by hand: who it is, and what its
-                        // presentation is shared by on its page.
+                        // An id written by hand: who it is - and a transition id,
+                        // what its presentation is shared by on its page.
                         .id("sample")
+                        .transition(id: "sample")
                         // A gradient behind a view, which is what a Brush is for
                         // everywhere else.
                         .background(Color(light: .whiteSmoke, dark: .black))

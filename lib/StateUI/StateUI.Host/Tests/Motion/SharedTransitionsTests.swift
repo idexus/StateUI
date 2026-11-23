@@ -17,10 +17,10 @@ private struct CardBoard: View {
     var body: some View {
         VStack {
             if detailShown.wrappedValue {
-                Text("detail").id(5)
+                Text("detail").id(5).transition(id: 5)
             } else {
                 MotionLayout([5, 6], parameters: State(wrappedValue: 0.0).projectedValue) { card in
-                    Text("card \(card)").id(card)
+                    Text("card \(card)").id(card).transition(id: card)
                 } placements: { _, _ in
                     [Placement(Rect(x: 40, y: 40, width: 40, height: 40)), Placement(Rect(x: 90, y: 40, width: 40, height: 40))]
                 }
@@ -40,9 +40,9 @@ private struct SwappingDeck: View {
         VStack {
             MotionLayout([5], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
                 if itemDetailed.wrappedValue {
-                    Rectangle().id(5)
+                    Rectangle().id(5).transition(id: 5)
                 } else {
-                    Text("small").id(5)
+                    Text("small").id(5).transition(id: 5)
                 }
             } placements: { _, _ in
                 [Placement(Rect(x: 40, y: 40, width: 100, height: 60))]
@@ -508,7 +508,7 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertEqual(speed.x, 0, accuracy: 0.001, "about its middle")
     }
 
-    /// AN ID WITH NO PARTNER MOVES NOTHING: a view made with an id written by hand, its patch dropping none of that
+    /// AN ID WITH NO PARTNER MOVES NOTHING: a view made with a transition id, its patch dropping none of that
     /// id, comes as any view does - it fades in joining where its view draws an opacity, and by no fade where it
     /// draws none.
     func testAnIdWithNoPartnerMovesNothing() throws {
@@ -773,7 +773,7 @@ final class SharedTransitionsTests: XCTestCase {
         let heard = Heard()
         Complaints.route(to: { heard.words.append($0) })
         defer { Complaints.route(to: nil) }
-        func key(_ name: String) -> Int { Renderer.shared.sharedIdentities.number(for: ElementIdentity(name)) }
+        func key(_ name: String) -> Int { Renderer.shared.sharedIdentities.number(for: SharedKey(id: name, scope: nil)) }
         func said(_ name: String) -> Bool { heard.words.contains { $0.contains("\"\(name)\" stands on more than one") } }
 
         let single = Bench(), one = key("alone on its page")

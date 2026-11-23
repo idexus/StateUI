@@ -5,9 +5,9 @@ import XCTest
 
 @_spi(Host) @testable import StateUI
 
-/// A shared presentation's number as it crosses: an id written by hand gives the number the core keeps for its value,
-/// the same for the view that leaves and the one that comes in one walk, never a number given again - and a list's
-/// item, keyed by its loop, gives none.
+/// A shared presentation's number as it crosses: a transition id gives the number the core keeps for it and its scope,
+/// the same for the view that leaves and the one that comes in one walk, never a number given again - and `.id()`,
+/// who a view is, gives none.
 @MainActor
 final class SharedPresentationIdentityTests: XCTestCase {
     /// An identity of this test's own: no other test's views wear one, so the numbers they keep are its alone.
@@ -20,9 +20,9 @@ final class SharedPresentationIdentityTests: XCTestCase {
         VStack {
             if let item {
                 if detailed {
-                    VStack { Text("detail").id(Item(number: item)) }
+                    VStack { Text("detail").transition(id: Item(number: item)) }
                 } else {
-                    Text("thumbnail").id(Item(number: item))
+                    Text("thumbnail").transition(id: Item(number: item))
                 }
             }
         }
@@ -63,9 +63,23 @@ final class SharedPresentationIdentityTests: XCTestCase {
         XCTAssertFalse([seven, eight].contains(again), "worn by nobody for a walk: another number")
     }
 
-    /// ONLY AN ID WRITTEN BY HAND SHARES A PRESENTATION: a list's items, keyed by their loop, cross under none.
-    func testAListsItemSharesNoPresentation() {
-        let message = Renders().render(VStack { ForEach([1, 2]) { Text("item \($0)") } }.node)
+    /// A SCOPE IS WHERE THE VIEWS OF ONE TRANSITION ID MEET: one id in one scope is one number, in two scopes two,
+    /// and an id written with no scope is another number than the same id in one.
+    func testATransitionIDsScopeIsPartOfItsNumber() throws {
+        func number(_ text: some View) throws -> Int { try XCTUnwrap(text.node.props[.sharedPresentation]?.int) }
+        let first = try number(Text("title").transition(id: Item(number: 4), scope: "card 1"))
+        XCTAssertEqual(try number(Text("title").transition(id: Item(number: 4), scope: "card 1")), first, "the same pair")
+        XCTAssertNotEqual(try number(Text("title").transition(id: Item(number: 4), scope: "card 2")), first, "another scope")
+        XCTAssertNotEqual(try number(Text("title").transition(id: Item(number: 4))), first, "no scope")
+    }
+
+    /// AN ID IS WHO A VIEW IS, NOT WHAT IT IS DRAWN AS: `.id()` alone shares no presentation, and a list's items,
+    /// keyed by their loop, share none either.
+    func testAnIdAloneSharesNoPresentation() {
+        let message = Renders().render(VStack {
+            Text("thumbnail").id(Item(number: 3))
+            ForEach([1, 2]) { Text("item \($0)") }
+        }.node)
         XCTAssertEqual(message.subtree.compactMap { $0.properties[.sharedPresentation] }.count, 0)
     }
 }

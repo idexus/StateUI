@@ -73,28 +73,13 @@ extension VisualElement {
     /// struct or class - compared as the value it is; one written twice among
     /// siblings is said.
     ///
-    /// An id written by hand also shares the view's presentation on its page:
-    /// as a view of that id leaves and one of the same id comes elsewhere in
-    /// the same change - another holder, another kind of view - the two are
-    /// drawn as one, the one coming setting out from where the other is drawn,
-    /// as fast as it moves, its corner too:
-    ///
-    ///     if let chosen {
-    ///         Picture(chosen).id(chosen.id)       // grows out of its thumbnail
-    ///     } else {
-    ///         HStack { ForEach(items, id: \.id) { Thumbnail($0).id($0.id) } }
-    ///     }
+    /// An id is who a view is, not what it is drawn as: two views drawn as
+    /// one as one leaves and the other comes share a `transition(id:)`.
     ///
     /// - Parameter value: who this view is - distinct among its siblings and
     ///   the same across renders.
     public func id(_ value: some Hashable) -> Modified {
-        modified { node in
-            node.identify(value)
-            // Design: docs/design/views/transitions.md#a-shared-presentation
-            guard let identity = node.identity, node.declaration?.wears(ViewContract.self) != false else { return }
-            node.props[ViewContract.sharedPresentation.token] =
-                Renderer.shared.sharedIdentities.number(for: identity).propValue
-        }
+        modified { node in node.identify(value) }
     }
 
     /// Puts an aim on this control, which is how an act reaches it.

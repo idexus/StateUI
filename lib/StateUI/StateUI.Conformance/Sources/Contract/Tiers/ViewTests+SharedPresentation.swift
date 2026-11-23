@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `ViewContract.sharedPresentation` in the layouts holding it: views of one id written by hand, one leaving and one
+/// `ViewContract.sharedPresentation` in the layouts holding it: views of one transition id, one leaving and one
 /// coming in another holder, drawn as one - the one coming setting out where the other was drawn, in front of what
 /// it passes until it lands, the one leaving kept for it, and each id of a change with its own partner.
 extension ViewTests {
@@ -303,6 +303,7 @@ private struct Swapped: View {
                         .onEvent(ViewContract.presentationFrameChanged) { drawn.values.append($0) }
                         .onEvent(ViewContract.layoutFrameChanged) { placed.values.append($0) }
                         .id("picture")
+                        .transition(id: "picture")
                         .motion(.eased(.milliseconds(600), curve: .linear))
                 }
                 .id("large")
@@ -312,6 +313,7 @@ private struct Swapped: View {
                     .width(40)
                     .height(40)
                     .id("picture")
+                    .transition(id: "picture")
             }
         }
         .horizontalAlignment(.start)
@@ -387,18 +389,18 @@ enum SettingOut {
     private static func pair(_ detailed: Bool, _ first: Received<[Double]>, _ second: Received<[Double]>) -> some View {
         if detailed {
             VStack {
-                Rectangle().fill(.red).width(160).height(80).id("a")
+                Rectangle().fill(.red).width(160).height(80).transition(id: "a")
                     .onEvent(ViewContract.presentationFrameChanged) { first.values.append($0) }
                     .motion(.eased(.milliseconds(600), curve: .linear))
-                Rectangle().fill(.blue).width(100).height(50).id("b")
+                Rectangle().fill(.blue).width(100).height(50).transition(id: "b")
                     .onEvent(ViewContract.presentationFrameChanged) { second.values.append($0) }
                     .motion(.eased(.milliseconds(600), curve: .linear))
             }
             .horizontalAlignment(.start)
         } else {
             HStack {
-                Rectangle().fill(.red).width(40).height(40).id("a")
-                Rectangle().fill(.blue).width(20).height(20).id("b")
+                Rectangle().fill(.red).width(40).height(40).transition(id: "a")
+                Rectangle().fill(.blue).width(20).height(20).transition(id: "b")
             }
         }
     }
@@ -416,6 +418,7 @@ enum SettingOut {
                     .width(160)
                     .height(80)
                     .id("picture")
+                    .transition(id: "picture")
                     .motion(.eased(.milliseconds(600), curve: .linear))
             }
             .id("large")
@@ -425,6 +428,7 @@ enum SettingOut {
                 .width(40)
                 .height(40)
                 .id("picture")
+                .transition(id: "picture")
                 .motion(.eased(.milliseconds(600), curve: .linear))
         }
     }

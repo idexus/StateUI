@@ -14,10 +14,10 @@ private struct LiftedApp: View {
     var body: some View {
         VStack {
             if appOpen.wrappedValue {
-                ZStack { Rectangle().id("app") }
+                ZStack { Rectangle().id("app").transition(id: "app") }
                     .translationY(appLift.projectedValue)
             } else {
-                HStack { Rectangle().id("app") }
+                HStack { Rectangle().id("app").transition(id: "app") }
             }
         }
     }

@@ -103,44 +103,44 @@ Two views may be one thing to the user - a thumbnail and its picture. A
 transition of each says how each comes and goes; a shared presentation says
 that as one goes and the other comes, in the same change, what the user sees
 is one view, the one coming setting out from where the other is drawn. Their
-presentation is shared by the id written by hand on each:
+presentation is shared by the transition id written on each:
 
 ```text
-  .id(value)     on a view: who it is among its siblings - and, written by hand, what its presentation
-                 is shared by on its page                                      ViewContract.sharedPresentation
+  .transition(id: value)                 on a view: what its presentation is shared by on its page
+  .transition(id: value, scope: where)   the same, met only by the views naming the scope
+                                         both write ViewContract.sharedPresentation, a number
 ```
 
-A view's id says three things, tried in this order:
-
-```text
-  among the same siblings, of one kind     one element continued: its control, its state - its layout moves it
-  coming back while the one of it leaves   the same view coming back (the host's), from where that one is drawn
-  elsewhere on the page, or another kind   two elements of one presentation: the one coming takes over from
-                                           the one leaving - where it was drawn, how fast, its corner
-```
-
-Only an id written by hand shares a presentation: a list's items are keyed by
-their loop, and two lists showing the same items fly nothing between them. The
+A transition id is what a view is drawn as, not who it is: `.id(_:)` keeps
+an element the same element among its siblings and brings back a view still
+leaving ([above](#a-transition)), and shares nothing. So the identities a
+loop gives and the ids written to keep a control in a list never meet, and a
+view takes part in a shared presentation only where its author says so. The
 views stay two views - nothing of the leaving one's state is the coming one's -
 and their kinds may differ: what is shared is where the view is drawn, its
 size and its corner.
 
-The page is where views of one id meet: a page that comes over another is the
-navigation's to bring, and two views of one id on two pages are each their own.
+The page is where views of one transition id meet: a page that comes over
+another is the navigation's to bring, and two views of one id on two pages are
+each their own. A scope says where they meet within it: only the views naming
+the same scope, so the parts of a component - its title, its picture - written
+once meet the parts of the same card, and a page holding several numbered
+examples keeps them apart. A scope is any `Hashable`, a card's own id or a
+word.
 
-One view goes and one comes: an id that stands on more than one view of the
-page as the change runs - two leaving, two coming, or one staying beside the
-two - makes nothing one. Which of two would the one coming set out from? Each
-coming view enters by its own transition, a change waiting on it hears
+One view goes and one comes: a transition id that stands on more than one view
+of the page as the change runs - two leaving, two coming, or one staying beside
+the two - makes nothing one. Which of two would the one coming set out from?
+Each coming view enters by its own transition, a change waiting on it hears
 `.unsupported`, and the library says once which id it was
-(`Complaints.sayRepeatedID`, [complaints](../core/diagnostics.md#complaints)).
+(`Complaints.sayRepeatedTransitionID`, [complaints](../core/diagnostics.md#complaints)).
 
-An id is any `Hashable`, and a host compares none. The modifier asks the core
-for the number the identity crosses as (`SharedIdentities`): the same number
-while an element wears it - so the view a walk drops and the view the same walk
-makes, written with equal ids, cross under one number - and forgotten once a
-walk ends with nobody wearing it, so an id written again later gets another.
-No number is given twice.
+An id and a scope are any `Hashable`, and a host compares none. The modifier
+asks the core for the number the pair crosses as (`SharedIdentities`, a
+`SharedKey`): the same number while an element wears it - so the view a walk
+drops and the view the same walk makes, of equal ids in equal scopes, cross
+under one number - and forgotten once a walk ends with nobody wearing it, so a
+pair written again later gets another. No number is given twice.
 
 ```text
   a view is made or said    the differ notes it wears the number
@@ -159,9 +159,9 @@ going its own way. What travels is the view wearing the id, with what it
 holds: what else left with it - a caption under a picture - stands where it is
 drawn and fades out there, so a view meant to travel whole wears the id itself.
 
-The trap is one id among the same siblings. A thumbnail and its picture
-written in one stack, of one kind and one id, are one element continued: its
-size changes and its layout moves it, and nothing is shared. Written in two
-holders - the picture in its own - or of two kinds, they are two views, drawn
-as one.
+The trap is one `.id()` among the same siblings. A thumbnail and its picture
+written in one stack, of one kind, under one `.id()` are one element continued:
+its size changes and its layout moves it, and nothing is shared, whatever
+transition id they wear. Without it, or in two holders, or of two kinds, they
+are two views, drawn as one.
 

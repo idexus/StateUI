@@ -411,7 +411,7 @@ shows, and the move takes the view past that.
 
 ## A shared presentation
 
-A view made with an id written by hand - its key - takes over from the one
+A view made with a transition id - its key - takes over from the one
 view its patch dropped with that id on its page: the two are drawn from ONE
 presentation, held by the host layer, which the one dropped was drawn as and
 the one made lands as - where they are drawn, how fast that moves, their
@@ -441,7 +441,7 @@ and no host adds to them:
                             anything else: it enters as any view does, and a change that waits
                             for the patch hears `.unsupported`; where the key stood on more than
                             one view - two dropped, or one more wearing it now - the core says
-                            the id once (`Complaints.sayRepeatedID`)
+                            the id once (`Complaints.sayRepeatedTransitionID`)
   every frame               the run's step draws every view drawn from it: each one's move and
                             scale onto the rectangle drawn, worked out against its own place and
                             what holds it, as they stood when it joined; its opacity and corner

@@ -2531,8 +2531,8 @@ enum Listings {
                     Rectangle()
                         .fill(card.color)
                         .height(200)
-                        // THE CARD'S OWN ID: the detail and its card are drawn as one.
-                        .id(card.name)
+                        // THE CARD'S TRANSITION ID: the detail and its card are drawn as one.
+                        .transition(id: card.name)
                         // Slow enough to see the way.
                         .motion(.eased(.milliseconds(600), curve: .sineInOut))
                         .onPanUpdated { pan in pulled(pan) }
@@ -2651,9 +2651,9 @@ enum Listings {
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
                 }
-                // ONE ID WITH ITS DETAIL, its name: opened, the detail grows from
-                // it; back, the detail shrinks into it as its deck comes.
-                .id(card.name)
+                // ONE TRANSITION ID WITH ITS DETAIL, its name: opened, the detail
+                // grows from it; back, the detail shrinks into it as its deck comes.
+                .transition(id: card.name)
                 .motion(.eased(.milliseconds(600), curve: .sineInOut))
                 .scale(held ? 1.1 : 1)
                 // THE HAND TAKES THE CARD ITSELF once a press has stood still on it.
@@ -5945,7 +5945,7 @@ enum Listings {
                         .onPanUpdated { pan in pulled(pan) }
                         .onTapped { opened = nil }
                     }
-                    .id(icon.name)
+                    .transition(id: icon.name)
                     .motion(HomeScreenSample.opening)
                 }
                 // THE APP AS THE HAND DRAWS IT: moved, and scaled about its foot,
@@ -6016,10 +6016,10 @@ enum Listings {
                         .width(60)
                         .height(60)
                         .horizontalAlignment(.center)
-                        // ONE ID WITH ITS APP, the icon's name: the app grows out
-                        // of the square and closes onto it, the two crossing over
-                        // near the square.
-                        .id(icon.name)
+                        // ONE TRANSITION ID WITH ITS APP, the icon's name: the app
+                        // grows out of the square and closes onto it, the two
+                        // crossing over near the square.
+                        .transition(id: icon.name)
                         .motion(HomeScreenSample.closing)
                     }
 
@@ -11948,12 +11948,12 @@ enum Listings {
             ZStack {
                 if let chosen {
                     // THE PICTURE: another view than its thumbnail, of the same
-                    // id - it sets out from where the thumbnail is drawn. No other
-                    // view of the page wears the id: the tiles below have theirs.
+                    // transition id - it sets out from where the thumbnail is
+                    // drawn. Its scope keeps it from the tiles below, numbered too.
                     Rectangle()
                         .fill(Self.tints[chosen])
                         .height(150)
-                        .id("picture \(chosen)")
+                        .transition(id: chosen, scope: "pictures")
                         // Slow enough to see the way.
                         .motion(.eased(.milliseconds(700), curve: .sineInOut))
                         .onTapped { self.chosen = nil }
@@ -11964,10 +11964,10 @@ enum Listings {
                                 .fill(Self.tints[item])
                                 .width(56)
                                 .height(40)
-                                // THE THUMBNAIL has the same id as its picture;
+                                // THE THUMBNAIL has its picture's transition id;
                                 // going back, it sets out from where the picture
                                 // is drawn at that moment.
-                                .id("picture \(item)")
+                                .transition(id: item, scope: "pictures")
                                 .motion(.eased(.milliseconds(700), curve: .sineInOut))
                                 .onTapped { chosen = item }
                         }
@@ -12019,13 +12019,14 @@ enum Listings {
             }
         }
 
-        /// One tile: its color, its corner, and its id - its number. The tile
-        /// made takes over where the one of its id was drawn, how fast it was
-        /// moving and its corner, and goes on from there onto its own place.
+        /// One tile: its color, its corner, and its transition id - its number,
+        /// in the tiles' scope. The tile made takes over where the one of its id
+        /// was drawn, how fast it was moving and its corner, and goes on from
+        /// there onto its own place.
         static func tile(_ index: Int, corner: Double) -> some View {
             Rectangle()
                 .fill(tints[index])
-                .id(index)
+                .transition(id: index, scope: "tiles")
                 .motion(.spring(response: .milliseconds(480), damping: 0.78))
         }
         """#,

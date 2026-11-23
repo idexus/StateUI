@@ -391,8 +391,8 @@ view declares.
 
 ## A shared presentation
 
-A thumbnail and its picture are two views and, to the user, one thing. An
-`.id(_:)` written by hand on each says so: as one leaves and the other comes
+A thumbnail and its picture are two views and, to the user, one thing. A
+`.transition(id:)` written on each says so: as one leaves and the other comes
 in the same change, anywhere on the page, the one coming sets out from where
 the other is drawn and grows onto its own place.
 
@@ -407,7 +407,7 @@ struct Catalog: View {
                     .fill(.indigo)
                     .width(240)
                     .height(160)
-                    .id(chosen)
+                    .transition(id: chosen)
                     .onTapped { self.chosen = nil }
             } else {
                 HStack {
@@ -416,7 +416,7 @@ struct Catalog: View {
                             .fill(.indigo)
                             .width(48)
                             .height(32)
-                            .id(item)
+                            .transition(id: item)
                             .onTapped { chosen = item }
                     }
                 }
@@ -430,17 +430,33 @@ struct Catalog: View {
 
 The two views stay two views - the picture's state is its own, and nothing
 of the thumbnail's is carried over - and they may be of two kinds: what is
-shared is where each is drawn, its size and its corner. Only an id written by
-hand shares a presentation; a `ForEach`'s items are keyed by their loop and
-share none. Among the same siblings, one id on two views of one kind is one
-view continued, its layout moving it: a picture meant to grow out of its
-thumbnail stands in another holder, as above, or is another kind of view.
+shared is where each is drawn, its size and its corner. A transition id is
+what a view is drawn as, not who it is: `.id(_:)` and a `ForEach`'s items
+share nothing. Under one `.id(_:)` too, two views of one kind among the same
+siblings are one view continued, its layout moving it, and nothing is shared.
 
-One view leaves and one comes: where the id stands on more than one view of
-the page as the change runs - two leaving, two coming, or another one staying
-- none takes over from another. Each comes by its own transition, and StateUI
-says once, on the standard output or where `Complaints.route` sends it, which
-id it was.
+Where the views meet is the page; `.transition(id:scope:)` narrows it to the
+views naming the same scope - a component's title, written once, meets only
+the title of the same card:
+
+```swift
+struct CardTitle: View {
+    let card: Int
+    let large: Bool
+
+    var body: some View {
+        Text("Card \(card)")
+            .fontSize(large ? 28 : 15)
+            .transition(id: "title", scope: card)
+    }
+}
+```
+
+One view leaves and one comes: where a transition id stands on more than one
+view of the page, in its scope, as the change runs - two leaving, two coming,
+or another one staying - none takes over from another. Each comes by its own
+transition, and StateUI says once, on the standard output or where
+`Complaints.route` sends it, which id it was.
 
 The entry moves under the entering view's own `.motion(_:)`, else the
 application's. Where the layout that held the leaving view keeps a view that
@@ -449,10 +465,10 @@ leaving one goes along onto where the entering one lands, at the speed it
 had, so a view the hand throws goes on as thrown; they cross over near the
 smaller of the two, and a rounded corner goes from the one's to the other's;
 only the one in front, the larger, fades, so the two never let through what
-lies under them. What goes along is the view with the id, with what it holds;
-anything else that left with it - a caption under a picture - stands where it
-is drawn and fades out there, so a view meant to travel whole, an app with
-its words, has the id itself. Elsewhere the leaving one goes at once.
+lies under them. What goes along is the view with the transition id, with
+what it holds; anything else that left with it - a caption under a picture -
+stands where it is drawn and fades out there, so a view meant to travel
+whole, an app with its words, has the id itself. Elsewhere the leaving one goes at once.
 Going back during the movement sets out from where the picture is drawn at
 that moment. On its way the entering view is drawn in front of what it passes
 over - every sibling in a stack, and what stood before it in a layout that
@@ -462,8 +478,8 @@ drawn in front so too, and where one layout holds them both, the larger of
 the two is in front there: a picture closing onto its thumbnail is drawn over
 the other thumbnails all the way.
 
-One change carries as many ids as it holds. A row of tiles laid out again as
-a grid, each tile with its own id, sends every tile from where it stands in
+One change carries as many transition ids as it holds. A row of tiles laid out
+again as a grid, each tile with its own, sends every tile from where it stands in
 the row onto its cell. The view made takes over from the one of its id -
 where it was drawn, how fast it was moving, its corner - so switching back
 during the movement turns each tile from where it is, as fast as it was going:
@@ -482,7 +498,7 @@ struct Tiles: View {
                             Rectangle()
                                 .fill(.indigo)
                                 .cornerRadius(12)
-                                .id(tile)
+                                .transition(id: tile)
                                 .gridRow(tile / 3)
                                 .gridColumn(tile % 3)
                         }
@@ -497,7 +513,7 @@ struct Tiles: View {
                                 .cornerRadius(20)
                                 .width(40)
                                 .height(40)
-                                .id(tile)
+                                .transition(id: tile)
                         }
                     }
                 }
@@ -508,8 +524,8 @@ struct Tiles: View {
 }
 ```
 
-One view leaving and one coming under an id, in one window and on one page,
-are one - a view coming with the `MotionLayout` that places it too: the card
+One view leaving and one coming under a transition id, in one window and on
+one page, are one - a view coming with the `MotionLayout` that places it too: the card
 coming back from its detail travels into its deck. Anything else - two views
 of one id leaving, a partner on another page, a view whose `MotionLayout` is
 laid out in a room of nothing, which places nothing - is not: each view then

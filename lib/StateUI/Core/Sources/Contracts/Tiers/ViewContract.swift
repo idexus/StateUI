@@ -97,8 +97,8 @@ public enum ViewContract: Tier {
     /// its exit goes to.
     public static let transition = ElementProperty<Self, Transition>("transition", layer: .stateUI, travels: false)
 
-    /// What the view's presentation is shared by on its page: the number the `.id()` written on it crosses as. A
-    /// view leaving and a view entering of one such id are drawn as one.
+    /// What the view's presentation is shared by on its page: the number its `transition(id:)` - with the scope it
+    /// names - crosses as. A view leaving and a view entering of one such number are drawn as one.
     public static let sharedPresentation = ElementProperty<Self, Int>(
         "sharedPresentation", layer: .stateUI, travels: false)
 

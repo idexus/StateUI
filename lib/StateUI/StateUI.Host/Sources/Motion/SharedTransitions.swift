@@ -184,7 +184,7 @@
             for each in left {
                 if let kept = keptHolding(each.element), kept.exitsRunning == 0 { release(kept.mount) }
             }
-            if left.count > 1 || wearers(of: key, from: element) > 1 { Complaints.sayRepeatedID(key.number) }
+            if left.count > 1 || wearers(of: key, from: element) > 1 { Complaints.sayRepeatedTransitionID(key.number) }
             refused?(element)
             return nil
         }
@@ -356,7 +356,7 @@
         return holders
     }
 
-    /// The key `element`'s presentation is shared by on its page; nil where its id was not written by hand.
+    /// The key `element`'s presentation is shared by on its page; nil where it names no transition id.
     private static func key(of element: MountedElement) -> Key? {
         guard let number = element.value(ViewContract.sharedPresentation.token)?.int,
               let scope = element.presentationScope

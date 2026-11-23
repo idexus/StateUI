@@ -149,7 +149,7 @@ struct TransitionSample: SampleContent, ExampleContent {
     }
 }
 
-/// A thumbnail growing into its picture, and back: two views of one id.
+/// A thumbnail growing into its picture, and back: two views of one transition id.
 struct SharedPictures: ExampleContent {
     // listing: SharedPictures
     static let tints: [Color] = [Palette.accent, Palette.brand, AppColors.violetLight]
@@ -160,13 +160,13 @@ struct SharedPictures: ExampleContent {
         ZStack {
             if let chosen {
                 // THE PICTURE: another view than its thumbnail, of the same
-                // id - it sets out from where the thumbnail is drawn. No other
-                // view of the page wears the id: the tiles below have theirs.
+                // transition id - it sets out from where the thumbnail is
+                // drawn. Its scope keeps it from the tiles below, numbered too.
                 Rectangle()
                     .fill(Self.tints[chosen])
                     .cornerRadius(12)
                     .height(150)
-                    .id("picture \(chosen)")
+                    .transition(id: chosen, scope: "pictures")
                     // Slow enough to see the way.
                     .motion(.eased(.milliseconds(700), curve: .sineInOut))
                     .onTapped { self.chosen = nil }
@@ -179,10 +179,10 @@ struct SharedPictures: ExampleContent {
                             .cornerRadius(6)
                             .width(56)
                             .height(40)
-                            // THE THUMBNAIL has the same id as its picture;
+                            // THE THUMBNAIL has its picture's transition id;
                             // going back, it sets out from where the picture
                             // is drawn at that moment.
-                            .id("picture \(item)")
+                            .transition(id: item, scope: "pictures")
                             .motion(.eased(.milliseconds(700), curve: .sineInOut))
                             .onTapped { chosen = item }
                             .accessibilityIdentifier("shared.thumbnail.\(item)")
@@ -253,14 +253,15 @@ struct SharedTiles: ExampleContent {
         .spacing(12)
     }
 
-    /// One tile: its color, its corner, and its id - its number. The tile
-    /// made takes over where the one of its id was drawn, how fast it was
-    /// moving and its corner, and goes on from there onto its own place.
+    /// One tile: its color, its corner, and its transition id - its number,
+    /// in the tiles' scope. The tile made takes over where the one of its id
+    /// was drawn, how fast it was moving and its corner, and goes on from
+    /// there onto its own place.
     static func tile(_ index: Int, corner: Double) -> some View {
         Rectangle()
             .fill(tints[index])
             .cornerRadius(corner)
-            .id(index)
+            .transition(id: index, scope: "tiles")
             .motion(.spring(response: .milliseconds(480), damping: 0.78))
     }
     // listing: end

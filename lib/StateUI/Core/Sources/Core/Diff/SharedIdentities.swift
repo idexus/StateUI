@@ -1,24 +1,24 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The numbers the identities written by hand with `.id()` cross as, so a host compares numbers and never what
-/// a value says of itself. A number lives while an element wears it; one nobody wears as
-/// a walk ends is forgotten, and the same identity written later gets another.
+/// The numbers the keys written with `transition(id:)` cross as, so a host compares numbers and never what a value
+/// says of itself. A number lives while an element wears it; one nobody wears as a walk ends is forgotten, and the
+/// same key written later gets another.
 /// Design: docs/design/views/transitions.md#a-shared-presentation
 @MainActor
 final class SharedIdentities {
-    private var numbers: [ElementIdentity: Int] = [:]
-    private var worn: [Int: (identity: ElementIdentity, count: Int)] = [:]
+    private var numbers: [SharedKey: Int] = [:]
+    private var worn: [Int: (key: SharedKey, count: Int)] = [:]
     private var next = 1
 
-    /// The number `identity` crosses as: the one it has while anything wears it, else a new one.
-    func number(for identity: ElementIdentity) -> Int {
-        if let number = numbers[identity] { return number }
+    /// The number `key` crosses as: the one it has while anything wears it, else a new one.
+    func number(for key: SharedKey) -> Int {
+        if let number = numbers[key] { return number }
 
         let number = next
         next += 1
-        numbers[identity] = number
-        worn[number] = (identity, 0)
+        numbers[key] = number
+        worn[number] = (key, 0)
         return number
     }
 
@@ -34,16 +34,16 @@ final class SharedIdentities {
 
     /// What is said of `number` worn by more than one view of one page as one of them leaves and another comes.
     func repeated(_ number: Int) -> String {
-        let named = worn[number].map { "the id \"\(Node.described($0.identity))\"" } ?? "the id numbered \(number)"
+        let named = worn[number]?.key.named ?? "the transition id numbered \(number)"
         return "\(named) stands on more than one view of one page as one leaves and another comes: none takes over "
-            + "from another - give each view its own id."
+            + "from another - give each view its own transition id."
     }
 
     /// A walk ended: the numbers nobody wears are forgotten.
     func prune() {
         for (number, entry) in worn where entry.count <= 0 {
             worn[number] = nil
-            numbers[entry.identity] = nil
+            numbers[entry.key] = nil
         }
     }
 }

@@ -224,28 +224,30 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   - takes the press it began from, as a pan does: a view lifted by a long press and put down where it stood is no
   longer tapped open by its release, whatever its platform tells.
 
-- **Two views of one id are one to the eye.** An `.id(_:)` written by hand shares a view's presentation on its
+- **Two views of one transition id are one to the eye.** `.transition(id:)` shares a view's presentation on its
   page: as a view of that id leaves and one of the same id comes elsewhere on the page in the same change - in
   another holder, or another kind of view in its place - the one coming takes over from the one leaving where it
   was drawn, how fast it was moving and its corner, and grows onto its own place under its own `.motion(_:)`;
   going back during the movement turns it from where it has got to, as fast as it was going. The two stay two
-  views, of any kinds: what is shared is where each is drawn, its size and its corner. Only an id written by hand
-  shares a presentation - a `ForEach`'s items share none - and among the same siblings one id on two views of one
-  kind is one view continued. One change carries as many ids as it holds: a row of tiles laid out again as a grid
+  views, of any kinds: what is shared is where each is drawn, its size and its corner. `.transition(id:scope:)`
+  narrows where the views meet to those naming the same scope, so a component's title written once meets only
+  the title of the same card. A transition id is what a view is drawn as, not who it is: `.id(_:)` and a
+  `ForEach`'s items share nothing, and among the same siblings one `.id(_:)` on two views of one kind is one view
+  continued. One change carries as many transition ids as it holds: a row of tiles laid out again as a grid
   sends each tile onto its own cell, with no `MotionLayout`. Where no single partner is found - none, two of one
   id, another window or page, a view coming with a `MotionLayout` laid out in a room of nothing, which places
-  nothing - each goes by its own `.transition(_:)`; an id standing on more than one view of the page as the change
-  runs - two leaving, two coming, or one staying beside them - is said once on the standard output, or where
-  `Complaints.route` sends it; a view coming with the `MotionLayout` that places it - a card
-  coming back from its detail into its deck - is one with its partner. A host compares no value: the core hands
-  it numbers. On its way the entering view is drawn in front of what it passes over - every sibling in a stack,
-  what stood before it in a layout that layers its children - until it lands. Where the layout that held the
-  leaving view keeps a view that leaves - a stack, a grid, a ZStack - the two are drawn as one: the leaving one
-  goes along onto where the entering one lands; they cross over near the smaller, a rounded corner - a
-  rectangle's, a layout's rounded shape - going from the one's to the other's as drawn, whatever either is scaled
-  to, and only the one in front, the larger, fades, so the two never let through what lies under them. What goes
-  along is the view with the id, with what it holds: anything else that left with it - a caption under a picture
-  - stands where it is drawn and fades out there, so a view meant to travel whole has the id itself.
+  nothing - each goes by its own `.transition(_:)`; a transition id standing on more than one view of the page as
+  the change runs - two leaving, two coming, or one staying beside them - is said once on the standard output,
+  or where `Complaints.route` sends it; a view coming with the `MotionLayout` that places it - a card coming back
+  from its detail into its deck - is one with its partner. A host compares no value: the core hands it numbers.
+  On its way the entering view is drawn in front of what it passes over - every sibling in a stack, what stood
+  before it in a layout that layers its children - until it lands. Where the layout that held the leaving view
+  keeps a view that leaves - a stack, a grid, a ZStack - the two are drawn as one: the leaving one goes along
+  onto where the entering one lands; they cross over near the smaller, a rounded corner - a rectangle's, a
+  layout's rounded shape - going from the one's to the other's as drawn, whatever either is scaled to, and only
+  the one in front, the larger, fades, so the two never let through what lies under them. What goes along is the
+  view with the transition id, with what it holds: anything else that left with it - a caption under a picture -
+  stands where it is drawn and fades out there, so a view meant to travel whole has the id itself.
 - **For a host: a layout draws its children in one order.** `DrawingOrder.of(_:placedBy:inFront:)`, and
   `TravelingPlaces.drawingOrder(of:placedBy:)` over the children's mounts, replace
   `ZStackArithmetic.drawingOrder(of:placedBy:)`: a run's ranks, else the tree's order, and last a child a shared

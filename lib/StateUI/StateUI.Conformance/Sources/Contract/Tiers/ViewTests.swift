@@ -417,7 +417,7 @@
         }
     }
 
-    /// A view made with an id written by hand, in another holder than the one view dropped with it, enters from
+    /// A view made with a transition id, in another holder than the one view dropped with it, enters from
     /// where that one was drawn: its first drawn frame is as large as that view was - not its own size, which it
     /// grows to.
     @MainActor
@@ -440,6 +440,7 @@
                                 Write(VisualElementContract.width, 160), Write(VisualElementContract.height, 80),
                                 Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
                             ], id: "picture")
+                            .transition(id: "picture")
                             .motion(.eased(.milliseconds(600), curve: .linear))
                         }
                         .id("detail")
@@ -447,6 +448,7 @@
                         Specimens.view(element, [
                             Write(VisualElementContract.width, 40), Write(VisualElementContract.height, 40),
                         ], id: "picture")
+                        .transition(id: "picture")
                     }
                 }
                 .horizontalAlignment(.start)

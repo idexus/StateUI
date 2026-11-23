@@ -42,13 +42,13 @@ the control, focus and caret of the one that left. Hand-written nodes, such as
 a page's appended title view, are matched by position among themselves, so a
 conditional beside them does not shift them.
 
-An id written by hand is also what the view's presentation is shared by on its
-page ([a shared presentation](../views/transitions.md#a-shared-presentation)):
-`.id()` writes the number its value crosses as (`ViewContract.sharedPresentation`),
-which `ForEach`'s stamp and the identities StateUI gives its own views never
-write. Among the same siblings, of one kind, the id still continues one element;
-elsewhere on the page, or of another kind, a view leaving and one coming under
-it are two elements drawn as one.
+An id is who a view is, never what it is drawn as: what a view's presentation
+is shared by is its transition id
+([a shared presentation](../views/transitions.md#a-shared-presentation)), which
+`transition(id:)` writes as a number (`ViewContract.sharedPresentation`) and
+`.id()`, `ForEach`'s stamp and the identities StateUI gives its own views never
+do. Among the same siblings, of one kind, an `.id()` still continues one
+element, whatever transition id it wears.
 
 `ElementID` has two namespaces: `.manual` preserves a literal string name,
 including a structural name StateUI writes; `.auto` numbers every other

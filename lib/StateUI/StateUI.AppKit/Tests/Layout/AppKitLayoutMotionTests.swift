@@ -475,10 +475,10 @@ final class AppKitLayoutMotionTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             VStack {
                 if opened.wrappedValue {
-                    Rectangle().id(5).height(200).motion(way)
+                    Rectangle().id(5).transition(id: 5).height(200).motion(way)
                 } else {
                     MotionLayout([5, 6], parameters: State(wrappedValue: 0.0).projectedValue) { card in
-                        Rectangle().id(card).motion(way)
+                        Rectangle().id(card).transition(id: card).motion(way)
                     } placements: { _, _ in
                         [Placement(Rect(x: 40, y: 40, width: 60, height: 80)),
                          Placement(Rect(x: 110, y: 40, width: 60, height: 80), transform: .scale(0.8))]

@@ -64,12 +64,12 @@
                         Button("Back").onClicked { opened.wrappedValue = false }.id("back")
                         VStack {
                             if opened.wrappedValue {
-                                Rectangle().fill(.red).id(1).width(100).height(60).motion(way)
+                                Rectangle().fill(.red).transition(id: 1).width(100).height(60).motion(way)
                             } else {
                                 MotionLayout([1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { card in
                                     Rectangle()
                                         .fill(.blue)
-                                        .id(card)
+                                        .transition(id: card)
                                         .motion(way)
                                         .onEvent(ViewContract.presentationFrameChanged) {
                                             if card == 1 { drawn.values.append($0) }
