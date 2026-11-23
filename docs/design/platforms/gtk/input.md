@@ -18,6 +18,19 @@ and removed when it stops, and every controller's signals name the view by
 its number. A view that leaves the tree stops listening first, so its widget
 holds none of them.
 
+### A controller taken off
+
+A controller a view stops listening for is taken off its widget once GTK has
+ended the event it may be dispatching (`GTKControllers.takeOff`, at the next
+idle of high priority), the widget and the controller held until then. The
+trap: a pan's own release can drop its view - the home screen's app pulled up
+closes - and GTK, still running the controllers of the widgets the release
+bubbles through, marks a controller taken off in its list; a dispatch nested
+in that one - a crossing GTK sends as the widget under the pointer goes -
+sweeps the marked entries out of the list the outer run is walking, and the
+outer run reads a freed controller (`SIGSEGV` in
+`gtk_event_controller_get_propagation_phase`, or its assertion failing).
+
 GTK hits a widget across its bounds, whatever it draws: a panel with nothing
 between its children still takes a click there, so a row answers past its
 words as well as on them. GTK tries a widget's children before the widget

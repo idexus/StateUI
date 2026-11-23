@@ -94,7 +94,7 @@ final class GTKListening {
                 for controller in made { gtk_widget_add_controller(widget, controller) }
                 controllers[kind] = made
             } else {
-                for controller in controllers[kind] ?? [] { gtk_widget_remove_controller(widget, controller) }
+                for controller in controllers[kind] ?? [] { GTKControllers.takeOff(controller, from: widget) }
                 controllers[kind] = nil
             }
         }
@@ -108,7 +108,7 @@ final class GTKListening {
             gtk_widget_add_controller(widget, drag)
             mirroredDrag = drag
         } else if !mirrors, let drag = mirroredDrag {
-            gtk_widget_remove_controller(widget, drag)
+            GTKControllers.takeOff(drag, from: widget)
             mirroredDrag = nil
         }
     }

@@ -33,7 +33,7 @@ final class GTKDragAndDrop {
         self.offered = offered
         if (offered.words != nil) != (source != nil) {
             if let source {
-                gtk_widget_remove_controller(widget, source)
+                GTKControllers.takeOff(source, from: widget)
                 self.source = nil
             } else {
                 source = makeSource()
@@ -41,7 +41,7 @@ final class GTKDragAndDrop {
         }
         guard offered.takesWords != before.takesWords || offered.takesFiles != before.takesFiles else { return }
         if let target {
-            gtk_widget_remove_controller(widget, target)
+            GTKControllers.takeOff(target, from: widget)
             self.target = nil
         }
         if offered.takesWords || offered.takesFiles { target = makeTarget(offered) }

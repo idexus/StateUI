@@ -86,6 +86,36 @@ private struct DragPage: View {
 
 @MainActor
 final class GTKGesturesTests: XCTestCase {
+    /// A CONTROLLER TAKEN OFF STAYS UNTIL GTK HAS ENDED ITS EVENT: a view that stops hearing a kind - its element
+    /// dropped by the pan's own release - leaves its controllers on the widget while GTK may be dispatching the
+    /// event; taken off then, a dispatch nested in it frees them under the one that runs them. By the next idle they
+    /// are gone.
+    func testAControllerTakenOffStaysUntilGTKHasEndedItsEvent() throws {
+        try onUIThread {
+            _ = GTKRenderer.running { TapsPage(count: 1) }
+            let widget = try XCTUnwrap(gtk_box_new(GTK_ORIENTATION_VERTICAL, 0))
+            g_object_ref_sink(UnsafeMutableRawPointer(widget))
+            defer { g_object_unref(UnsafeMutableRawPointer(widget)) }
+            let listening = GTKListening(widget: widget, number: -1)
+            let none = Self.controllers(on: widget)
+            listening.listen(for: [.drags])
+            let heard = Self.controllers(on: widget)
+            XCTAssertGreaterThan(heard, none)
+
+            listening.listen(for: [])
+            XCTAssertEqual(Self.controllers(on: widget), heard, "still on the widget while GTK's event may be under way")
+            GTKTestHost.pump(0.05)
+            XCTAssertEqual(Self.controllers(on: widget), none, "taken off by the next idle")
+        }
+    }
+
+    /// How many event controllers `widget` holds.
+    private static func controllers(on widget: GTKWidget) -> UInt32 {
+        let list = gtk_widget_observe_controllers(widget)
+        defer { g_object_unref(UnsafeMutableRawPointer(list)) }
+        return g_list_model_get_n_items(list)
+    }
+
     /// A press on a row that answers a tap taps as a button does, past its words where it draws nothing: let go over
     /// the row it taps, let go away it taps nothing, and back over the row before it lets go it taps.
     func testAPressTapsAsAButtonDoes() throws {

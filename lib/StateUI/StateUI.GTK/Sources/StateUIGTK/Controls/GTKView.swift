@@ -339,7 +339,7 @@ class GTKView {
     func setFocusChanged(_ action: ((Bool) -> Void)?) {
         onFocusChanged = action
         if action == nil, let focusController {
-            gtk_widget_remove_controller(widget, focusController)
+            GTKControllers.takeOff(focusController, from: widget)
             self.focusController = nil
         } else if action != nil, focusController == nil {
             let focus = gtk_event_controller_focus_new()!

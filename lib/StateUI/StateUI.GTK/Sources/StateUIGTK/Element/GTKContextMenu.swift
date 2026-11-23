@@ -55,7 +55,7 @@ final class GTKContextMenu {
 
     /// Takes the menu off the widget: its popover, its actions and what opened it.
     func remove() {
-        for controller in controllers { gtk_widget_remove_controller(widget, controller) }
+        for controller in controllers { GTKControllers.takeOff(controller, from: widget) }
         controllers = []
         gtk_widget_insert_action_group(widget, menu.group, nil)
         gtk_widget_unparent(popover)
