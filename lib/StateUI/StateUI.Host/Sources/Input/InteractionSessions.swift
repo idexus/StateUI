@@ -312,17 +312,22 @@ import StateUIFoundation
 
     // MARK: - A hand taken away
 
-    /// A write of the program names `lanes` of `state`, held by hands that do not wait for it: each such hand's
-    /// gesture ends there - the numbers written are the program's, its other numbers go onto where they were
-    /// going - and what the gesture says until it ends moves nothing.
+    /// A write of the program names `lanes` of `state`, held by hands that do not wait for it: each gesture holding
+    /// one ends there - the numbers written are the program's, its other numbers go onto where they were going -
+    /// and what it says until it ends moves nothing; another gesture on the same view holds on.
     /// Design: docs/design/host/interaction.md#a-write-of-the-program
     private func interrupted(_ state: Int32, _ lanes: [Int]) {
         let written = Set(lanes.map { Lane(state: state, lane: $0) })
         let mounts = Set(written.compactMap { held[$0]?.mount })
         for mount in mounts.sorted() {
-            lost[mount] = Set(held.values.filter { $0.mount == mount }.map(\.stream))
-            for lane in written where held[lane]?.mount == mount { held[lane] = nil }
-            cancel(held.filter { $0.value.mount == mount }.map(\.key))
+            for stream in [Stream.hand, .fingers] {
+                let gesture = { (hold: Hold) in hold.mount == mount && hold.stream == stream }
+                guard written.contains(where: { held[$0].map(gesture) == true }) else { continue }
+
+                lost[mount, default: []].insert(stream)
+                for lane in written where held[lane].map(gesture) == true { held[lane] = nil }
+                cancel(held.filter { gesture($0.value) }.map(\.key))
+            }
         }
     }
 

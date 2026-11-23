@@ -151,6 +151,58 @@ final class InteractionSessionsTests: XCTestCase {
         XCTAssertEqual(orbit.wrappedValue, Orbit(turn: 2, tilt: 3))
     }
 
+    /// A view the hand turns across and two fingers tilt: a light table's pan and pinch.
+    private func table(_ orbit: State<Orbit>) -> MotionLayout<[Int], Int, Orbit> {
+        let moved = orbit.traveling(linear)
+        return MotionLayout([0], parameters: moved) { Text("\($0)") } placements: { _, _ in
+            [Placement(Rect(x: 0, y: 0, width: 10, height: 10))]
+        }
+        .interaction(.simultaneous([
+            .value(moved, axis: \.turn, input: .translation(.horizontal, unit: .points(100))).range(0...4),
+            .value(moved, axis: \.tilt, input: .rotation(degreesPerUnit: 90)).range(0...4),
+        ]).release(.nearest(linear)))
+    }
+
+    /// A WRITE OF WHAT TWO FINGERS MOVE LEAVES ONE FINGER ITS OWN: a finger turning the table while the program
+    /// sends the tilt - two fingers' number, not the finger's - turns on, the tilt traveling beside it.
+    func testAWriteOfWhatTwoFingersMoveLeavesOneFingerItsOwn() throws {
+        let orbit = State(wrappedValue: Orbit())
+        bench.laid { self.table(orbit).node }
+        let (layout, runtime) = (try XCTUnwrap(bench.layout), try XCTUnwrap(bench.runtime))
+
+        bench.hand(.began)
+        bench.hand(.changed, moved: Point(x: 140, y: 0))
+        orbit.wrappedValue.tilt = 3
+        bench.frames(4)
+        bench.hand(.changed, moved: Point(x: 20, y: 0))
+
+        XCTAssertTrue(runtime.interactions.holds(layout), "the finger holds on")
+        XCTAssertEqual(try XCTUnwrap(bench.journey).value[0], 1.6, accuracy: 0.000_1, "the turn under the finger")
+    }
+
+    /// A WRITE ENDS THE GESTURE HOLDING WHAT IT WRITES, AND NO OTHER: the program sends the tilt while two fingers
+    /// tilt and the hand turns - the fingers' gesture ends, the tilt the program's, and the turn stays under the hand.
+    func testAWriteEndsTheGestureHoldingWhatItWritesAndNoOther() throws {
+        let orbit = State(wrappedValue: Orbit())
+        bench.laid { self.table(orbit).node }
+        let layout = try XCTUnwrap(bench.layout)
+        let runtime = try XCTUnwrap(bench.runtime)
+
+        bench.hand(.began)
+        bench.pinch(.began, degrees: 0)
+        bench.hand(.changed, moved: Point(x: 140, y: 0))
+        bench.pinch(.changed, degrees: 45)
+        orbit.wrappedValue.tilt = 3
+        bench.frames(4)
+        bench.hand(.changed, moved: Point(x: 20, y: 0))
+        bench.pinch(.changed, degrees: 90)
+
+        XCTAssertTrue(runtime.interactions.holds(layout), "the hand holds on")
+        let held = try XCTUnwrap(bench.journey)
+        XCTAssertEqual(held.value[0], 1.6, accuracy: 0.000_1, "the turn under the hand")
+        XCTAssertEqual(held.destination[1], 3, "the tilt the program's, the fingers moving it no more")
+    }
+
     /// A HAND THAT WAITS KEEPS THE NUMBER: the state is going where the program sent it at once, the number stays
     /// under the hand, and let go it travels where the program sent it last - not onto a snap of the hand's.
     func testAHandThatWaitsGoesWhereTheProgramSentItLast() throws {
