@@ -154,6 +154,34 @@ final class InteractionArbitrationTests: XCTestCase {
         XCTAssertTrue(told.said.contains("changed"), "the view went with the hand: \(told.said)")
     }
 
+    /// A PLATFORM GIVING A TOUCH TO ONE GESTURE ASKS WHOSE THE FIRST MOVE IS: a view held by its long press takes it
+    /// whichever way it goes, and the layout placing the view leaves it, a move along its own way too.
+    func testTheFirstMoveIsTheHeldViewsNotItsLayouts() throws {
+        let turn = State(wrappedValue: 0.0)
+        bench.laid {
+            MotionLayout([0, 1], parameters: turn.projectedValue) { _ in
+                Rectangle().interaction(.drag(.both, begins: .longPress))
+            } placements: { _, at in
+                (0..<2).map { Placement(Rect(x: (Double($0) - at) * 120, y: 0, width: 100, height: 40)) }
+            }
+            .interaction(.value(turn.projectedValue, input: .translation(.horizontal, unit: .points(120))).range(0...1))
+            .onItemDragged { _ in }
+            .layoutBodies(LayoutBody.none)
+            .node
+        }
+        let layout = try XCTUnwrap(bench.layout)
+        let view = try XCTUnwrap(layout.children.first?.children.first)
+        let (at, across, down) = (Point(x: 50, y: 20), Point(x: 40, y: 0), Point(x: 0, y: 40))
+        XCTAssertTrue(layout.takesHand(first: across), "no view held: the layout's way")
+
+        hear(.hand(.began, moved: .zero, speed: nil, point: at), on: layout)
+        hear(.hand(.began, moved: .zero, speed: nil, point: at), on: view)
+        bench.frames(Int(HandReading.longPress / 16) + 4)
+
+        XCTAssertTrue(view.takesHand(first: down), "held, the view's any way")
+        XCTAssertFalse(layout.takesHand(first: across), "and not the layout's")
+    }
+
     /// A VIEW'S PRESS AND ITS DRAG GO ON TOGETHER, EACH OVER ITS OWN NUMBERS: the view shrinks under the press
     /// while the hand carries it, and the press taken away lets the scale go and leaves the view in the hand.
     func testAViewsPressAndItsDragGoOnTogether() throws {

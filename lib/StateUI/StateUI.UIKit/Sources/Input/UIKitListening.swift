@@ -19,10 +19,10 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     /// What hears what the view heard, answering whether the element took it.
     var onHeard: ((HeardInput) -> Bool)?
 
-    /// Which way the hand moves the layout the view is, where one does; how the hand takes the view by itself,
-    /// and whether it holds it.
+    /// Which way the hand moves the layout the view is, where one does; whether the hand's first move begins over
+    /// the view, by the host layer's rule.
     var handWay: (() -> HandWay?)?
-    var handDrag: (() -> (drag: HostDrag?, holding: Bool))?
+    var takesHand: ((Point) -> Bool)?
 
     /// The view the hand's moves are measured in, which the hand itself does not move: the layout placing the
     /// view, else the view above it. A view the hand takes comes after it, and a move measured in the view itself
@@ -280,8 +280,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     /// declines is told all the same: the pan tells nothing of the press after it, which would stand still for the
     /// host layer and hold a view.
     func handBegins(first: Point) -> Bool {
-        let own = handDrag?()
-        let begins = HandReading.takes(first, way: handWay?(), drag: own?.drag, holding: own?.holding ?? false)
+        let begins = takesHand?(first) ?? false
         if !begins { hand(.changed, moved: first) }
         return begins
     }

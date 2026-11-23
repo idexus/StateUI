@@ -294,7 +294,12 @@ what follows of the decision is the same on every host:
   a layout the touches of its views first (Android's listener, the Web's
   bubbling) tells the layout the first move; claimed there along its way, it
   turned nothing and took the touch from the held icon, which stood lifted
-  under a hand that had gone.
+  under a hand that had gone. A toolkit that gives a touch to one of two
+  pans as it begins (UIKit, AppKit) asks the same rule whose the first move
+  is (`takesHand(first:)`): a layout's pan that began by its own way took
+  the touch, and the held view's pan, failed, heard neither its moves nor
+  its lift - the icon stood lifted, and the layout, placing a held view,
+  turned no more.
 
 ## A view's own press and drag
 

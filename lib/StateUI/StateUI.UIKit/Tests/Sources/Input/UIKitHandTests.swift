@@ -91,4 +91,43 @@ final class UIKitHandTests: XCTestCase {
 
         XCTAssertEqual(told.items, [], "no view lifted")
     }
+
+    /// A VIEW HELD BY ITS LONG PRESS KEEPS THE FIRST MOVE FROM ITS LAYOUT: UIKit gives a touch to one of the two pans,
+    /// so the layout's declines a move, whichever way it goes, while a view it places holds the hand - else it takes
+    /// the touch, and the held view, its own pan failed, hears neither its moves nor its lift.
+    @MainActor
+    func testAViewHeldByItsLongPressKeepsTheFirstMoveFromItsLayout() throws {
+        let (clock, told, turn) = (TestClock(), Told(), State(wrappedValue: 0.0))
+        let host = UIKitRenderer.running(clock: clock) {
+            MotionLayout([0, 1, 2], parameters: turn.projectedValue) { _ in
+                Rectangle()
+                    .fill(.red)
+                    .interaction(.drag(.both, begins: .longPress))
+            } placements: { _, at in
+                (0..<3).map { Placement(Rect(x: (Double($0) - at) * 100, y: 0, width: 80, height: 80)) }
+            }
+            .interaction(
+                .value(turn.projectedValue, input: .translation(.horizontal, unit: .frontItem))
+                    .reversed(true).range(0...2).snaps(.every(1)))
+            .onItemDragged { told.items.append($0.id) }
+            .width(300)
+            .height(100)
+        }
+        defer { host.finish() }
+        let element = try XCTUnwrap(host.runtime.tree.root?.first(type: .rectangle))
+        let held = try XCTUnwrap((element.native as? UIKitElement)?.listening)
+        let placing = try XCTUnwrap((element.handSpace?.native as? UIKitElement)?.listening)
+
+        // The finger goes down on the first view - both pans tell it - and stands still its time.
+        placing.hand(.began, moved: .zero, point: Point(x: 40, y: 40))
+        held.hand(.began, moved: .zero, point: Point(x: 40, y: 40))
+        for _ in 0..<Int(HandReading.longPress / 16) + 4 {
+            clock.now += 16
+            host.frame()
+        }
+        XCTAssertFalse(told.items.isEmpty, "held still its time, the view is lifted")
+
+        XCTAssertTrue(held.handBegins(first: Point(x: 30, y: 0)), "the held view's own pan takes the move")
+        XCTAssertFalse(placing.handBegins(first: Point(x: 30, y: 0)), "the layout's leaves it, along its way too")
+    }
 }

@@ -152,11 +152,9 @@ extension MountedElement {
             let now = runtime.clock.now()
             // A press on a view on its way out catches it where it stands: its flight ends, and nothing is told.
             if phase == .began, let stood = interruptFlight() { caught = stood }
-            // A view this layout places that the hand already holds by itself keeps it: the layout claims nothing.
-            // Design: docs/design/host/interaction.md#one-gesture-taking-anothers-touch
-            let way = handReading.claimed == nil && placesAHeldView ? nil : handWay
             let heard = handReading.hand(
-                phase, moved: moved, speed: speed, at: time ?? now, way: way, point: point, drag: handDrag, now: now)
+                phase, moved: moved, speed: speed, at: time ?? now, way: claimingWay, point: point, drag: handDrag,
+                now: now)
             // Caught and let go with no move, the view goes back to its place.
             if phase == .ended || phase == .cancelled, caught != nil, heard.reports.isEmpty {
                 caught = nil
@@ -314,6 +312,21 @@ extension MountedElement {
 
     /// Whether the hand holds the view itself.
     public var holdsView: Bool { handReading.holdsView }
+
+    /// Whether the hand's first move, `moved`, begins over the element by the host layer's rule: along the way the
+    /// element claims, any way where it holds a view or as its own drag begins - for a platform that gives a touch to
+    /// one gesture as it begins.
+    /// Design: docs/design/host/interaction.md#one-gesture-taking-anothers-touch
+    public func takesHand(first moved: Point) -> Bool {
+        HandReading.takes(moved, way: claimingWay, drag: handDrag, holding: holdsView)
+    }
+
+    /// The way the hand moves the element's numbers: none while a view its layout places, which the hand already
+    /// holds by itself, keeps it.
+    /// Design: docs/design/host/interaction.md#one-gesture-taking-anothers-touch
+    private var claimingWay: HandWay? {
+        handReading.claimed == nil && placesAHeldView ? nil : handWay
+    }
 
     /// Whether a view the element's layout program places is held by the hand by itself.
     var placesAHeldView: Bool {

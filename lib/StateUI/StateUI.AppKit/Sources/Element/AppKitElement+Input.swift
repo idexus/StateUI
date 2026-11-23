@@ -172,8 +172,7 @@ extension AppKitElement {
         let reader = AppKitHandReader(
             taking: { [weak self] input in self?.hear(input) ?? false },
             takesFirst: { [weak self] first in
-                guard let element = self?.element else { return true }
-                return HandReading.takes(first, way: element.handWay, drag: element.handDrag, holding: element.holdsView)
+                self?.element.takesHand(first: first) ?? true
             })
         view.addGestureRecognizer(reader.dragging)
         AppKitHandScroll.hear(reader, on: view)
