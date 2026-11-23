@@ -288,6 +288,13 @@ what follows of the decision is the same on every host:
 - A number is one hand's ([the hold](#the-hold)): another view's hand on
   it moves nothing, and a hand on another number of the same state moves
   its own.
+- A view a layout places that the hand already holds by itself - its long
+  press came - keeps the hand: the layout claims none of its moves, even
+  one along its own way (`placesAHeldView`). The trap: a toolkit that shows
+  a layout the touches of its views first (Android's listener, the Web's
+  bubbling) tells the layout the first move; claimed there along its way, it
+  turned nothing and took the touch from the held icon, which stood lifted
+  under a hand that had gone.
 
 ## A view's own press and drag
 

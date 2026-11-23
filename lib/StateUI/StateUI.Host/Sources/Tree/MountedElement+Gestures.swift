@@ -152,9 +152,11 @@ extension MountedElement {
             let now = runtime.clock.now()
             // A press on a view on its way out catches it where it stands: its flight ends, and nothing is told.
             if phase == .began, let stood = interruptFlight() { caught = stood }
+            // A view this layout places that the hand already holds by itself keeps it: the layout claims nothing.
+            // Design: docs/design/host/interaction.md#one-gesture-taking-anothers-touch
+            let way = handReading.claimed == nil && placesAHeldView ? nil : handWay
             let heard = handReading.hand(
-                phase, moved: moved, speed: speed, at: time ?? now, way: handWay, point: point, drag: handDrag,
-                now: now)
+                phase, moved: moved, speed: speed, at: time ?? now, way: way, point: point, drag: handDrag, now: now)
             // Caught and let go with no move, the view goes back to its place.
             if phase == .ended || phase == .cancelled, caught != nil, heard.reports.isEmpty {
                 caught = nil
@@ -312,6 +314,11 @@ extension MountedElement {
 
     /// Whether the hand holds the view itself.
     public var holdsView: Bool { handReading.holdsView }
+
+    /// Whether a view the element's layout program places is held by the hand by itself.
+    var placesAHeldView: Bool {
+        layoutProgram != nil && children.contains { $0.holdsPlacedView }
+    }
 
     /// A frame at `now` found the element's wheel open or its hand's reports waiting: the wheel let go where it has
     /// stood still long enough, then what the hand said since the last frame said at once.

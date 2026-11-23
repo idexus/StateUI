@@ -120,6 +120,40 @@ final class InteractionArbitrationTests: XCTestCase {
         XCTAssertEqual(layout.programPlaces.first?.scaleX, 1, "and nothing more of that press is the view's")
     }
 
+    /// A VIEW HELD BY ITS OWN LONG PRESS KEEPS THE HAND FROM ITS LAYOUT: held still its time, the view is the
+    /// hand's, and a first move along the layout's way - told the layout first, as a toolkit showing a layout the
+    /// touches of its views first tells it - moves the view, and the run stands.
+    func testAViewHeldByItsLongPressKeepsTheHandFromItsLayout() throws {
+        let turn = State(wrappedValue: 0.0)
+        let told = Told()
+        bench.laid {
+            MotionLayout([0, 1], parameters: turn.projectedValue) { _ in
+                Rectangle().interaction(.drag(.both, begins: .longPress))
+            } placements: { _, at in
+                (0..<2).map { Placement(Rect(x: (Double($0) - at) * 120, y: 0, width: 100, height: 40)) }
+            }
+            .interaction(.value(turn.projectedValue, input: .translation(.horizontal, unit: .points(120))).range(0...1))
+            .onItemDragged { drag in told.said.append("\(drag.phase)") }
+            .layoutBodies(LayoutBody.none)
+            .node
+        }
+        let layout = try XCTUnwrap(bench.layout)
+        let view = try XCTUnwrap(layout.children.first?.children.first)
+        let at = Point(x: 50, y: 20)
+
+        hear(.hand(.began, moved: .zero, speed: nil, point: at), on: layout)
+        hear(.hand(.began, moved: .zero, speed: nil, point: at), on: view)
+        bench.frames(Int(HandReading.longPress / 16) + 4)
+        XCTAssertTrue(view.handReading.holdsView, "held still its time: the view's")
+        let layoutTook = hear(.hand(.changed, moved: Point(x: 40, y: 0), speed: nil), on: layout)
+        hear(.hand(.changed, moved: Point(x: 40, y: 0), speed: nil), on: view)
+        bench.cycle()
+
+        XCTAssertFalse(layoutTook, "the layout leaves a hand its view holds")
+        XCTAssertEqual(turn.wrappedValue, 0, "the run stands")
+        XCTAssertTrue(told.said.contains("changed"), "the view went with the hand: \(told.said)")
+    }
+
     /// A VIEW'S PRESS AND ITS DRAG GO ON TOGETHER, EACH OVER ITS OWN NUMBERS: the view shrinks under the press
     /// while the hand carries it, and the press taken away lets the scale go and leaves the view in the hand.
     func testAViewsPressAndItsDragGoOnTogether() throws {
