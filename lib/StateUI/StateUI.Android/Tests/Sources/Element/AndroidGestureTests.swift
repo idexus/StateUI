@@ -196,8 +196,8 @@ final class AndroidGestureTests: XCTestCase {
     /// A SECOND FINGER IS THE VIEW'S IT LANDS ON, as Android hands a user's touches down a window: a finger dragging
     /// one view while a second presses the view beside it - the second is tapped, and the first pans with its one
     /// finger, pinched by none; the touch cancelled with both down cancels the pan and taps nothing.
-    func testASecondFingerIsTheViewsItLandsOn() throws {
-        try onMainActor {
+    func testASecondFingerIsTheViewsItLandsOn() {
+        onMainActor {
             let heard = Received<String>()
             let host = AndroidRenderer.running {
                 VStack {
@@ -234,8 +234,8 @@ final class AndroidGestureTests: XCTestCase {
 
     /// A FINGER HELD STANDS WHERE IT IS on the screen while a second presses the view beside it, in a layout lower
     /// on the screen than the window's top: the pan goes only across, as the held finger does.
-    func testAFingerHeldStandsWhereItIsWhileASecondPresses() throws {
-        try onMainActor {
+    func testAFingerHeldStandsWhereItIsWhileASecondPresses() {
+        onMainActor {
             let down = Received<Int>(), tapped = Received<String>()
             let host = AndroidRenderer.running {
                 VStack {
@@ -268,8 +268,8 @@ final class AndroidGestureTests: XCTestCase {
 
     /// TWO FINGERS ON ONE VIEW ARE ONE PINCH through the layouts above it - the second landing on the view, or past
     /// it where no view of the layout stands, as Android gives a finger no view takes to the view the touch has.
-    func testTwoFingersThroughALayoutAreOnePinchOfTheViewTheyBeganOn() throws {
-        try onMainActor {
+    func testTwoFingersThroughALayoutAreOnePinchOfTheViewTheyBeganOn() {
+        onMainActor {
             let heard = Received<String>()
             let host = AndroidRenderer.running {
                 VStack {
