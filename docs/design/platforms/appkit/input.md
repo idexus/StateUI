@@ -196,8 +196,9 @@ AppKit begins one drag of a press and no second beside it, so a pointer's
 drag begins by the host layer's rule, as a scroll's first move does: the
 recognizer is its own delegate, and asked whether to begin it answers
 whether the view's hand takes the press's first move (`AppKitHandReader.begins`,
-`HandReading.takes`) - the way its values go, the way its own drag begins,
-any way where it holds the view. AppKit asks before the drag has a
+`MountedElement.takesHand(first:)`) - the way its values go, the way its own
+drag begins, any way where it holds the view, none while a view its layout
+places holds the hand by itself. AppKit asks before the drag has a
 translation, so the first move is read off the press: where it went down
 and where the pointer stands. A move the view leaves is told to it all the
 same, and is the hand's of what holds the view - whose drag waits for the
@@ -209,6 +210,13 @@ dragged over boards that stay.
 The trap is a drag that begins at any move. A view with a drag of its own
 then begins it for a move it does not take, AppKit begins no other, and the
 run under the view never turns.
+
+The drag's moves, its first one and its lift's speed are read in the view
+the host layer names for the hand (`handSpace`,
+[where the hand is measured](../../host/interaction.md#where-the-hand-is-measured));
+where the press went down, in the view itself. Read in the view, a held icon
+drawn 1.18 times its size heard the hand's 245 points as 208 and, let go at
+once, landed a place short of the hand.
 
 AppKit hands a scroll event to the view under the pointer, which a view of
 AppKit's own class cannot be taught to offer to a hand, so the host takes

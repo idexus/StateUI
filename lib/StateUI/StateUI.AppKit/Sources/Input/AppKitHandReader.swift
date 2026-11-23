@@ -93,9 +93,17 @@ final class AppKitHandDrag: NSPanGestureRecognizer, NSGestureRecognizerDelegate 
     private var last = Point.zero
     private var down = Point.zero
 
-    /// Where the pointer pressed stood at its last move, in the view: what the drag's first move is read from.
+    /// Where the pointer pressed went down and stood at its last move, in the view the hand is measured in: what the
+    /// drag's first move is read from.
+    private var start = Point.zero
     private var latest = Point.zero
     private var dragged = false
+
+    /// The view the hand is measured in, which the hand does not move: the layout placing the view, else the view
+    /// above it.
+    /// Design: docs/design/host/interaction.md#where-the-hand-is-measured
+    var handSpace: (() -> NSView?)?
+    private var measured: NSView? { handSpace?() ?? view?.superview ?? view }
     private var mirrors = false
 
     /// The hand as the host was told it.
@@ -114,11 +122,11 @@ final class AppKitHandDrag: NSPanGestureRecognizer, NSGestureRecognizerDelegate 
     /// the view, whose drag AppKit would not begin beside this one.
     func gestureRecognizerShouldBegin(_ recognizer: NSGestureRecognizer) -> Bool {
         // AppKit asks before its drag has a translation: the first move is read off the press itself.
-        reader?.begins(first: Point(x: latest.x - down.x, y: latest.y - down.y)) ?? true
+        reader?.begins(first: Point(x: latest.x - start.x, y: latest.y - start.y)) ?? true
     }
 
     override func mouseDragged(with event: NSEvent) {
-        if let at = point(of: event) { latest = at }
+        if let at = point(of: event, in: measured) { latest = at }
         super.mouseDragged(with: event)
     }
 
@@ -139,20 +147,21 @@ final class AppKitHandDrag: NSPanGestureRecognizer, NSGestureRecognizerDelegate 
         mirrors = AppKitMirroredRecognizer.takes(event.modifierFlags)
             && view?.gestureRecognizers.contains { $0 is AppKitMirroredRecognizer } == true
         guard !mirrors else { return }
-        guard let at = point(of: event) else { return takenAway(at: .began) }
+        guard let at = point(of: event, in: view) else { return takenAway(at: .began) }
         pressed(at: at)
+        if let here = point(of: event, in: measured) { (start, latest) = (here, here) }
     }
 
     override func mouseUp(with event: NSEvent) {
         super.mouseUp(with: event)
         guard !dragged, !mirrors, gesture.isUnderWay else { return }
-        if point(of: event) == nil { takenAway(at: .ended) } else { released() }
+        if point(of: event, in: view) == nil { takenAway(at: .ended) } else { released() }
     }
 
     /// The pointer pressed at `point` of the view: the hand begins there.
     func pressed(at point: Point) {
         down = point
-        latest = point
+        (start, latest) = (point, point)
         last = .zero
         dragged = false
         gesture.told(.began)
@@ -181,27 +190,27 @@ final class AppKitHandDrag: NSPanGestureRecognizer, NSGestureRecognizerDelegate 
         reader?.hand(.ended, moved: .zero, speed: speed)
     }
 
-    /// Where `event` happened in the view, where the view is drawn, from its top left; nil where no point lands in
-    /// the view, flattened by its drawing.
-    private func point(of event: NSEvent) -> Point? {
-        guard let view else { return nil }
-        return view.drawnPoint(fromWindow: event.locationInWindow).map(view.topLeft)
+    /// Where `event` happened in `space`, where it is drawn, from its top left; nil where no point lands in it,
+    /// flattened by its drawing.
+    private func point(of event: NSEvent, in space: NSView?) -> Point? {
+        guard let space else { return nil }
+        return space.drawnPoint(fromWindow: event.locationInWindow).map(space.topLeft)
     }
 
     @objc private func recognized(_ recognizer: NSPanGestureRecognizer) {
-        recognized(state, at: location(in: nil), moved: translation(in: nil), speed: velocity(in: view))
+        recognized(state, at: location(in: nil), moved: translation(in: nil), speed: velocity(in: measured))
     }
 
     /// AppKit's drag at `state`, the press at `now` of the window, having moved by `moved` there since it began, at
-    /// `speed` in the view's points.
+    /// `speed` in the points of the view the hand is measured in.
     func recognized(_ state: NSGestureRecognizer.State, at now: NSPoint, moved: NSPoint, speed: NSPoint = .zero) {
         // The press began the hand: the drag's beginning is a step of it.
-        guard let view, let phase = GesturePhase(state).map({ $0 == .began ? GesturePhase.changed : $0 }),
-              gesture.tells(phase)
+        guard let view, let space = measured,
+              let phase = GesturePhase(state).map({ $0 == .began ? GesturePhase.changed : $0 }), gesture.tells(phase)
         else { return }
-        // How far the press came, measured where the view is drawn, from its top left.
-        guard let at = view.drawnPoint(fromWindow: now).map(view.topLeft),
-              let from = view.drawnPoint(fromWindow: NSPoint(x: now.x - moved.x, y: now.y - moved.y)).map(view.topLeft)
+        // How far the press came, measured in a view the hand does not move; a view flattened under it takes it away.
+        guard view.drawnPoint(fromWindow: now) != nil, let at = space.drawnPoint(fromWindow: now).map(space.topLeft),
+              let from = space.drawnPoint(fromWindow: NSPoint(x: now.x - moved.x, y: now.y - moved.y)).map(space.topLeft)
         else { return takenAway(at: phase) }
         let total = Point(x: at.x - from.x, y: at.y - from.y)
 
@@ -214,7 +223,7 @@ final class AppKitHandDrag: NSPanGestureRecognizer, NSGestureRecognizerDelegate 
             reader?.hand(.changed, moved: Point(x: total.x - last.x, y: total.y - last.y))
             last = total
         case .ended:
-            released(speed: Point(x: Double(speed.x), y: Double(view.isFlipped ? speed.y : -speed.y)))
+            released(speed: Point(x: Double(speed.x), y: Double(space.isFlipped ? speed.y : -speed.y)))
         case .cancelled, .failed:
             gesture.told(.cancelled)
             reader?.hand(.cancelled, moved: .zero)

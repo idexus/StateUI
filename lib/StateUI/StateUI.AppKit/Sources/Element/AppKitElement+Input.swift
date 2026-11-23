@@ -174,6 +174,7 @@ extension AppKitElement {
             takesFirst: { [weak self] first in
                 self?.element.takesHand(first: first) ?? true
             })
+        reader.dragging.handSpace = { [weak self] in (self?.element.handSpace?.native as? AppKitElement)?.view }
         view.addGestureRecognizer(reader.dragging)
         AppKitHandScroll.hear(reader, on: view)
         handReader = reader

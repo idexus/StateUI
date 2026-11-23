@@ -160,6 +160,35 @@ final class AppKitDrawnInputTests: XCTestCase {
         XCTAssertEqual(heard, [.began, .cancelled])
     }
 
+    /// THE HAND IS READ IN A VIEW IT DOES NOT MOVE: a view the hand lifts is drawn larger, or smaller, and comes after
+    /// the hand, so its own points tell another distance than the hand went. Read in the view above it, a view drawn
+    /// at half its size hears ten points as ten - and the press still goes down where it is, in its own points.
+    func testTheHandOnAViewDrawnSmallerIsReadInAViewItDoesNotMove() throws {
+        let stage = ViewToFlatten()
+        defer { stage.window.orderOut(nil) }
+        var half = HostDrawingTransform.identity
+        (half.scaleX, half.scaleY) = (0.5, 0.5)
+        stage.drawing.own = half
+        var (moved, pressed) = (Point(x: 0, y: 0), Point(x: -1, y: -1))
+        let reader = AppKitHandReader { input in
+            if case .hand(_, let step, _, _, let point) = input {
+                (moved.x, moved.y) = (moved.x + step.x, moved.y + step.y)
+                if let point { pressed = point }
+            }
+            return true
+        }
+        stage.view.addGestureRecognizer(reader.dragging)
+
+        reader.dragging.mouseDown(with: try event(.leftMouseDown, at: stage.middle, in: stage.window))
+        let on = NSPoint(x: stage.middle.x + 10, y: stage.middle.y - 10)
+        reader.dragging.recognized(.changed, at: on, moved: NSPoint(x: 10, y: -10))
+
+        XCTAssertEqual(moved.x, 10, accuracy: 0.001, "across, as the view above it measures it")
+        XCTAssertEqual(moved.y, 10, accuracy: 0.001, "down, as the view above it measures it")
+        XCTAssertEqual(pressed.x, 20, accuracy: 0.001, "the press went down at the view's middle, in its own points")
+        XCTAssertEqual(pressed.y, 20, accuracy: 0.001)
+    }
+
     /// A click of a run of taps let go on a view flattened under it is no tap; on a view drawn whole it is one.
     func testAClickOnAViewFlattenedUnderItIsNoTap() throws {
         for flattened in [true, false] {
