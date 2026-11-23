@@ -381,6 +381,24 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   element is put in the page, and that call from the page ended by itself in the middle of the one laying the page
   out - a call made inside another is now a part of it.
 
+- **A view held by its long press over a motion layout goes with the hand, whichever way.** On Android and the Web
+  a held icon dragged along the layout's own way stood still: the layout took the hand from it and turned nothing.
+  On iOS and macOS the same rule now decides which gesture begins, so the layout's pan never takes a held view's
+  touch.
+
+- **On macOS a press dragged on a view drawn larger or smaller tells how far the hand went.** A pan on a view a
+  layout draws at a scale heard the distance divided by it: an app pulled slowly on a home screen flew off the top.
+  A view lifted larger by its long press and let go at once landed a place short of the hand.
+
+- **On Android a short, fast throw of a view the hand carries reads its speed.** The speed was read where the finger
+  stood in the moving view, so a card thrown up 90 points in 60 ms read as moving down and was never dismissed.
+
+- **On Android a faded layout draws what stands past its edges.** A layout fading out cut the views drawn beyond its
+  bounds - tiles switched back mid-way between a grid and a row stood cut flat at its bottom for a few frames.
+
+- **On GTK an app no longer crashes when a gesture's release removes the view it was on.** Pulling an app closed on a
+  home screen freed a controller GTK was still dispatching the release to.
+
 ## 0.8.6 - 2026-11-16
 
 ### Breaking changes
