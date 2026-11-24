@@ -329,7 +329,7 @@ extension LayoutDirection {
     /// Where a place worked out left to right stands in `room` laid out this way: right to left, turned
     /// about the room's middle, so a row fills from the right and padding and margins swap sides.
     /// Design: docs/design/host/layout.md#right-to-left
-    func places(_ place: Rect, in room: Rect) -> Rect {
+    @_spi(Host) public func places(_ place: Rect, in room: Rect) -> Rect {
         guard self == .rightToLeft else { return place }
         return Rect(x: room.x + room.width - (place.x - room.x) - place.width, y: place.y,
                     width: place.width, height: place.height)

@@ -279,8 +279,12 @@ its box in the layout says nothing of the place: read so, a card a deck draws
 at half its size, kept as it leaves, was drawn from a shared presentation as
 far off as its place - fifty points
 (`View/MotionLayout.aViewItDrawsSmallerGoesAlongAsItIsDrawn`). A view a run
-stands left to right says the run's place; one it stands right to left, its
-box as laid out.
+stands says the run's place - right to left, that place turned about the
+middle of the room the run was given, the one read where a report asks for it
+(host/layout.md, right to left). Its box as laid out stands every view a run
+stands right to left at the room's right corner: read so, with the corner
+worked out from the place, the two views of a mirrored run said they stood
+as one (`MotionLayout.mirroredRightToLeftItsViewsStandTurnedAboutItsMiddle`).
 
 A view observes its size once (`WebDOMView.followSize`): its box drawn again
 where a gradient is in it, its drawing - a shape's, a canvas's - and its

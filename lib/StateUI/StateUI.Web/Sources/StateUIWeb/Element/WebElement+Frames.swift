@@ -48,14 +48,17 @@ extension WebElement: FrameReporter {
 
     /// Where the view's place stands now in the layout placing it: on its way where it travels - the browser lays
     /// it out at its slot all the while, and draws it moved - where a run stands it, the run's place, which the
-    /// browser draws as a move from the layout's corner; else as that layout laid it out.
+    /// browser draws as a move from the layout's corner, right to left turned about the run's room; else as that
+    /// layout laid it out.
     /// Design: docs/design/platforms/web/layout.md#where-a-view-stands
     var placeStanding: Rect? {
         if let traveling = view?.traveling { return traveling }
-        if let view, let run = view.placedByRun, !view.placedFromRight {
-            return Rect(x: run.bounds.x, y: run.bounds.y, width: max(0, run.bounds.width), height: max(0, run.bounds.height))
-        }
-        return placeInLayout
+        guard let view, let run = view.placedByRun else { return placeInLayout }
+        let place = Rect(x: run.bounds.x, y: run.bounds.y, width: max(0, run.bounds.width), height: max(0, run.bounds.height))
+        guard view.placedFromRight else { return place }
+        guard let layout = layoutParent?.view, let room = WebRelay.places([(layout.node, layout.node)]).first ?? nil
+        else { return placeInLayout }
+        return LayoutDirection.rightToLeft.places(place, in: Rect(x: 0, y: 0, width: room.width, height: room.height))
     }
 
     /// Where the view stands in the layout placing it, as that layout laid it out - no transform in it, and its place
