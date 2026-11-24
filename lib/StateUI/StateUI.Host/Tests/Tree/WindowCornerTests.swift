@@ -52,6 +52,30 @@ final class WindowCornerTests: XCTestCase {
         XCTAssertEqual(corner, Point(x: 100, y: 60), "the deck's corner with its place added, no scale in it")
     }
 
+    /// A VIEW ITS LAYOUT'S PROGRAM PLACES stands where the program put it, drawn as it is or not: a toolkit laying
+    /// out apart from the display frame the program is asked in stands it there only at its next pass.
+    func testACornerIsWhereTheProgramPlacedTheView() throws {
+        HalvedDeckApplication.register()
+        let clock = WoundClock()
+        let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let deck = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
+        deck.reportFrame([0, 0, 300, 200, 10, 20, 10, 20], in: runtime)
+        clock.time = 16
+        runtime.displayCycle.frame(now: 16)
+        runtime.pump.turn()
+        let first = try XCTUnwrap(deck.children.first)
+        XCTAssertEqual(first.placingTransform, .identity, "placed by the program, drawn as it is")
+
+        // The toolkit has not laid the deck out since: it holds the card at the deck's corner.
+        let corner = first.cornerInWindow(
+            toolkit: { $0 === first || $0 === deck ? Point(x: 10, y: 20) : nil },
+            place: { $0 === first ? Point(x: 40, y: 40) : nil },
+            scrolled: { _ in Point(x: 0, y: 0) })
+        XCTAssertEqual(corner, Point(x: 50, y: 60), "the deck's corner with the program's place added")
+    }
+
     /// A rectangle moved by a transform of its own, and one in a moved layout, stand where their layouts placed them:
     /// the corner of the layout above, their place in it added and its scroll taken away - never the toolkit's,
     /// which moves with the drawing; one under no transform stands at the toolkit's own.

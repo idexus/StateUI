@@ -492,10 +492,14 @@ toolkit's conversion to the window carries the transforms of the view and of
 every view above it on most hosts, so the rule is the host layer's
 (`MountedElement.cornerInWindow`): where no transform stands on the element
 or a layout above it - its own, or the one its layout's program draws it
-with, a side card of a deck drawn smaller - the toolkit's own corner, exact under bars, insets and
-scrolls; else the corner of the layout placing it, its place there added and
-that layout's scroll taken away, down from the nearest layout under no
-transform. A host hands it its toolkit's corner, an element's place and a
+with, a side card of a deck drawn smaller - and no layout's program places
+either, the toolkit's own corner, exact under bars, insets and scrolls; else
+the corner of the layout placing it, its place there added and that layout's
+scroll taken away, down from the nearest layout neither transformed nor
+placed by a program. A program is asked in the display frame, and a toolkit
+laying out apart from it - WinUI - stands a view there only at its next
+pass: the trap, a deck's front card made as the board came back from its
+detail set out from that detail shifted by its whole place in the deck. A host hands it its toolkit's corner, an element's place and a
 scroller's offset (`windowCorner`), and its driver reads a press's point from
 that corner (`HostDriver.reaches`). AppKit's conversion carries no layer
 transform, so its own corner is the rule's answer and AppKit reads it alone.

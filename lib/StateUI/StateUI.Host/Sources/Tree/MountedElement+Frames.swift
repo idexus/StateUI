@@ -188,26 +188,28 @@ extension MountedElement {
     }
 
     /// Where the top left corner of the element's laid-out rectangle stands in its window, no transform in it: the
-    /// toolkit's own (`toolkit`) where none stands on the element or a layout above it, else the corner of the
-    /// layout placing it, with its `place` there added and that layout's `scrolled` offset taken away.
+    /// toolkit's own (`toolkit`) where no transform and no layout's program stands on the element or a layout above
+    /// it, else the corner of the layout placing it, with its `place` there added and that layout's `scrolled`
+    /// offset taken away.
     /// Design: docs/design/host/runtime.md#a-corner-in-the-window
     public func cornerInWindow(
         toolkit: (MountedElement) -> Point?, place: (MountedElement) -> Point?, scrolled: (MountedElement) -> Point
     ) -> Point? {
-        guard standsTransformed, let parent = layoutParent, let at = place(self),
+        guard standsApartFromItsToolkit, let parent = layoutParent, let at = place(self),
               let above = parent.cornerInWindow(toolkit: toolkit, place: place, scrolled: scrolled)
         else { return toolkit(self) }
         let scroll = scrolled(parent)
         return Point(x: above.x + at.x - scroll.x, y: above.y + at.y - scroll.y)
     }
 
-    /// Whether a transform - a move, a turn, a size, its own or the one its layout's program draws it with - stands on
-    /// the element or on a layout above it.
-    var standsTransformed: Bool {
+    /// Whether its toolkit's corner may not be where the element stands: a transform - a move, a turn, a size - stands
+    /// on it or on a layout above it, or a layout's program places one of them, which a toolkit laying out apart from
+    /// the display frame stands there only at its next pass.
+    var standsApartFromItsToolkit: Bool {
         var each: MountedElement? = self
         while let element = each {
             if Self.transforms.contains(where: { (element.number($0.property) ?? $0.none) != $0.none }) { return true }
-            if let placing = element.placingTransform, placing != .identity { return true }
+            if element.placingTransform != nil { return true }
             each = element.layoutParent
         }
         return false
