@@ -225,7 +225,8 @@ final class AndroidImageViewTests: XCTestCase {
 
     /// Turns the UI thread until the readings on their way have landed.
     @MainActor private static func waitForReadings() {
-        for _ in 0..<100 where AndroidPictures.readingsOnTheirWay > 0 {
+        for _ in 0..<100 {
+            guard AndroidPictures.readingsOnTheirWay > 0 else { break }
             TestWindow.run(for: 20)
         }
     }

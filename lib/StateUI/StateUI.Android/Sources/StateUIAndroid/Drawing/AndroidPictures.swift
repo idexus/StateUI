@@ -67,9 +67,8 @@ enum AndroidPictures {
     }
 
     /// The readings on their way beside the UI thread, by ticket, and the views waiting for each.
-    private static var onTheirWay: [Int64: Reading] = [:]
+    private static let onTheirWay = Numbered<Reading>()
     private static var waiting: [Reading: [Waiting]] = [:]
-    private static var lastTicket: Int64 = 0
 
     /// How many readings are on their way.
     static var readingsOnTheirWay: Int { onTheirWay.count }
@@ -146,9 +145,7 @@ enum AndroidPictures {
         guard kept[reading] == nil, let found = encoded(picture) else { return take(picture, sample: sample) }
 
         if waiting[reading] == nil {
-            lastTicket += 1
-            onTheirWay[lastTicket] = reading
-            read(found.encoded, density: found.density, sample: sample, later: lastTicket)
+            read(found.encoded, density: found.density, sample: sample, later: onTheirWay.hold(reading))
         }
         waiting[reading, default: []].append(Waiting(view: view))
         return nil
@@ -157,7 +154,7 @@ enum AndroidPictures {
     /// The reading under `ticket` landed, its bitmap nil where none was read: each view still waiting for it takes
     /// it, and one no view takes is let go.
     static func landed(ticket: Int64, bitmap: JavaObject?) {
-        guard let reading = onTheirWay.removeValue(forKey: ticket) else { return }
+        guard let reading = onTheirWay.take(ticket) else { return }
 
         let views = waiting.removeValue(forKey: reading) ?? []
         guard let bitmap, reading.density == displayDensity else { return }
