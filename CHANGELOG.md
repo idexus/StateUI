@@ -340,9 +340,10 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   hand alone. `.containerLength` is the view's own length; `.frontItem` is a motion layout's, and is refused
   elsewhere.
 - **A write of the program under the hand.** `Interaction.programWrites(_:)` takes an
-  `InteractionProgramWrites`: `.interrupt`, unless said, or `.deferLatest` - the state is going where the program
-  sent it at once, the value stays under the hand, and let go it travels where the program sent it last. A write
-  of another number of the same state leaves the hand its own either way.
+  `InteractionProgramWrites`: `.interrupt`, unless said - the value written travels where the program sent it from
+  under the hand, and the gesture holds its other values on - or `.deferLatest` - the state is going where the
+  program sent it at once, the value stays under the hand, and let go it travels where the program sent it last. A
+  write of another number of the same state leaves the hand its own either way.
 - **Snaps with no range.** `.snaps(.every(1))` on a value given no range is every whole number, worked out and
   never listed, and a list stands as written; only `.endpoints` needs a range.
 - **A view's two rectangles.** `.frame(into:stage:)` and `.onFrameChanged(in:stage:)` take a `GeometryStage`:

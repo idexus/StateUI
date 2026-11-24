@@ -923,8 +923,9 @@ While the hand holds a value, the value stands under the hand: the state
 itself is the snap it is bound for, and `$turn.journey.sample` says where the
 hand has it. A write of the program meets the hand as the interaction's
 `.programWrites(_:)` says, an `InteractionProgramWrites`. `.interrupt`, unless
-said, takes the value from the hand: the gesture ends there and the value
-travels where the program sent it from under the hand. `.deferLatest` lets the
+said, takes the value from the hand: it travels where the program sent it
+from under the hand, the gesture moves it no more until it ends, and every
+other value of that gesture stays under the hand. `.deferLatest` lets the
 hand keep it - a carousel turning by itself does not pull a card from under a
 finger: the state is going where the program sent it at once, and the value
 travels there once the hand lets go. Either way a write of another number of

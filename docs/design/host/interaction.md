@@ -205,10 +205,10 @@ the state: a write of another number of the same state leaves the hand its
 own, and both travel beside each other.
 
 ```text
-  .interrupt     the gesture ends there: the lane written is the program's,
-                 traveling from under the hand; the gesture's other numbers
-                 go onto where they were bound; what it says until it ends
-                 moves nothing, and the next gesture moves again
+  .interrupt     the lane written is the program's, traveling from under
+                 the hand; what the gesture says of it until it ends moves
+                 nothing, and the next gesture moves it again; the
+                 gesture's other numbers stay under the hand
   .deferLatest   the hand keeps the lane: the state is going where the
                  program sent it at once, the lane stays under the hand and
                  names no rest over it; let go - or taken away - it travels
@@ -217,11 +217,12 @@ own, and both travel beside each other.
 ```
 
 A gesture is one hand's, or two fingers': a hold remembers which took it.
-A write ends the gestures that hold a number it writes, and no other - the
-hand turning a table holds on while the program sends the zoom two fingers
-spread, and two fingers that held nothing move their own number from their
-first report - and a gesture that begins or is over is forgotten as one that
-lost its numbers, so the sessions keep nothing of a view no hand is on.
+A write takes exactly the lanes it writes, from whichever gesture holds
+them - two fingers spreading and turning a light table turn on while the
+program sends the zoom, the hand panning it holds on, and two fingers that
+held nothing move their own number from their first report - and what a
+write took is forgotten as the gesture that held it begins or is over, so
+the sessions keep nothing of a view no hand is on.
 
 ## A hand taken away
 
@@ -232,8 +233,8 @@ taking is no letting go. Who takes it decides how a number it held goes on:
   who takes it                         the number held
   the platform - its cancel, a         let go with no speed: no throw, onto the rest
   capture lost, its window gone        it was bound for, by its release's approach
-  a write of the program               the numbers written are the program's; the hand's
-                                       others go where they were bound
+  a write of the program               the numbers written are the program's; the hand
+                                       holds its others on
   its program described again          a number it moves no longer goes where it was bound
   its element leaving the tree         what its hand held goes where it was bound
 ```

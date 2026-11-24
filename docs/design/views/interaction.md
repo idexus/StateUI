@@ -93,8 +93,9 @@ do.
 ## A write of the program
 
 `InteractionProgramWrites` says what a write of the program does to a value
-the hand holds: `.interrupt`, unless said, ends the hand's gesture there and
-the value travels where the program sent it from under the hand;
+the hand holds: `.interrupt`, unless said, takes the value from the hand -
+it travels where the program sent it from under the hand, the gesture moves
+it no more until it ends, and the gesture's other values stay under it;
 `.deferLatest` keeps the value under the hand - the state going where the
 program sent it at once - and sends it there once the hand lets go. A write
 of another number of the same state meets no hand at all

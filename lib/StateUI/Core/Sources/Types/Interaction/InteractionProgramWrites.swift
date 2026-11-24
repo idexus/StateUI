@@ -9,8 +9,8 @@
 ///
 /// Design: docs/design/views/interaction.md#a-write-of-the-program
 public enum InteractionProgramWrites: Equatable, Sendable {
-    /// The write takes the value from the hand: the hand's gesture ends there, and the value travels to where the
-    /// program sent it from where the hand held it.
+    /// The write takes the value from the hand: it travels to where the program sent it from where the hand held
+    /// it, and the gesture moves it no more until it ends; the gesture's other values stay under the hand.
     case interrupt
 
     /// The hand keeps the value: the state is going where the program sent it at once, the value stays under the

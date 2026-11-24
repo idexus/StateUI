@@ -27,17 +27,23 @@ import StateUIFoundation
     /// What of the hand a gesture is: one hand, or two fingers.
     private enum Stream { case hand, fingers }
 
+    /// A number a program's write took from a gesture: what the gesture says of it until it ends moves nothing.
+    private struct Taken: Hashable {
+        let mount: UInt64
+        let stream: Stream
+        let lane: Lane
+    }
+
     private let channels: StateChannels
     private let now: () -> Double
     private let reducesMotion: () -> Bool
 
-    /// Every number held, and the gestures a program's write took the numbers from, by their element's mount:
-    /// what such a gesture says until it ends moves nothing.
+    /// Every number held, and the numbers a program's write took from the gestures holding them.
     private var held: [Lane: Hold] = [:]
-    private var lost: [UInt64: Set<Stream>] = [:]
+    private var taken: Set<Taken> = []
 
-    /// How many numbers a hand holds, and gestures that lost theirs.
-    var entries: Int { held.count + lost.count }
+    /// How many numbers a hand holds, and numbers writes took from gestures still under way.
+    var entries: Int { held.count + taken.count }
 
     /// Sessions writing `channels`, on the clock `now`.
     public init(channels: StateChannels, now: @escaping () -> Double, reducesMotion: @escaping () -> Bool) {
@@ -69,10 +75,8 @@ import StateUIFoundation
             over(.hand, on: element.mount)
             show(axes.compactMap { axis in take(axis, by: .hand, on: element).map { (axis, $0) } })
         case .changed:
-            guard lost[element.mount]?.contains(.hand) != true else { return }
-
             var shown: [(InteractionAxis, Double)] = []
-            for axis in axes {
+            for axis in axes where !isTaken(axis, from: .hand, on: element) {
                 // A move with no beginning heard is one: the number is taken where it stands.
                 guard let value = mine(axis, on: element)?.value ?? take(axis, by: .hand, on: element),
                       // A room not yet measured draws no view, so a hand over it moves none.
@@ -141,7 +145,6 @@ import StateUIFoundation
         let axes = axes(of: element) { if case .translation = $0 { false } else { true } }
         guard !axes.isEmpty else { return }
         if phase == .began || phase == .ended || phase == .cancelled { over(.fingers, on: element.mount) }
-        guard phase != .changed || lost[element.mount]?.contains(.fingers) != true else { return }
 
         let (scale, degrees, speed) = (scale.isFinite && scale > 0 ? scale : 1, degrees.isFinite ? degrees : 0, Self.told(speed))
         var shown: [(InteractionAxis, Double)] = []
@@ -162,7 +165,8 @@ import StateUIFoundation
             case .began:
                 if let value = take(axis, by: .fingers, on: element) { shown.append((axis, value)) }
             case .changed:
-                guard mine(axis, on: element) != nil || take(axis, by: .fingers, on: element) != nil
+                guard !isTaken(axis, from: .fingers, on: element),
+                      mine(axis, on: element) != nil || take(axis, by: .fingers, on: element) != nil
                 else { continue }
                 shown.append((axis, move(axis, by: step)))
             case .ended, .cancelled:
@@ -184,6 +188,11 @@ import StateUIFoundation
     /// The numbers of `element`'s program an input `moved` by answers for.
     private func axes(of element: MountedElement, where moved: (HostInteractionInput) -> Bool) -> [InteractionAxis] {
         element.interactionProgram?.values.filter { moved($0.input) }.map(InteractionAxis.init) ?? []
+    }
+
+    /// Whether a program's write took `axis`'s number from `element`'s gesture `stream`, still under way.
+    private func isTaken(_ axis: InteractionAxis, from stream: Stream, on element: MountedElement) -> Bool {
+        taken.contains(Taken(mount: element.mount, stream: stream, lane: Lane(state: axis.value.state, lane: axis.value.lane)))
     }
 
     /// The hold `element`'s hand has on `axis`'s number; nil where it has none.
@@ -312,30 +321,20 @@ import StateUIFoundation
 
     // MARK: - A hand taken away
 
-    /// A write of the program names `lanes` of `state`, held by hands that do not wait for it: each gesture holding
-    /// one ends there - the numbers written are the program's, its other numbers go onto where they were going -
-    /// and what it says until it ends moves nothing; another gesture on the same view holds on.
+    /// A write of the program names `lanes` of `state`, held by hands that do not wait for it: each number written
+    /// is the program's - what the gesture holding it says of it until it ends moves nothing - and every other
+    /// number that gesture holds stays under it.
     /// Design: docs/design/host/interaction.md#a-write-of-the-program
     private func interrupted(_ state: Int32, _ lanes: [Int]) {
-        let written = Set(lanes.map { Lane(state: state, lane: $0) })
-        let mounts = Set(written.compactMap { held[$0]?.mount })
-        for mount in mounts.sorted() {
-            for stream in [Stream.hand, .fingers] {
-                let gesture = { (hold: Hold) in hold.mount == mount && hold.stream == stream }
-                guard written.contains(where: { held[$0].map(gesture) == true }) else { continue }
-
-                lost[mount, default: []].insert(stream)
-                for lane in written where held[lane].map(gesture) == true { held[lane] = nil }
-                cancel(held.filter { gesture($0.value) }.map(\.key))
-            }
+        for lane in lanes.map({ Lane(state: state, lane: $0) }) {
+            guard let hold = held.removeValue(forKey: lane) else { continue }
+            taken.insert(Taken(mount: hold.mount, stream: hold.stream, lane: lane))
         }
     }
 
-    /// The gesture `stream` of the element mounted as `mount` begins or is over: it is one that lost its numbers no
-    /// more.
+    /// The gesture `stream` of the element mounted as `mount` begins or is over: a write took nothing from it.
     private func over(_ stream: Stream, on mount: UInt64) {
-        lost[mount]?.remove(stream)
-        if lost[mount]?.isEmpty == true { lost[mount] = nil }
+        taken = taken.filter { $0.mount != mount || $0.stream != stream }
     }
 
     /// `element`'s program changed from `old`: a number its hand holds that the program moves no longer, or by
@@ -356,7 +355,7 @@ import StateUIFoundation
 
     /// The element mounted as `mount` left the tree: what its hand held is let go, as a hand taken away.
     public func left(_ mount: UInt64) {
-        lost[mount] = nil
+        taken = taken.filter { $0.mount != mount }
         cancel(held.filter { $0.value.mount == mount }.map(\.key))
     }
 }
