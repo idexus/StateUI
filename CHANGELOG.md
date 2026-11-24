@@ -415,9 +415,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   more pixels on the UI thread - a ring of cards spread past a step stood still for half a second on a phone. A
   later reading is now made beside the UI thread while the view shows what it holds.
 
-- **A program's write ends only the gesture holding what it writes.** A write of a number two fingers held also took
-  from the hand the numbers it moved on the same view - a zoom sent while a light table was spread and panned
-  stopped the pan.
+- **A program's write takes from the hand only what it writes.** A write of a number two fingers held also took
+  from the hand the numbers it moved on the same view, and every other number of the fingers - a zoom sent while a
+  light table was spread, turned and panned stopped the pan and the turn.
 
 ## 0.8.6 - 2026-11-16
 
