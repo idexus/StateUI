@@ -212,8 +212,40 @@ namespace {
         }
     };
 
+    /// An SVG source standing, read once and shared: whether it is drawn, and the images drawing it under the one
+    /// shown, each by its view's number and the DIPs it asked - told once, as it is drawn or cannot be.
+    struct Standing {
+        enum class Drawing { coming, drawn, failed };
+        struct Waiting {
+            int64_t view;
+            double width, height;
+            winrt::weak_ref<controls::Image> coming;
+        };
+        winrt::weak_ref<imaging::SvgImageSource> source;
+        Drawing drawing = Drawing::coming;
+        std::vector<Waiting> waiting;
+    };
+
     /// The SVG sources standing, each read once and shared by every picture and window showing it.
-    std::map<Drawn, winrt::weak_ref<imaging::SvgImageSource>> drawn;
+    std::map<Drawn, Standing> drawn;
+
+    /// The source `key` names is drawn, or cannot be: each image still drawing it is told - one given another
+    /// picture or another drawing since waits for this one no more.
+    void told(Drawn const &key, bool made) {
+        auto found = drawn.find(key);
+        if (found == drawn.end()) return;
+        found->second.drawing = made ? Standing::Drawing::drawn : Standing::Drawing::failed;
+        auto source = found->second.source.get();
+        auto waiting = std::move(found->second.waiting);
+        found->second.waiting.clear();
+        for (auto const &each : waiting) {
+            auto coming = each.coming.get();
+            if (!source || !coming || !coming.Source()) continue;
+            if (coming.Source().as<winrt::Windows::Foundation::IUnknown>() != source.as<winrt::Windows::Foundation::IUnknown>())
+                continue;
+            if (callbacks.pictureDrawn) callbacks.pictureDrawn(each.view, each.width, each.height, made);
+        }
+    }
 
     /// How many SVG sources were made - each a rasterization the picture stands blank through; what a test counts.
     int32_t svgsMade = 0;
@@ -251,8 +283,9 @@ namespace {
     imaging::SvgImageSource svg(std::wstring const &file, uint32_t width = 0, uint32_t height = 0, bool stretched = false) {
         Drawn key{file, width, height, stretched};
         if (auto found = drawn.find(key); found != drawn.end())
-            if (auto source = found->second.get()) return source;
-        for (auto each = drawn.begin(); each != drawn.end();) each = each->second.get() ? std::next(each) : drawn.erase(each);
+            if (auto source = found->second.source.get()) return source;
+        for (auto each = drawn.begin(); each != drawn.end();)
+            each = each->second.source.get() ? std::next(each) : drawn.erase(each);
 
         imaging::SvgImageSource source(address(stretched ? stretchedCopy(file) : pictures() + file));
         ++svgsMade;
@@ -260,7 +293,9 @@ namespace {
             source.RasterizePixelWidth(width);
             source.RasterizePixelHeight(height);
         }
-        drawn[key] = winrt::make_weak(source);
+        source.Opened(guarded("handling Opened", [key](auto const &, auto const &) { told(key, true); }));
+        source.OpenFailed(guarded("handling OpenFailed", [key](auto const &, auto const &) { told(key, false); }));
+        drawn[key] = Standing{winrt::make_weak(source)};
         return source;
     }
 
@@ -304,9 +339,34 @@ namespace {
         return picture.bytes.empty() ? pictureSource(picture.file) : bitmapOf(picture.bytes);
     }
 
+    /// The panel the Image element `handle` stands its picture in: the element shown last, an image drawing the
+    /// picture on its way under it.
+    controls::Grid stageOf(StateUIObjectRef handle) {
+        return borrow<controls::Border>(handle).Child().as<controls::Grid>();
+    }
+
+    /// The element `stage` shows - an image, or an icon's box; null for none.
+    xaml::UIElement shownIn(controls::Grid const &stage) {
+        auto children = stage.Children();
+        return children.Size() ? children.GetAt(children.Size() - 1) : nullptr;
+    }
+
+    /// The image under the one `stage` shows, drawing the picture on its way; null for none.
+    controls::Image comingIn(controls::Grid const &stage) {
+        auto children = stage.Children();
+        return children.Size() > 1 ? children.GetAt(0).try_as<controls::Image>() : nullptr;
+    }
+
+    /// `stage` showing `element` alone.
+    void show(controls::Grid const &stage, xaml::UIElement const &element) {
+        stage.Children().Clear();
+        stage.Children().Append(element);
+    }
+
     /// The image the Image element `handle` shows a bitmap or an SVG in; null while it shows an icon.
     controls::Image imageOf(StateUIObjectRef handle) {
-        return borrow<controls::Border>(handle).Child().try_as<controls::Image>();
+        auto shown = shownIn(stageOf(handle));
+        return shown ? shown.try_as<controls::Image>() : nullptr;
     }
 
     /// Hands `taking` what assistive technology met of `leaving`: the element shown in its place.
@@ -393,7 +453,7 @@ std::wstring stateui::sourceFile(xaml::Media::ImageSource const &source) {
     if (!source) return {};
     if (auto shown = source.try_as<imaging::SvgImageSource>()) {
         for (auto const &[key, held] : drawn)
-            if (held.get() == shown) return key.file;
+            if (held.source.get() == shown) return key.file;
         return {};
     }
     auto bitmap = source.try_as<imaging::BitmapImage>();
@@ -428,9 +488,12 @@ extern "C" void stateui_winui_set_pictures(char const *utf8) {
 
 extern "C" StateUIObjectRef stateui_winui_image_make(void) {
     try {
-        // The picture stands in a border, which holds an image, or a FontIcon in a box for an icon.
+        // The picture stands in a border holding the panel it is shown in: an image, or a FontIcon in a box for an
+        // icon - and, while a drawing is on its way, the image making it under the one shown.
         controls::Border frame;
-        frame.Child(controls::Image());
+        controls::Grid stage;
+        stage.Children().Append(controls::Image());
+        frame.Child(stage);
         return detach(frame);
     } catch (...) {
         report("making an image");
@@ -456,7 +519,8 @@ extern "C" bool stateui_winui_image_set(
         // An icon is a FontIcon at its own size, fitted to the room by a box; what assistive technology met of the
         // picture before - an image, or the icon the box held - is the new icon's.
         // Design: docs/design/platforms/winui/controls.md#icons
-        auto shown = frame.Child().as<xaml::UIElement>();
+        auto stage = frame.Child().as<controls::Grid>();
+        auto shown = shownIn(stage);
         if (picture.glyph) {
             auto icon = fontIcon(picture.glyph);
             controls::Viewbox box;
@@ -464,7 +528,7 @@ extern "C" bool stateui_winui_image_set(
             box.Child(icon);
             auto held = shown.try_as<controls::Viewbox>();
             takeOver(held ? held.Child() : shown, icon);
-            frame.Child(box);
+            show(stage, box);
             size[0] = size[1] = icon.FontSize();
             return true;
         }
@@ -472,7 +536,10 @@ extern "C" bool stateui_winui_image_set(
         if (!image) {
             image = controls::Image();
             if (auto box = shown.try_as<controls::Viewbox>()) takeOver(box.Child(), image);
-            frame.Child(image);
+            show(stage, image);
+        } else if (comingIn(stage)) {
+            // A drawing on its way was of the picture or the fit before.
+            stage.Children().RemoveAt(0);
         }
         image.Stretch(stretch);
         image.HorizontalAlignment(centered ? xaml::HorizontalAlignment::Center : xaml::HorizontalAlignment::Stretch);
@@ -564,18 +631,61 @@ extern "C" int32_t stateui_winui_svgs_made(void) {
     }
 }
 
-extern "C" void stateui_winui_image_draw(StateUIObjectRef handle, double width, double height) {
+extern "C" bool stateui_winui_image_draw(StateUIObjectRef handle, int64_t view, double width, double height) {
     try {
         // The source of its file drawn at that size, which every picture showing it at that size shares.
-        auto image = imageOf(handle);
-        if (!image) return;
+        auto stage = stageOf(handle);
+        auto shown = shownIn(stage);
+        auto image = shown ? shown.try_as<controls::Image>() : nullptr;
+        if (!image) return true;
         std::wstring file(winrt::unbox_value_or<winrt::hstring>(image.Tag(), L"").c_str());
-        if (!isSvg(file)) return;
+        if (!isSvg(file)) return true;
         auto scale = image.XamlRoot() ? image.XamlRoot().RasterizationScale() : 1.0;
-        image.Source(svg(file, static_cast<uint32_t>(std::ceil(width * scale)),
-                         static_cast<uint32_t>(std::ceil(height * scale)),
-                         image.Stretch() == xaml::Media::Stretch::Fill));
+        Drawn key{file, static_cast<uint32_t>(std::ceil(width * scale)), static_cast<uint32_t>(std::ceil(height * scale)),
+                  image.Stretch() == xaml::Media::Stretch::Fill};
+        auto source = svg(key.file, key.width, key.height, key.stretched);
+        auto &standing = drawn[key];
+        // Shown at once where no drawing stands to keep, or this one is drawn already.
+        if (!image.Source() || standing.drawing != Standing::Drawing::coming) {
+            if (comingIn(stage)) stage.Children().RemoveAt(0);
+            image.Source(source);
+            return true;
+        }
+        // Else drawn by an image under the one shown, which keeps its drawing until this one is drawn.
+        auto coming = comingIn(stage);
+        if (!coming) {
+            coming = controls::Image();
+            stage.Children().InsertAt(0, coming);
+        }
+        coming.Tag(image.Tag());
+        coming.Stretch(image.Stretch());
+        coming.HorizontalAlignment(image.HorizontalAlignment());
+        coming.VerticalAlignment(image.VerticalAlignment());
+        coming.Width(image.Width());
+        coming.Height(image.Height());
+        coming.Source(source);
+        standing.waiting.push_back({view, width, height, winrt::make_weak(coming)});
+        return false;
     } catch (...) {
         report("drawing a picture");
+        return true;
     }
+}
+
+extern "C" void stateui_winui_image_take(StateUIObjectRef handle) {
+    try {
+        auto stage = stageOf(handle);
+        if (!comingIn(stage)) return;
+        auto children = stage.Children();
+        takeOver(children.GetAt(children.Size() - 1), children.GetAt(0));
+        children.RemoveAt(children.Size() - 1);
+    } catch (...) {
+        report("showing a picture's new drawing");
+    }
+}
+
+xaml::UIElement stateui::pictureShown(IInspectable const &element) {
+    auto frame = element.try_as<controls::Border>();
+    auto stage = frame ? frame.Child().try_as<controls::Grid>() : nullptr;
+    return stage ? shownIn(stage) : nullptr;
 }

@@ -255,8 +255,8 @@ a bitmap its pixels, both as gdk-pixbuf reads them from the file.
 The panel draws the picture in the place its layout gives it, as the aspect
 says - whole in its room, covering it, stretched across it, or at its own
 size in the middle - cut at the room's edge. A bitmap is read once. An SVG is
-read at the size it shows at, at the display's scale, and again only for more
-pixels, so a size in motion does not read it every frame - a stretched one at
+read at the size it shows at, at the display's scale, and again only as it
+crosses a step of its pixels, so a size in motion does not read it every frame - a stretched one at
 its room's own size, its proportions let go as it is read, so it is sharp both
 ways ([a picture](../../host/layout.md#a-picture)) - never enlarged.
 

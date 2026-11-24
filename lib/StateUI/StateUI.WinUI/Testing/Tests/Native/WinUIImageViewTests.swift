@@ -120,6 +120,44 @@ final class WinUIImageViewTests: XCTestCase {
         }
     }
 
+    /// A PICTURE DRAWN AGAIN for more pixels keeps the drawing it shows until the new one is drawn: WinUI stands an
+    /// image blank through the rasterization of each source it is given - a ring of cards growing under two
+    /// fingers blinked out. Read by the drawing the image shows: a render to a bitmap draws a source whole that the
+    /// screen still shows blank.
+    func testAPictureDrawnAgainKeepsItsDrawingUntilTheNewOneIsDrawn() throws {
+        try onUIThread {
+            let folder = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-winui-drawn-again")
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            let name = "card-\(UUID().uuidString).svg"
+            try "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"30\" height=\"20\"><rect width=\"30\" height=\"20\"/></svg>"
+                .write(to: folder.appendingPathComponent(name), atomically: true, encoding: .utf8)
+            stateui_winui_set_pictures(folder.path)
+            defer { stateui_winui_set_pictures("") }
+
+            let host = WinUIRenderer.running {
+                VStack { Image(ImageSource(name)).width(30).height(20) }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+            }
+            let image = try XCTUnwrap(host.views(WinUIImageView.self).first)
+            host.settle { Self.pixelsAcross(image) > 0 }
+            let first = Self.pixelsAcross(image)
+            XCTAssertGreaterThan(first, 0, "drawn at first")
+
+            // Placed ten times larger, nothing pumped: WinUI has drawn nothing new yet.
+            image.layout(Rect(x: 0, y: 0, width: 300, height: 200))
+            XCTAssertEqual(Self.pixelsAcross(image), first, "the drawing shown stays while the new one is drawn")
+
+            host.settle { Self.pixelsAcross(image) > first }
+            XCTAssertGreaterThan(Self.pixelsAcross(image), first, "the new drawing shown once drawn")
+        }
+    }
+
+    /// How many pixels across the drawing of the SVG `view` shows holds; nought for none.
+    @MainActor private static func pixelsAcross(_ view: WinUIView) -> Double {
+        Double(held(view, "pixelsAcross")) ?? 0
+    }
+
     /// An SVG stands at the size it declares: its width and height, the one it leaves out taken from its viewBox's
     /// proportions, or its viewBox alone.
     func testAnSVGStandsAtTheSizeItDeclares() throws {

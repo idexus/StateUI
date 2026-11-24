@@ -27,9 +27,9 @@ final class GTKImageView: GTKPanelView {
     private var size = LayoutSize(width: 0, height: 0)
     private var isVector = false
 
-    /// The picture's pixels, and the size in device pixels they were drawn at; nil while none are.
+    /// The picture's pixels, and the drawings of an SVG by their device pixels.
     private var texture: OpaquePointer?
-    private var drawn: LayoutSize?
+    private var drawings = PictureDrawings()
 
     isolated deinit {
         if let texture { g_object_unref(UnsafeMutableRawPointer(texture)) }
@@ -41,7 +41,7 @@ final class GTKImageView: GTKPanelView {
         self.aspect = aspect
         path = picture?.file.flatMap(GTKPictures.path(of:))
         replaceTexture(with: nil)
-        drawn = nil
+        drawings = PictureDrawings()
 
         var width: Int32 = 0
         var height: Int32 = 0
@@ -77,8 +77,9 @@ final class GTKImageView: GTKPanelView {
     }
 
     /// Reads the picture's pixels for a room: a bitmap once, an SVG at the size it shows at in the room, at the
-    /// display's scale - a stretched one at the room's own, sharp both ways - and again only for more pixels, so a
-    /// size in motion does not read it every frame (`PictureArithmetic.vectorPixels`, `drawsAgain`).
+    /// display's scale - a stretched one at the room's own, sharp both ways - and again only as it crosses a step of
+    /// its pixels, so a size in motion does not read it every frame (`PictureArithmetic.vectorPixels`,
+    /// `PictureDrawings`).
     /// Design: docs/design/platforms/gtk/controls.md#pictures
     private func read(for room: LayoutSize) {
         guard let path, size.width > 0, size.height > 0, room.width > 0, room.height > 0 else { return }
@@ -89,21 +90,21 @@ final class GTKImageView: GTKPanelView {
 
         let scale = Double(max(gtk_widget_get_scale_factor(widget), 1))
         let wanted = PictureArithmetic.vectorPixels(size, in: room, aspect: aspect, scale: scale)
-        guard wanted.width > 0, wanted.height > 0, PictureArithmetic.drawsAgain(drawn: drawn, for: wanted) else { return }
+        guard wanted.width > 0, wanted.height > 0, let pixels = drawings.asks(for: wanted) else { return }
 
         let keepsProportions: gboolean = aspect == .stretch ? 0 : 1
-        guard let width = Int32(exactly: wanted.width), let height = Int32(exactly: wanted.height),
+        guard let width = Int32(exactly: pixels.width), let height = Int32(exactly: pixels.height),
               let pixbuf = gdk_pixbuf_new_from_file_at_scale(path, width, height, keepsProportions, nil)
-        else { return }
+        else { return drawings.lost(pixels) }
         // The pixbuf's own pixels, eight bits a channel, its alpha straight where it has one.
-        let pixels = gdk_pixbuf_read_pixel_bytes(pixbuf)
+        let bytes = gdk_pixbuf_read_pixel_bytes(pixbuf)
         let format = gdk_pixbuf_get_has_alpha(pixbuf) != 0 ? GDK_MEMORY_R8G8B8A8 : GDK_MEMORY_R8G8B8
         replaceTexture(with: gdk_memory_texture_new(
-            gdk_pixbuf_get_width(pixbuf), gdk_pixbuf_get_height(pixbuf), format, pixels,
+            gdk_pixbuf_get_width(pixbuf), gdk_pixbuf_get_height(pixbuf), format, bytes,
             gsize(gdk_pixbuf_get_rowstride(pixbuf))))
-        g_bytes_unref(pixels)
+        g_bytes_unref(bytes)
         g_object_unref(UnsafeMutableRawPointer(pixbuf))
-        drawn = wanted
+        _ = drawings.landed(pixels)
         gtk_widget_queue_draw(widget)
     }
 

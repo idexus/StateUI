@@ -33,21 +33,63 @@ final class PlacesRulesTests: XCTestCase {
             Rect(x: 50, y: 50, width: 0, height: 0))
     }
 
-    /// A vector picture is drawn at the size it shows at, in the display's pixels rounded up - the room's where it
-    /// is stretched, sharp both ways - and drawn again only for more pixels either way.
+    /// A vector picture is drawn at the size it shows at, in the display's pixels - the room's where it is
+    /// stretched, sharp both ways - taken up to the next of four steps doubling its own size, then rounded up; at a
+    /// step it is drawn at exactly that.
     func testAVectorPictureIsDrawnAtTheSizeItShowsAt() {
         let picture = LayoutSize(width: 20, height: 10)
         let room = LayoutSize(width: 30, height: 40)
         XCTAssertEqual(PictureArithmetic.vectorPixels(picture, in: room, aspect: .stretch, scale: 2),
-                       LayoutSize(width: 60, height: 80), "the room's, not its own proportions covering it")
+                       LayoutSize(width: 68, height: 80), "each way its own step: 3.36 times across, 8 down")
         XCTAssertEqual(PictureArithmetic.vectorPixels(picture, in: room, aspect: .fit, scale: 1.5),
-                       LayoutSize(width: 45, height: 23), "fitted, then rounded up")
+                       LayoutSize(width: 48, height: 24), "fitted, its proportions kept: 2.38 times either way")
+        XCTAssertEqual(PictureArithmetic.vectorPixels(picture, in: LayoutSize(width: 40, height: 20), aspect: .fit, scale: 1),
+                       LayoutSize(width: 40, height: 20), "twice its size is a step")
+        XCTAssertEqual(PictureArithmetic.vectorPixels(picture, in: room, aspect: .center, scale: 1), picture,
+                       "at its own size, its own")
+    }
 
-        XCTAssertTrue(PictureArithmetic.drawsAgain(drawn: nil, for: LayoutSize(width: 10, height: 10)))
-        XCTAssertFalse(PictureArithmetic.drawsAgain(
-            drawn: LayoutSize(width: 60, height: 80), for: LayoutSize(width: 50, height: 80)), "fewer pixels")
-        XCTAssertTrue(PictureArithmetic.drawsAgain(
-            drawn: LayoutSize(width: 60, height: 80), for: LayoutSize(width: 50, height: 81)), "more down")
+    /// A VECTOR PICTURE GROWING is drawn a few times on its way, never in every frame - a host standing a picture
+    /// blank through each drawing, or drawing it on the UI thread, shows each one - and every drawing covers what it
+    /// shows.
+    func testAGrowingVectorPictureIsDrawnAFewTimes() {
+        let picture = LayoutSize(width: 30, height: 40)
+        var drawings = PictureDrawings()
+        var made = 0
+        for side in stride(from: 100.0, through: 400, by: 1) {
+            let room = LayoutSize(width: side, height: side)
+            if let pixels = drawings.asks(for: PictureArithmetic.vectorPixels(picture, in: room, aspect: .fit, scale: 1)) {
+                XCTAssertTrue(drawings.landed(pixels))
+                made += 1
+            }
+            let shown = PictureArithmetic.place(picture, in: room, aspect: .fit)
+            XCTAssertGreaterThanOrEqual(drawings.shown?.height ?? 0, shown.height.rounded(.up), "covers at \(side)")
+            XCTAssertLessThanOrEqual(drawings.shown?.height ?? 0, shown.height * 1.19 + 1, "no more than a step at \(side)")
+        }
+        XCTAssertLessThanOrEqual(made, 9, "drawn \(made) times over a growth of four times")
+    }
+
+    /// A drawing on its way is asked again only for more pixels than it holds; one that lands is shown only while
+    /// it is the one on its way, and one not made leaves the next asking free to draw again.
+    func testAPictureShowsWhatItHoldsUntilTheDrawingOnItsWayLands() {
+        var drawings = PictureDrawings()
+        let small = LayoutSize(width: 40, height: 40), large = LayoutSize(width: 80, height: 80)
+        XCTAssertEqual(drawings.asks(for: small), small, "the first drawing")
+        XCTAssertNil(drawings.asks(for: small), "on its way already")
+        XCTAssertTrue(drawings.landed(small))
+        XCTAssertNil(drawings.asks(for: LayoutSize(width: 30, height: 40)), "fewer pixels")
+
+        XCTAssertEqual(drawings.asks(for: LayoutSize(width: 60, height: 60)), LayoutSize(width: 60, height: 60))
+        XCTAssertEqual(drawings.asks(for: large), large, "grown past the one on its way")
+        XCTAssertFalse(drawings.landed(LayoutSize(width: 60, height: 60)), "no longer the one on its way")
+        XCTAssertEqual(drawings.shown, small, "what it held stays shown")
+        XCTAssertTrue(drawings.landed(large))
+        XCTAssertEqual(drawings.shown, large)
+
+        XCTAssertNotNil(drawings.asks(for: LayoutSize(width: 90, height: 90)))
+        drawings.lost(LayoutSize(width: 90, height: 90))
+        XCTAssertEqual(drawings.asks(for: LayoutSize(width: 90, height: 90)), LayoutSize(width: 90, height: 90),
+                       "asked again once the one on its way was not made")
     }
 
     /// A bar's or a tab's picture stands at the platform's icon height, as wide as its shape makes it, whatever size

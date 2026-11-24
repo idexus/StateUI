@@ -261,6 +261,11 @@ enum WinUICallbacks {
                 let opened = String(cString: address)
                 MainActor.assumeIsolated { WinUIRenderer.shared?.openLinks([opened]) }
             },
-            layoutDidNotSettle: { Complaints.say(LayoutComplaint.didNotSettle(on: "Windows")) })
+            layoutDidNotSettle: { Complaints.say(LayoutComplaint.didNotSettle(on: "Windows")) },
+            pictureDrawn: { view, width, height, made in
+                MainActor.assumeIsolated {
+                    (WinUIView.find(view) as? WinUIImageView)?.drawn(LayoutSize(width: width, height: height), made: made)
+                }
+            })
     }
 }

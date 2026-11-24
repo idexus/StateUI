@@ -789,9 +789,16 @@ platform's icon height, as wide as its shape makes it, whatever size it is
 drawn at elsewhere (`PictureArithmetic.glyph`): the platform draws its own
 pictures there at that size, and one at its file's size stands far taller. A
 host drawing an SVG draws it at the size it shows at, in the display's pixels
-- a stretched one at its room's own size, sharp both ways - and again only for
-more pixels, so a size in motion does not draw it every frame
-(`PictureArithmetic.vectorPixels`, `drawsAgain`). A host keeping the pictures
+- a stretched one at its room's own size, sharp both ways - taken up either
+way to the next of four steps that double its own size
+(`PictureArithmetic.vectorPixels`): a growing picture is drawn as it crosses
+a step, a few times on its way, and covered by its drawing a step over at
+most. A view holds the drawing it shows and the one on its way
+(`PictureDrawings`): it asks again only for more pixels than either holds,
+shows what it holds while one is on its way, and takes a drawing that lands
+only while it is the one on its way. The trap: drawn for every pixel more, a
+ring of eight cards growing under two fingers on WinUI was drawn eight times
+a frame and stood blank through each. A host keeping the pictures
 it made for asking again - beyond the ones shown, which stay found while they
 show - keeps them within one budget of pixels, forty million
 (`PictureArithmetic.keptPixels`), the one asked for longest ago going first.

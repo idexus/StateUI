@@ -411,9 +411,15 @@ over. StateUI is before 1.0: a release may break what the one before it promised
 - **On an iPhone in landscape a page's scroller stays on the screen.** A scroller let under the bars laid what it
   scrolls down as wide as the screen, moved in by the left side and past the right; it lays it between the sides it
   keeps clear.
+
 - **On Android a picture growing under the fingers no longer stops them.** A picture shown larger was read again at
   more pixels on the UI thread - a ring of cards spread past a step stood still for half a second on a phone. A
   later reading is now made beside the UI thread while the view shows what it holds.
+
+- **On WinUI a picture growing no longer blinks out.** An SVG was drawn again for every pixel more, and WinUI stands
+  an image blank through each drawing - a ring of cards spread under two fingers vanished for frames. A vector
+  picture is now drawn again only as it crosses a step of its size, on every host, and on WinUI the new drawing is
+  made under the one shown, which stays until it is drawn.
 
 - **A program's write takes from the hand only what it writes.** A write of a number two fingers held also took
   from the hand the numbers it moved on the same view, and every other number of the fingers - a zoom sent while a

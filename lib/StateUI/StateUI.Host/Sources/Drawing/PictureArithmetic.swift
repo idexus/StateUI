@@ -3,6 +3,8 @@
 
 @_spi(Host) import StateUI
 
+import StateUIFoundation
+
 /// An application's picture - the file its name stands for, and where it stands in its room - the same on every
 /// host.
 /// Design: docs/design/host/layout.md#a-picture
@@ -34,19 +36,27 @@
         return LayoutSize(width: size.width * height / size.height, height: height)
     }
 
+    /// How many steps of a vector picture's drawing make it twice as large either way: four, each some fifth larger.
+    public static let drawingSteps = 4.0
+
     /// The pixels a vector picture `size` across is drawn at to stand in `room` as `aspect` says, at `scale` pixels
-    /// a point, rounded up: the size it shows at - the room's where it is stretched, so it is sharp both ways.
+    /// a point: the size it shows at - the room's where it is stretched, so it is sharp both ways - taken up either
+    /// way to the next of the `drawingSteps` steps that double its own size, and rounded up. A size in motion is
+    /// drawn as it crosses a step, never in every frame (`PictureDrawings`).
+    /// Design: docs/design/host/layout.md#a-picture
     public static func vectorPixels(_ size: LayoutSize, in room: LayoutSize, aspect: ContentMode, scale: Double)
         -> LayoutSize {
         let shown = place(size, in: room, aspect: aspect)
-        return LayoutSize(width: (shown.width * scale).rounded(.up), height: (shown.height * scale).rounded(.up))
-    }
-
-    /// Whether a vector picture drawn at `drawn` pixels is drawn again for `wanted`: only for more pixels either
-    /// way, so a size in motion does not draw it every frame.
-    public static func drawsAgain(drawn: LayoutSize?, for wanted: LayoutSize) -> Bool {
-        guard let drawn else { return true }
-        return wanted.width > drawn.width || wanted.height > drawn.height
+        guard size.width > 0, size.height > 0 else {
+            return LayoutSize(width: (shown.width * scale).rounded(.up), height: (shown.height * scale).rounded(.up))
+        }
+        func stepped(_ shown: Double, _ own: Double) -> Double {
+            let factor = shown * scale / own
+            guard factor > 0, factor.isFinite else { return (shown * scale).rounded(.up) }
+            let step = (log2(factor) * drawingSteps - 1e-9).rounded(.up)
+            return (own * exp2(step / drawingSteps) - 1e-9).rounded(.up)
+        }
+        return LayoutSize(width: stepped(shown.width, size.width), height: stepped(shown.height, size.height))
     }
 
     /// Where a picture `size` across stands in a room at the origin, as `aspect` says: fitted in or covering it,

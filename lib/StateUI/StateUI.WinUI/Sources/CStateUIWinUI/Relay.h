@@ -146,6 +146,9 @@ namespace stateui {
     /// The file an icon `pictureIcon` made shows; empty for any other icon, and for none.
     std::wstring iconFile(controls::IconElement const &icon);
 
+    /// What an Image element `element` shows - its image, or an icon's box; null for any other element.
+    xaml::UIElement pictureShown(IInspectable const &element);
+
     /// Names `brushes` - a name a template reads, a color - in the entry's resources for the light theme and the dark,
     /// before the entry stands. Design: docs/design/platforms/winui/pages.md#a-bars-buttons
     void nameThemedBrushes(

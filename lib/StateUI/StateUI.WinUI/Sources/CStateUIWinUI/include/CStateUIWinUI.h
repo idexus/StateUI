@@ -468,6 +468,10 @@ typedef struct {
     /// WinUI gave up laying a window out - a layout cycle, which would end the process - and the pass ended where it
     /// stood.
     void (*layoutDidNotSettle)(void);
+
+    /// The drawing of an SVG the image `view` asked at `width` by `height` DIPs (`stateui_winui_image_draw`) was
+    /// made - `made` - or cannot be.
+    void (*pictureDrawn)(int64_t view, double width, double height, bool made);
 } StateUIWinUICallbacks;
 
 /// What the environment is, in groups, each read at once.
@@ -1578,8 +1582,13 @@ bool stateui_winui_image_set(StateUIObjectRef image, char const *const *names, i
 /// layout holding the image is asked to measure again.
 void stateui_winui_image_size(StateUIObjectRef image, double *size);
 
-/// Draws an SVG `image` shows at `width` by `height` DIPs, at the display's scale; nothing for a bitmap.
-void stateui_winui_image_draw(StateUIObjectRef image, double width, double height);
+/// Draws an SVG `image` shows at `width` by `height` DIPs, at the display's scale; nothing for a bitmap. True where
+/// it is shown at once - drawn already, or no drawing standing to keep - else it is drawn under the one shown, which
+/// stays, and told to `pictureDrawn` with `view`.
+bool stateui_winui_image_draw(StateUIObjectRef image, int64_t view, double width, double height);
+
+/// The drawing made under the one `image` shows takes its place.
+void stateui_winui_image_take(StateUIObjectRef image);
 
 /// How many SVGs the pictures and icons under an element show read by their file's address, and how many not.
 void stateui_winui_svgs_read(StateUIObjectRef element, int32_t *counts);

@@ -22,9 +22,8 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
     /// What the image view shows: the picture, or a drawing's pixels.
     var shownImage: NSImage? { imageView.image }
 
-    /// The drawing the shown pixels were made of, and how many there are across and down; the ones on their way.
-    private var pixelsMade: (image: NSImage, pixels: LayoutSize)?
-    private var pixelsComing: (image: NSImage, pixels: LayoutSize)?
+    /// The drawings of the picture shown and on their way, by their pixels across and down.
+    private var drawings = PictureDrawings()
 
     var animationPlaying: Bool { imageView.animates }
     var renderedImageFrame: NSRect { imageView.frame }
@@ -57,8 +56,7 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
         let imageChanged = self.image !== image
         self.image = image
         if imageChanged {
-            pixelsMade = nil
-            pixelsComing = nil
+            drawings = PictureDrawings()
             imageView.image = image
         }
         imageView.animates = animationPlaying
@@ -116,36 +114,33 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
     }
 
     /// A drawing stands as pixels of the size it is shown at, made away from the main thread - the picture standing as
-    /// it is meanwhile - and again only for more pixels, by the host layer's rule (`PictureArithmetic.vectorPixels`,
-    /// `drawsAgain`): AppKit draws an image view again whenever a transform above it moves, and a drawing made anew
-    /// each time, or on the main thread, drops frames.
+    /// it is meanwhile - and again only as it crosses a step of its pixels, by the host layer's rules
+    /// (`PictureArithmetic.vectorPixels`, `PictureDrawings`): AppKit draws an image view again whenever a transform
+    /// above it moves, and a drawing made anew each time, or on the main thread, drops frames.
     /// Design: docs/design/platforms/appkit/views.md#a-drawn-picture
     private func showPixels() {
         guard let image, image.isDrawing else { return }
         let scale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 2
         let room = imageView.frame.size
-        let pixels = PictureArithmetic.vectorPixels(
+        let wanted = PictureArithmetic.vectorPixels(
             LayoutSize(width: Double(image.size.width), height: Double(image.size.height)),
             in: LayoutSize(width: Double(room.width), height: Double(room.height)), aspect: aspect, scale: Double(scale))
-        guard pixels.width >= 1, pixels.height >= 1 else { return }
-        let wanted = pixelsComing?.image === image ? pixelsComing : pixelsMade?.image === image ? pixelsMade : nil
-        guard PictureArithmetic.drawsAgain(drawn: wanted?.pixels, for: pixels) else { return }
+        guard wanted.width >= 1, wanted.height >= 1, let pixels = drawings.asks(for: wanted) else { return }
 
         let size = NSSize(width: pixels.width / Double(scale), height: pixels.height / Double(scale))
-        pixelsComing = (image, pixels)
-        let drawing = SendableDrawing(image: image)
+        let picture = SendableDrawing(image: image)
         // The work holds the drawing, never the view: one the tree dropped meanwhile goes, and the pixels to nobody.
         Task.detached(priority: .userInitiated) { [weak self] in
-            let made = SendableDrawing(image: Self.pixels(of: drawing.image, size: size, pixels: pixels))
-            await self?.take(made.image, of: drawing.image, pixels: pixels)
+            let made = SendableDrawing(image: Self.pixels(of: picture.image, size: size, pixels: pixels))
+            await self?.take(made.image, of: picture.image, pixels: pixels)
         }
     }
 
     /// The pixels made for `image`, shown where they are still the ones on their way.
     private func take(_ made: NSImage?, of image: NSImage?, pixels: LayoutSize) {
-        guard let made, let coming = pixelsComing, coming.image === image, coming.pixels == pixels else { return }
-        pixelsComing = nil
-        pixelsMade = coming
+        guard image === self.image else { return }
+        guard let made else { return drawings.lost(pixels) }
+        guard drawings.landed(pixels) else { return }
         imageView.image = made
     }
 

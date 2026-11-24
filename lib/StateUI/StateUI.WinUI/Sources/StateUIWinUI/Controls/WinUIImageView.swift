@@ -20,8 +20,8 @@ final class WinUIImageView: WinUIView {
     /// The size an SVG declares, in DIPs; nil for a bitmap, whose size WinUI knows once it has read it.
     private var declared: LayoutSize?
 
-    /// The size an SVG is drawn at, in DIPs; nil while it is not drawn.
-    private var drawn: LayoutSize?
+    /// The drawings of an SVG by their DIPs: the one shown and the one on its way.
+    private var drawings = PictureDrawings()
 
     init() {
         super.init { _ in stateui_winui_image_make() }
@@ -39,7 +39,7 @@ final class WinUIImageView: WinUIView {
         }
         if !found { WinUIRenderer.log.error("no picture \(picture?.identity ?? "") among the application's pictures") }
         declared = size[0] > 0 && size[1] > 0 ? LayoutSize(width: size[0], height: size[1]) : nil
-        drawn = nil
+        drawings = PictureDrawings()
         if let placed { draw(in: placed) }
         placingLayout?.invalidateMeasurements()
     }
@@ -61,16 +61,23 @@ final class WinUIImageView: WinUIView {
     }
 
     /// Draws an SVG at the size it shows at in `room` - in its own proportions, or, stretched, at the room's - so
-    /// WinUI fills the room from it; again only for more pixels, so a size in motion does not draw it every frame
-    /// (`PictureArithmetic.vectorPixels`, `drawsAgain`).
+    /// WinUI fills the room from it; again only as it crosses a step of its pixels, so a size in motion does not
+    /// draw it every frame (`PictureArithmetic.vectorPixels`, `PictureDrawings`). A later drawing is made under the
+    /// one shown, which stays until it is: WinUI stands an image blank through each drawing it is given.
+    /// Design: docs/design/platforms/winui/controls.md#pictures
     private func draw(in room: Rect) {
         guard let declared, room.width > 0, room.height > 0 else { return }
 
-        let size = PictureArithmetic.vectorPixels(
+        let wanted = PictureArithmetic.vectorPixels(
             declared, in: LayoutSize(width: room.width, height: room.height), aspect: aspect, scale: 1)
-        guard size.width > 0, size.height > 0, PictureArithmetic.drawsAgain(drawn: drawn, for: size) else { return }
+        guard wanted.width > 0, wanted.height > 0, let size = drawings.asks(for: wanted) else { return }
 
-        drawn = size
-        stateui_winui_image_draw(handle, size.width, size.height)
+        if stateui_winui_image_draw(handle, number, size.width, size.height) { _ = drawings.landed(size) }
+    }
+
+    /// The drawing asked at `size` was `made`, or cannot be: shown where it is still the one on its way.
+    func drawn(_ size: LayoutSize, made: Bool) {
+        guard made else { return drawings.lost(size) }
+        if drawings.landed(size) { stateui_winui_image_take(handle) }
     }
 }

@@ -621,15 +621,20 @@ namespace {
             if (!box) return std::string();
             return painted(box, what.substr(4));
         }
-        if (auto frame = object.try_as<controls::Border>(); frame && frame.Child().try_as<controls::Viewbox>()) {
-            if (what == "stretch") return number(static_cast<int32_t>(frame.Child().as<controls::Viewbox>().Stretch()));
-            if (what == "source") return winrt::to_string(shownName(frame.Child().as<controls::Viewbox>().Child()));
+        auto pictured = pictureShown(object);
+        if (auto box = pictured ? pictured.try_as<controls::Viewbox>() : nullptr) {
+            if (what == "stretch") return number(static_cast<int32_t>(box.Stretch()));
+            if (what == "source") return winrt::to_string(shownName(box.Child()));
         }
         auto image = object.try_as<controls::Image>();
-        if (auto frame = object.try_as<controls::Border>(); !image && frame) image = frame.Child().try_as<controls::Image>();
+        if (!image && pictured) image = pictured.try_as<controls::Image>();
         if (image) {
             if (what == "stretch") return number(static_cast<int32_t>(image.Stretch()));
             if (what == "source") return narrow(winrt::unbox_value_or<winrt::hstring>(image.Tag(), L""));
+            if (what == "pixelsAcross") {
+                auto drawing = image.Source().try_as<xaml::Media::Imaging::SvgImageSource>();
+                return drawing ? number(drawing.RasterizePixelWidth()) : std::string();
+            }
         }
         // The brushes the host wrote into a control's own resources, by their names.
         if (auto bar = object.try_as<controls::MenuBar>(); bar && what == "itemForeground") {

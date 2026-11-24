@@ -72,8 +72,8 @@ final class AppKitImageViewTests: XCTestCase {
 
     /// A DRAWN PICTURE STANDS AS PIXELS OF THE SIZE IT IS SHOWN AT: AppKit draws an image view again whenever a
     /// transform above it moves, and an SVG drawn anew each time cost a turning light table 300 ms of every 500. As
-    /// pixels a draw costs nothing; made away from the main thread, they are made again only for more pixels, by the
-    /// host layer's rule.
+    /// pixels a draw costs nothing; made away from the main thread, they are made again only as they cross a step of
+    /// their pixels, by the host layer's rules - covering the size shown, a step over it at most.
     func testADrawnPictureStandsAsPixelsOfTheSizeItIsShownAt() throws {
         let svg = #"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50"><rect width="100" height="50" fill="red"/></svg>"#
         let drawing = try XCTUnwrap(NSImage(data: Data(svg.utf8)))
@@ -85,7 +85,8 @@ final class AppKitImageViewTests: XCTestCase {
 
         let shown = try pixels(of: view)
         let bitmap = try XCTUnwrap(shown.representations.first as? NSBitmapImageRep)
-        XCTAssertEqual(shown.size, view.renderedImageFrame.size, "pixels of the size it covers")
+        XCTAssertGreaterThanOrEqual(shown.size.width, view.renderedImageFrame.width, "pixels covering what it shows")
+        XCTAssertLessThanOrEqual(shown.size.width, view.renderedImageFrame.width * 1.19 + 1, "a step over it at most")
         XCTAssertGreaterThanOrEqual(bitmap.pixelsWide, 120, "a pixel a point at the least")
         XCTAssertTrue(view.image === drawing, "the picture as given")
         XCTAssertEqual(view.intrinsicContentSize, drawing.size)

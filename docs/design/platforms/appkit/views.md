@@ -206,8 +206,8 @@ text).
 
 A picture that is a file's drawing - an SVG's, a PDF's - stands in the
 image view as pixels of the size it is shown at (`AppKitImageView`), by
-the host layer's rule (`PictureArithmetic.vectorPixels`, `drawsAgain`):
-made again only for more pixels, so a size in motion does not draw it
+the host layer's rules (`PictureArithmetic.vectorPixels`, `PictureDrawings`):
+made again only as they cross a step of their pixels, so a size in motion does not draw it
 every frame. They are made away from the main thread, the picture
 standing as it is meanwhile; the work holds the drawing and never the view,
 so a view the tree drops while its drawing is still being made goes with
