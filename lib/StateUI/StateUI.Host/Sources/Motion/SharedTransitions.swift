@@ -3,14 +3,16 @@
 
 @_spi(Host) import StateUI
 
-/// The shared transitions of one tree: a view dropped and a view made in one patch, wearing one key in one
-/// scope, are one - the made one enters from the rectangle the dropped one was drawn in.
+/// The shared transitions of one tree: a view dropped and a view made in one patch, wearing one transition id in
+/// one scope on one page, are one - the made one enters from the rectangle the dropped one was drawn in.
 /// Design: docs/design/host/motion.md#a-shared-presentation
 @_spi(Host) @MainActor public final class SharedTransitions {
-    /// A key in its scope: the element that is the scope, by its mount, and the key's number.
+    /// A view's key: the page it is on, by its mount, and the numbers its transition id and the scope it names
+    /// cross as - none for no scope.
     private struct Key: Hashable {
-        let scope: UInt64
-        let number: Int
+        let page: UInt64
+        let id: Int
+        let scope: Int?
     }
 
     /// What a view wearing a key was drawn as when it left - what the view of its key made next takes over: the
@@ -92,10 +94,10 @@
         var noted = false
         if let key = Self.key(of: element), let numbers = element.native.frameNumbers(), numbers.count >= 8 {
             let own = element.drawnTransform.bounds(of: Rect(x: numbers[4], y: numbers[5], width: numbers[2], height: numbers[3]))
-            let drawn = Self.drawn(own, above: element, to: key.scope)
+            let drawn = Self.drawn(own, above: element, to: key.page)
             let scale = numbers[2] > 0 && numbers[3] > 0 ? (drawn.width / numbers[2] * drawn.height / numbers[3]).squareRoot() : 1
             presences[key, default: []].append(Presence(
-                patch: patch, drawn: drawn, speed: element.drawnSpeed(to: key.scope),
+                patch: patch, drawn: drawn, speed: element.drawnSpeed(to: key.page),
                 corner: element.ownCorner.map { $0 * scale },
                 window: element.enclosing(type: .window)?.mount, page: element.enclosing(type: .page)?.mount,
                 element: element))
@@ -178,22 +180,22 @@
             made[key]?.removeAll { $0.patch == mine }
         }
         guard let source = partner(of: element, key: key, patch: mine),
-              let destination = placeInWindow(of: element, scope: key.scope, in: tree),
+              let destination = placeInWindow(of: element, scope: key.page, in: tree),
               destination.width > 0, destination.height > 0
         else {
             for each in left {
                 if let kept = keptHolding(each.element), kept.exitsRunning == 0 { release(kept.mount) }
             }
-            if left.count > 1 || wearers(of: key, from: element) > 1 { Complaints.sayRepeatedTransitionID(key.number) }
+            if left.count > 1 || wearers(of: key, from: element) > 1 { Complaints.sayRepeatedTransitionID(key.id, scope: key.scope) }
             refused?(element)
             return nil
         }
         // The kept view stays awaiting: another key of its own may meet its partner in this patch too.
         let kept = keptHolding(source.element)
-        let landsDrawn = Self.drawn(element.drawnTransform.bounds(of: destination), above: element, to: key.scope)
+        let landsDrawn = Self.drawn(element.drawnTransform.bounds(of: destination), above: element, to: key.page)
         return Pair(
-            from: source.drawn, to: landsDrawn, setsOut: Self.undrawn(source.drawn, above: element, to: key.scope),
-            lands: destination, scope: key.scope, leaving: source.element, kept: kept, speed: source.speed,
+            from: source.drawn, to: landsDrawn, setsOut: Self.undrawn(source.drawn, above: element, to: key.page),
+            lands: destination, scope: key.page, leaving: source.element, kept: kept, speed: source.speed,
             corner: source.corner)
     }
 
@@ -223,7 +225,7 @@
         else { return nil }
 
         var above: MountedElement? = element
-        while let view = above, view.mount != key.scope {
+        while let view = above, view.mount != key.page {
             if standsUnknown(view) { return nil }
             above = view.parent
         }
@@ -235,7 +237,7 @@
     /// Design: docs/design/host/motion.md#a-shared-presentation
     private func wearers(of key: Key, from element: MountedElement) -> Int {
         var scope: MountedElement? = element
-        while let view = scope, view.mount != key.scope { scope = view.parent }
+        while let view = scope, view.mount != key.page { scope = view.parent }
         var (count, walked) = (0, scope.map { [$0] } ?? [])
         while let view = walked.popLast() {
             if view.lifecycle == .active, Self.key(of: view) == key { count += 1 }
@@ -358,10 +360,9 @@
 
     /// The key `element`'s presentation is shared by on its page; nil where it names no transition id.
     private static func key(of element: MountedElement) -> Key? {
-        guard let number = element.value(ViewContract.sharedPresentation.token)?.int,
-              let scope = element.presentationScope
+        guard let id = element.value(ViewContract.transitionID.token)?.int, let page = element.presentationScope
         else { return nil }
-        return Key(scope: scope.mount, number: number)
+        return Key(page: page.mount, id: id, scope: element.value(ViewContract.transitionScope.token)?.int)
     }
 
     /// Where `element` is placed, in its window's coordinates: the place its layout gave it, and each place a

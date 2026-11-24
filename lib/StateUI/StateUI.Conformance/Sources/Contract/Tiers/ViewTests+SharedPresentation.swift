@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `ViewContract.sharedPresentation` in the layouts holding it: views of one transition id, one leaving and one
+/// `ViewContract.transitionID` in the layouts holding it: views of one transition id, one leaving and one
 /// coming in another holder, drawn as one - the one coming setting out where the other was drawn, in front of what
 /// it passes until it lands, the one leaving kept for it, and each id of a change with its own partner.
 extension ViewTests {
@@ -13,9 +13,9 @@ extension ViewTests {
     @MainActor
     static func sharedIn(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).theViewsInItShareTheirPresentationByTheirIds", proves: [
-            Covered(ViewContract.sharedPresentation, on: element),
+            Covered(ViewContract.transitionID, on: element),
         ], needs: [
-            Covered(ViewContract.sharedPresentation, on: RectangleContract.self),
+            Covered(ViewContract.transitionID, on: RectangleContract.self),
             Covered(ViewContract.presentationFrameChanged, on: RectangleContract.self),
             Covered(ViewContract.layoutFrameChanged, on: RectangleContract.self),
             Covered(ClickElementContract.clicked, on: ButtonContract.self),
@@ -54,9 +54,9 @@ extension ViewTests {
     @MainActor
     static func drawnInFront(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aViewSettingOutInItIsDrawnInFrontUntilItLands", proves: [
-            Covered(ViewContract.sharedPresentation, on: element),
+            Covered(ViewContract.transitionID, on: element),
         ], needs: [
-            Covered(ViewContract.sharedPresentation, on: RectangleContract.self),
+            Covered(ViewContract.transitionID, on: RectangleContract.self),
             Covered(ClickElementContract.clicked, on: ButtonContract.self),
         ]) { s in
             let clock = TestClock()
@@ -95,9 +95,9 @@ extension ViewTests {
     @MainActor
     static func keptForItsPartner(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).theViewLeavingItStandsUntilItsPartnerLands", proves: [
-            Covered(ViewContract.sharedPresentation, on: element),
+            Covered(ViewContract.transitionID, on: element),
         ], needs: [
-            Covered(ViewContract.sharedPresentation, on: RectangleContract.self),
+            Covered(ViewContract.transitionID, on: RectangleContract.self),
             Covered(ClickElementContract.clicked, on: ButtonContract.self),
         ]) { s in
             let clock = TestClock()
@@ -135,9 +135,9 @@ extension ViewTests {
     @MainActor
     static func drawnAsOne(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).theTwoViewsOfAPresentationAreDrawnAsOne", proves: [
-            Covered(ViewContract.sharedPresentation, on: element),
+            Covered(ViewContract.transitionID, on: element),
         ], needs: [
-            Covered(ViewContract.sharedPresentation, on: RectangleContract.self),
+            Covered(ViewContract.transitionID, on: RectangleContract.self),
             Covered(ClickElementContract.clicked, on: ButtonContract.self),
         ]) { s in
             let clock = TestClock()
@@ -159,9 +159,9 @@ extension ViewTests {
     @MainActor
     static var drawnAsOneFromAPlaceDrawnSmaller: ConformanceCase {
         ConformanceCase("MotionLayout.aViewItDrawsSmallerGoesAlongAsItIsDrawn", proves: [
-            Covered(ViewContract.sharedPresentation, on: "MotionLayout"),
+            Covered(ViewContract.transitionID, on: "MotionLayout"),
         ], needs: [
-            Covered(ViewContract.sharedPresentation, on: RectangleContract.self),
+            Covered(ViewContract.transitionID, on: RectangleContract.self),
             Covered(ClickElementContract.clicked, on: ButtonContract.self),
         ]) { s in
             let clock = TestClock()
@@ -210,9 +210,9 @@ extension ViewTests {
     @MainActor
     static func closedAsItOpens(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aViewClosedAsItOpensGoesBackAlong", proves: [
-            Covered(ViewContract.sharedPresentation, on: element),
+            Covered(ViewContract.transitionID, on: element),
         ], needs: [
-            Covered(ViewContract.sharedPresentation, on: RectangleContract.self),
+            Covered(ViewContract.transitionID, on: RectangleContract.self),
             Covered(ClickElementContract.clicked, on: ButtonContract.self),
         ]) { s in
             let clock = TestClock()
@@ -253,9 +253,9 @@ extension ViewTests {
     @MainActor
     static func eachKeyOwn(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).eachIdOfAChangeSetsOutFromItsOwnPartner", proves: [
-            Covered(ViewContract.sharedPresentation, on: element),
+            Covered(ViewContract.transitionID, on: element),
         ], needs: [
-            Covered(ViewContract.sharedPresentation, on: RectangleContract.self),
+            Covered(ViewContract.transitionID, on: RectangleContract.self),
             Covered(ViewContract.presentationFrameChanged, on: RectangleContract.self),
             Covered(ClickElementContract.clicked, on: ButtonContract.self),
         ]) { s in
@@ -303,7 +303,7 @@ private struct Swapped: View {
                         .onEvent(ViewContract.presentationFrameChanged) { drawn.values.append($0) }
                         .onEvent(ViewContract.layoutFrameChanged) { placed.values.append($0) }
                         .id("picture")
-                        .transition(id: "picture")
+                        .transitionID("picture")
                         .motion(.eased(.milliseconds(600), curve: .linear))
                 }
                 .id("large")
@@ -313,7 +313,7 @@ private struct Swapped: View {
                     .width(40)
                     .height(40)
                     .id("picture")
-                    .transition(id: "picture")
+                    .transitionID("picture")
             }
         }
         .horizontalAlignment(.start)
@@ -389,18 +389,18 @@ enum SettingOut {
     private static func pair(_ detailed: Bool, _ first: Received<[Double]>, _ second: Received<[Double]>) -> some View {
         if detailed {
             VStack {
-                Rectangle().fill(.red).width(160).height(80).transition(id: "a")
+                Rectangle().fill(.red).width(160).height(80).transitionID("a")
                     .onEvent(ViewContract.presentationFrameChanged) { first.values.append($0) }
                     .motion(.eased(.milliseconds(600), curve: .linear))
-                Rectangle().fill(.blue).width(100).height(50).transition(id: "b")
+                Rectangle().fill(.blue).width(100).height(50).transitionID("b")
                     .onEvent(ViewContract.presentationFrameChanged) { second.values.append($0) }
                     .motion(.eased(.milliseconds(600), curve: .linear))
             }
             .horizontalAlignment(.start)
         } else {
             HStack {
-                Rectangle().fill(.red).width(40).height(40).transition(id: "a")
-                Rectangle().fill(.blue).width(20).height(20).transition(id: "b")
+                Rectangle().fill(.red).width(40).height(40).transitionID("a")
+                Rectangle().fill(.blue).width(20).height(20).transitionID("b")
             }
         }
     }
@@ -418,7 +418,7 @@ enum SettingOut {
                     .width(160)
                     .height(80)
                     .id("picture")
-                    .transition(id: "picture")
+                    .transitionID("picture")
                     .motion(.eased(.milliseconds(600), curve: .linear))
             }
             .id("large")
@@ -428,7 +428,7 @@ enum SettingOut {
                 .width(40)
                 .height(40)
                 .id("picture")
-                .transition(id: "picture")
+                .transitionID("picture")
                 .motion(.eased(.milliseconds(600), curve: .linear))
         }
     }

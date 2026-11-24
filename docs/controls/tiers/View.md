@@ -55,11 +55,12 @@ How each of them realizes these members is on its own page.
 | `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |
 | `presentationSample` | act | `() -> PresentationSample` | stateUI |
 | `onRotationUpdated` (`rotationUpdated`) | event | `(GesturePhase, Double, Double)` | native |
-| `sharedPresentation` | property | `Int` | stateUI |
 | `swipeDirections` | property | `SwipeDirections` | structure |
 | `swipeThreshold` | property | `Double` | structure |
 | `onSwiped` (`swiped`) | event | `SwipeDirection` | native |
 | `tapCount` | property | `Int` | structure |
 | `onTapped` (`tapped`) | event |  | native |
 | `transition` | property | `Transition` | stateUI |
+| `transitionID` | property | `Int` | stateUI |
+| `transitionScope` | property | `Int` | stateUI |
 | `verticalAlignment` | property | `Alignment` | native |

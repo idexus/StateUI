@@ -166,7 +166,8 @@ struct SharedPictures: ExampleContent {
                     .fill(Self.tints[chosen])
                     .cornerRadius(12)
                     .height(150)
-                    .transition(id: chosen, scope: "pictures")
+                    .transitionID(chosen)
+                    .transitionScope("pictures")
                     // Slow enough to see the way.
                     .motion(.eased(.milliseconds(700), curve: .sineInOut))
                     .onTapped { self.chosen = nil }
@@ -182,7 +183,8 @@ struct SharedPictures: ExampleContent {
                             // THE THUMBNAIL has its picture's transition id;
                             // going back, it sets out from where the picture
                             // is drawn at that moment.
-                            .transition(id: item, scope: "pictures")
+                            .transitionID(item)
+                            .transitionScope("pictures")
                             .motion(.eased(.milliseconds(700), curve: .sineInOut))
                             .onTapped { chosen = item }
                             .accessibilityIdentifier("shared.thumbnail.\(item)")
@@ -261,7 +263,8 @@ struct SharedTiles: ExampleContent {
         Rectangle()
             .fill(tints[index])
             .cornerRadius(corner)
-            .transition(id: index, scope: "tiles")
+            .transitionID(index)
+            .transitionScope("tiles")
             .motion(.spring(response: .milliseconds(480), damping: 0.78))
     }
     // listing: end

@@ -71,7 +71,7 @@ extension MountedElement {
         holdStanding(in: tree)
         var under = held
         while let each = under.popLast() {
-            if each.value(ViewContract.sharedPresentation.token) != nil { each.holdStanding(in: tree) }
+            if each.value(ViewContract.transitionID.token) != nil { each.holdStanding(in: tree) }
             under += each.held
         }
         deactivate(kept: true)

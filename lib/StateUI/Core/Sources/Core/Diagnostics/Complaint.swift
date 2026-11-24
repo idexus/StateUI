@@ -114,10 +114,11 @@ final class Said: Sendable {
         complain(message)
     }
 
-    /// Says once a process, by the transition id the application wrote, that the one crossing as `number` stood on
-    /// more than one view of one page as one of them left and another came - none took over from another.
+    /// Says once a process, by the transition id and scope the application wrote, that the id crossing as `id`, in
+    /// the scope crossing as `scope`, stood on more than one view of one page as one of them left and another came -
+    /// none took over from another.
     /// Design: docs/design/views/transitions.md#a-shared-presentation
-    @MainActor public static func sayRepeatedTransitionID(_ number: Int) {
-        complain(Renderer.shared.sharedIdentities.repeated(number))
+    @MainActor public static func sayRepeatedTransitionID(_ id: Int, scope: Int?) {
+        complain(Renderer.shared.sharedIdentities.repeated(id: id, scope: scope))
     }
 }

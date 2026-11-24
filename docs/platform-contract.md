@@ -455,13 +455,14 @@ of its own; no case gives them a verdict of their own, so no page marks them:
 | `onPointerPressed` (`pointerPressed`) | [View](controls/tiers/View.md) | event |
 | `onPointerReleased` (`pointerReleased`) | [View](controls/tiers/View.md) | event |
 | `onRotationUpdated` (`rotationUpdated`) | [View](controls/tiers/View.md) | event |
-| `sharedPresentation` | [View](controls/tiers/View.md) | property |
 | `swipeDirections` | [View](controls/tiers/View.md) | property |
 | `swipeThreshold` | [View](controls/tiers/View.md) | property |
 | `onSwiped` (`swiped`) | [View](controls/tiers/View.md) | event |
 | `tapCount` | [View](controls/tiers/View.md) | property |
 | `onTapped` (`tapped`) | [View](controls/tiers/View.md) | event |
 | `transition` | [View](controls/tiers/View.md) | property |
+| `transitionID` | [View](controls/tiers/View.md) | property |
+| `transitionScope` | [View](controls/tiers/View.md) | property |
 | `verticalAlignment` | [View](controls/tiers/View.md) | property |
 <!-- shared:end -->
 
@@ -474,48 +475,48 @@ Every control, and every part an application, its windows and its pages are made
 
 | Control | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| [Button](controls/Button.md) | 112 | 65 ✅ · 3 ☑️ · 38 ✓ · 4 – | 64 ✅ · 2 ☑️ · 40 ✓ · 5 – | 81 ✅ · 7 ☑️ · 13 ✓ · 5 – | 74 ✅ · 3 ☑️ · 29 ✓ · 6 – | 74 ✅ · 4 ☑️ · 27 ✓ · 7 – | 86 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [Canvas](controls/Canvas.md) | 81 | 41 ✅ · 3 ☑️ · 36 ✓ · 1 – | 41 ✅ · 3 ☑️ · 36 ✓ · 1 – | 62 ✅ · 5 ☑️ · 10 ✓ · 3 – | 43 ✅ · 3 ☑️ · 28 ✓ · 6 – | 48 ✅ · 4 ☑️ · 22 ✓ · 7 – | 55 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [Capsule](controls/Capsule.md) | 88 | 48 ✅ · 3 ☑️ · 36 ✓ · 1 – | 47 ✅ · 4 ☑️ · 36 ✓ · 1 – | 69 ✅ · 6 ☑️ · 10 ✓ · 2 – | 49 ✅ · 3 ☑️ · 29 ✓ · 7 – | 54 ✅ · 5 ☑️ · 22 ✓ · 7 – | 61 ✅ · 3 ☑️ · 21 ✓ · 3 – |
-| [CheckBox](controls/CheckBox.md) | 91 | 50 ✅ · 3 ☑️ · 36 ✓ · 2 – | 44 ✅ · 3 ☑️ · 39 ✓ · 5 – | 68 ✅ · 6 ☑️ · 12 ✓ · 4 – | 55 ✅ · 3 ☑️ · 27 ✓ · 6 – | 55 ✅ · 4 ☑️ · 25 ✓ · 7 – | 65 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [ColorPicker](controls/ColorPicker.md) | 88 | 47 ✅ · 3 ☑️ · 36 ✓ · 2 – | 42 ✅ · 3 ☑️ · 38 ✓ · 5 – | 88 – | 52 ✅ · 3 ☑️ · 27 ✓ · 6 – | 53 ✅ · 4 ☑️ · 24 ✓ · 7 – | 61 ✅ · 2 ☑️ · 21 ✓ · 4 – |
-| [DatePicker](controls/DatePicker.md) | 100 | 52 ✅ · 3 ☑️ · 37 ✓ · 8 – | 43 ✅ · 2 ☑️ · 38 ✓ · 13 – | 73 ✅ · 6 ☑️ · 15 ✓ · 4 – | 62 ✅ · 5 ☑️ · 27 ✓ · 6 – | 62 ✅ · 7 ☑️ · 24 ✓ · 7 – | 69 ✅ · 2 ☑️ · 21 ✓ · 7 – |
-| [Ellipse](controls/Ellipse.md) | 88 | 48 ✅ · 3 ☑️ · 36 ✓ · 1 – | 47 ✅ · 4 ☑️ · 36 ✓ · 1 – | 69 ✅ · 6 ☑️ · 10 ✓ · 2 – | 49 ✅ · 3 ☑️ · 29 ✓ · 7 – | 54 ✅ · 5 ☑️ · 22 ✓ · 7 – | 61 ✅ · 3 ☑️ · 21 ✓ · 3 – |
-| [Fill](controls/Fill.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ · 1 – | 43 ✅ · 3 ☑️ · 36 ✓ · 1 – | 66 ✅ · 5 ☑️ · 10 ✓ · 2 – | 47 ✅ · 3 ☑️ · 29 ✓ · 4 – | 51 ✅ · 3 ☑️ · 22 ✓ · 7 – | 57 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [Grid](controls/Grid.md) | 94 | 54 ✅ · 2 ☑️ · 36 ✓ · 1 – | 51 ✅ · 3 ☑️ · 38 ✓ · 1 – | 75 ✅ · 5 ☑️ · 12 ✓ · 2 – | 58 ✅ · 3 ☑️ · 27 ✓ · 5 – | 59 ✅ · 3 ☑️ · 24 ✓ · 8 – | 68 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [HStack](controls/HStack.md) | 94 | 55 ✅ · 2 ☑️ · 35 ✓ · 1 – | 51 ✅ · 3 ☑️ · 38 ✓ · 1 – | 75 ✅ · 5 ☑️ · 12 ✓ · 2 – | 59 ✅ · 3 ☑️ · 26 ✓ · 5 – | 59 ✅ · 3 ☑️ · 24 ✓ · 8 – | 68 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [Image](controls/Image.md) | 83 | 42 ✅ · 3 ☑️ · 36 ✓ · 1 – | 42 ✅ · 3 ☑️ · 36 ✓ · 1 – | 63 ✅ · 5 ☑️ · 10 ✓ · 2 – | 44 ✅ · 2 ☑️ · 29 ✓ · 7 – | 49 ✅ · 4 ☑️ · 22 ✓ · 7 – | 56 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [ItemsView](controls/ItemsView.md) | 98 | 50 ✅ · 3 ☑️ · 40 ✓ · 5 – | 48 ✅ · 3 ☑️ · 42 ✓ · 5 – | 76 ✅ · 5 ☑️ · 13 ✓ · 3 – | 59 ✅ · 3 ☑️ · 27 ✓ · 9 – | 60 ✅ · 3 ☑️ · 24 ✓ · 10 – | 68 ✅ · 2 ☑️ · 22 ✓ · 6 – |
-| [Line](controls/Line.md) | 89 | 49 ✅ · 3 ☑️ · 36 ✓ · 1 – | 49 ✅ · 3 ☑️ · 36 ✓ · 1 – | 71 ✅ · 5 ☑️ · 10 ✓ · 2 – | 51 ✅ · 2 ☑️ · 29 ✓ · 7 – | 56 ✅ · 4 ☑️ · 22 ✓ · 7 – | 63 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [Link](controls/Link.md) | 90 | 48 ✅ · 3 ☑️ · 37 ✓ · 2 – | 43 ✅ · 3 ☑️ · 39 ✓ · 5 – | 66 ✅ · 6 ☑️ · 13 ✓ · 4 – | 53 ✅ · 3 ☑️ · 28 ✓ · 6 – | 54 ✅ · 4 ☑️ · 25 ✓ · 7 – | 63 ✅ · 2 ☑️ · 22 ✓ · 3 – |
-| [Map](controls/Map.md) | 88 | 46 ✅ · 3 ☑️ · 37 ✓ · 2 – | 46 ✅ · 3 ☑️ · 37 ✓ · 2 – | 88 🧩 | 88 🧩 | 88 🧩 | 88 🧩 |
-| [MotionLayout](controls/MotionLayout.md) | 96 | 52 ✅ · 2 ☑️ · 36 ✓ · 2 – | 51 ✅ · 3 ☑️ · 38 ✓ · 2 – | 73 ✅ · 5 ☑️ · 12 ✓ · 3 – | 57 ✅ · 3 ☑️ · 27 ✓ · 8 – | 56 ✅ · 3 ☑️ · 24 ✓ · 9 – | 69 ✅ · 2 ☑️ · 21 ✓ · 4 – |
-| [Path](controls/Path.md) | 91 | 51 ✅ · 3 ☑️ · 36 ✓ · 1 – | 50 ✅ · 4 ☑️ · 36 ✓ · 1 – | 72 ✅ · 6 ☑️ · 10 ✓ · 2 – | 52 ✅ · 3 ☑️ · 29 ✓ · 7 – | 57 ✅ · 5 ☑️ · 22 ✓ · 7 – | 64 ✅ · 3 ☑️ · 21 ✓ · 3 – |
-| [Picker](controls/Picker.md) | 102 | 56 ✅ · 3 ☑️ · 37 ✓ · 3 – | 49 ✅ · 4 ☑️ · 41 ✓ · 5 – | 73 ✅ · 6 ☑️ · 13 ✓ · 5 – | 66 ✅ · 3 ☑️ · 27 ✓ · 6 – | 61 ✅ · 4 ☑️ · 24 ✓ · 13 – | 57 ✅ · 1 ☑️ · 20 ✓ · 16 – |
-| [Polygon](controls/Polygon.md) | 92 | 52 ✅ · 3 ☑️ · 36 ✓ · 1 – | 51 ✅ · 4 ☑️ · 36 ✓ · 1 – | 73 ✅ · 6 ☑️ · 10 ✓ · 2 – | 53 ✅ · 3 ☑️ · 29 ✓ · 7 – | 58 ✅ · 5 ☑️ · 22 ✓ · 7 – | 65 ✅ · 3 ☑️ · 21 ✓ · 3 – |
-| [Polyline](controls/Polyline.md) | 92 | 52 ✅ · 3 ☑️ · 36 ✓ · 1 – | 51 ✅ · 4 ☑️ · 36 ✓ · 1 – | 73 ✅ · 6 ☑️ · 10 ✓ · 2 – | 53 ✅ · 3 ☑️ · 29 ✓ · 7 – | 58 ✅ · 5 ☑️ · 22 ✓ · 7 – | 65 ✅ · 3 ☑️ · 21 ✓ · 3 – |
-| [ProgressBar](controls/ProgressBar.md) | 82 | 40 ✅ · 3 ☑️ · 36 ✓ · 3 – | 41 ✅ · 3 ☑️ · 36 ✓ · 2 – | 64 ✅ · 5 ☑️ · 10 ✓ · 2 – | 46 ✅ · 2 ☑️ · 27 ✓ · 7 – | 48 ✅ · 4 ☑️ · 23 ✓ · 7 – | 56 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [Rectangle](controls/Rectangle.md) | 91 | 53 ✅ · 3 ☑️ · 34 ✓ · 1 – | 52 ✅ · 4 ☑️ · 34 ✓ · 1 – | 72 ✅ · 6 ☑️ · 10 ✓ · 2 – | 52 ✅ · 3 ☑️ · 29 ✓ · 7 – | 59 ✅ · 5 ☑️ · 20 ✓ · 7 – | 66 ✅ · 3 ☑️ · 19 ✓ · 3 – |
-| [ScrollView](controls/ScrollView.md) | 97 | 48 ✅ · 4 ☑️ · 37 ✓ · 8 – | 50 ✅ · 3 ☑️ · 38 ✓ · 4 – | 72 ✅ · 5 ☑️ · 13 ✓ · 6 – | 58 ✅ · 3 ☑️ · 27 ✓ · 9 – | 60 ✅ · 3 ☑️ · 24 ✓ · 10 – | 65 ✅ · 2 ☑️ · 21 ✓ · 9 – |
-| [SearchField](controls/SearchField.md) | 110 | 60 ✅ · 5 ☑️ · 36 ✓ · 6 – | 67 ✅ · 3 ☑️ · 38 ✓ · 2 – | 88 ✅ · 6 ☑️ · 12 ✓ · 2 – | 68 ✅ · 7 ☑️ · 27 ✓ · 8 – | 69 ✅ · 6 ☑️ · 28 ✓ · 7 – | 84 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [Separator](controls/Separator.md) | 80 | 39 ✅ · 3 ☑️ · 36 ✓ · 2 – | 39 ✅ · 3 ☑️ · 36 ✓ · 2 – | 62 ✅ · 5 ☑️ · 10 ✓ · 2 – | 42 ✅ · 3 ☑️ · 28 ✓ · 6 – | 47 ✅ · 4 ☑️ · 22 ✓ · 7 – | 54 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [Slider](controls/Slider.md) | 92 | 48 ✅ · 3 ☑️ · 36 ✓ · 3 – | 44 ✅ · 3 ☑️ · 40 ✓ · 5 – | 68 ✅ · 5 ☑️ · 12 ✓ · 6 – | 54 ✅ · 3 ☑️ · 27 ✓ · 6 – | 54 ✅ · 4 ☑️ · 25 ✓ · 9 – | 66 ✅ · 1 ☑️ · 21 ✓ · 4 – |
-| [Space](controls/Space.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ · 1 – | 43 ✅ · 3 ☑️ · 36 ✓ · 1 – | 66 ✅ · 5 ☑️ · 10 ✓ · 2 – | 47 ✅ · 3 ☑️ · 29 ✓ · 4 – | 51 ✅ · 3 ☑️ · 22 ✓ · 7 – | 57 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [Spinner](controls/Spinner.md) | 82 | 39 ✅ · 3 ☑️ · 37 ✓ · 3 – | 41 ✅ · 3 ☑️ · 36 ✓ · 2 – | 64 ✅ · 5 ☑️ · 10 ✓ · 2 – | 43 ✅ · 3 ☑️ · 28 ✓ · 7 – | 49 ✅ · 4 ☑️ · 22 ✓ · 7 – | 56 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [Stepper](controls/Stepper.md) | 90 | 49 ✅ · 3 ☑️ · 36 ✓ · 2 – | 44 ✅ · 3 ☑️ · 38 ✓ · 5 – | 66 ✅ · 5 ☑️ · 12 ✓ · 6 – | 53 ✅ · 4 ☑️ · 27 ✓ · 6 – | 55 ✅ · 4 ☑️ · 24 ✓ · 7 – | 64 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [Switch](controls/Switch.md) | 91 | 49 ✅ · 3 ☑️ · 36 ✓ · 3 – | 45 ✅ · 3 ☑️ · 38 ✓ · 5 – | 67 ✅ · 6 ☑️ · 12 ✓ · 4 – | 55 ✅ · 3 ☑️ · 27 ✓ · 6 – | 55 ✅ · 3 ☑️ · 25 ✓ · 8 – | 65 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [Text](controls/Text.md) | 98 | 56 ✅ · 4 ☑️ · 36 ✓ · 1 – | 58 ✅ · 2 ☑️ · 36 ✓ · 1 – | 79 ✅ · 6 ☑️ · 10 ✓ · 1 – | 61 ✅ · 3 ☑️ · 28 ✓ · 6 – | 64 ✅ · 5 ☑️ · 23 ✓ · 6 – | 72 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [TextEditor](controls/TextEditor.md) | 109 | 66 ✅ · 4 ☑️ · 36 ✓ · 3 – | 66 ✅ · 3 ☑️ · 38 ✓ · 2 – | 87 ✅ · 6 ☑️ · 12 ✓ · 2 – | 72 ✅ · 4 ☑️ · 27 ✓ · 6 – | 68 ✅ · 6 ☑️ · 28 ✓ · 7 – | 83 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [TextField](controls/TextField.md) | 112 | 64 ✅ · 5 ☑️ · 36 ✓ · 4 – | 69 ✅ · 3 ☑️ · 38 ✓ · 2 – | 89 ✅ · 6 ☑️ · 12 ✓ · 3 – | 72 ✅ · 6 ☑️ · 27 ✓ · 6 – | 70 ✅ · 6 ☑️ · 28 ✓ · 8 – | 85 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [TimePicker](controls/TimePicker.md) | 98 | 50 ✅ · 3 ☑️ · 37 ✓ · 8 – | 44 ✅ · 2 ☑️ · 38 ✓ · 10 – | 73 ✅ · 6 ☑️ · 13 ✓ · 4 – | 57 ✅ · 4 ☑️ · 27 ✓ · 6 – | 61 ✅ · 4 ☑️ · 25 ✓ · 7 – | 67 ✅ · 2 ☑️ · 21 ✓ · 7 – |
-| [VStack](controls/VStack.md) | 91 | 51 ✅ · 2 ☑️ · 36 ✓ · 1 – | 49 ✅ · 3 ☑️ · 37 ✓ · 1 – | 73 ✅ · 5 ☑️ · 11 ✓ · 2 – | 55 ✅ · 3 ☑️ · 27 ✓ · 5 – | 57 ✅ · 3 ☑️ · 23 ✓ · 8 – | 65 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [WebView](controls/WebView.md) | 96 | 54 ✅ · 3 ☑️ · 37 ✓ · 2 – | 52 ✅ · 3 ☑️ · 39 ✓ · 2 – | 73 ✅ · 5 ☑️ · 12 ✓ · 5 – | 55 ✅ · 13 ✓ · 26 – | 61 ✅ · 4 ☑️ · 24 ✓ · 7 – | 64 ✅ · 2 ☑️ · 21 ✓ · 6 – |
-| [ZStack](controls/ZStack.md) | 90 | 50 ✅ · 2 ☑️ · 36 ✓ · 1 – | 47 ✅ · 3 ☑️ · 38 ✓ · 1 – | 71 ✅ · 5 ☑️ · 12 ✓ · 2 – | 54 ✅ · 3 ☑️ · 27 ✓ · 5 – | 55 ✅ · 3 ☑️ · 24 ✓ · 8 – | 64 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| ✅ |  | 1862 | 1804 | 2512 | 1980 | 2061 | 2354 |
+| [Button](controls/Button.md) | 113 | 66 ✅ · 3 ☑️ · 38 ✓ · 4 – | 65 ✅ · 2 ☑️ · 40 ✓ · 5 – | 82 ✅ · 7 ☑️ · 13 ✓ · 5 – | 75 ✅ · 3 ☑️ · 29 ✓ · 6 – | 75 ✅ · 4 ☑️ · 27 ✓ · 7 – | 87 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [Canvas](controls/Canvas.md) | 82 | 42 ✅ · 3 ☑️ · 36 ✓ · 1 – | 42 ✅ · 3 ☑️ · 36 ✓ · 1 – | 63 ✅ · 5 ☑️ · 10 ✓ · 3 – | 44 ✅ · 3 ☑️ · 28 ✓ · 6 – | 49 ✅ · 4 ☑️ · 22 ✓ · 7 – | 56 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [Capsule](controls/Capsule.md) | 89 | 49 ✅ · 3 ☑️ · 36 ✓ · 1 – | 48 ✅ · 4 ☑️ · 36 ✓ · 1 – | 70 ✅ · 6 ☑️ · 10 ✓ · 2 – | 50 ✅ · 3 ☑️ · 29 ✓ · 7 – | 55 ✅ · 5 ☑️ · 22 ✓ · 7 – | 62 ✅ · 3 ☑️ · 21 ✓ · 3 – |
+| [CheckBox](controls/CheckBox.md) | 92 | 51 ✅ · 3 ☑️ · 36 ✓ · 2 – | 45 ✅ · 3 ☑️ · 39 ✓ · 5 – | 69 ✅ · 6 ☑️ · 12 ✓ · 4 – | 56 ✅ · 3 ☑️ · 27 ✓ · 6 – | 56 ✅ · 4 ☑️ · 25 ✓ · 7 – | 66 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [ColorPicker](controls/ColorPicker.md) | 89 | 48 ✅ · 3 ☑️ · 36 ✓ · 2 – | 43 ✅ · 3 ☑️ · 38 ✓ · 5 – | 89 – | 53 ✅ · 3 ☑️ · 27 ✓ · 6 – | 54 ✅ · 4 ☑️ · 24 ✓ · 7 – | 62 ✅ · 2 ☑️ · 21 ✓ · 4 – |
+| [DatePicker](controls/DatePicker.md) | 101 | 53 ✅ · 3 ☑️ · 37 ✓ · 8 – | 44 ✅ · 2 ☑️ · 38 ✓ · 13 – | 74 ✅ · 6 ☑️ · 15 ✓ · 4 – | 63 ✅ · 5 ☑️ · 27 ✓ · 6 – | 63 ✅ · 7 ☑️ · 24 ✓ · 7 – | 70 ✅ · 2 ☑️ · 21 ✓ · 7 – |
+| [Ellipse](controls/Ellipse.md) | 89 | 49 ✅ · 3 ☑️ · 36 ✓ · 1 – | 48 ✅ · 4 ☑️ · 36 ✓ · 1 – | 70 ✅ · 6 ☑️ · 10 ✓ · 2 – | 50 ✅ · 3 ☑️ · 29 ✓ · 7 – | 55 ✅ · 5 ☑️ · 22 ✓ · 7 – | 62 ✅ · 3 ☑️ · 21 ✓ · 3 – |
+| [Fill](controls/Fill.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ · 1 – | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 67 ✅ · 5 ☑️ · 10 ✓ · 2 – | 48 ✅ · 3 ☑️ · 29 ✓ · 4 – | 52 ✅ · 3 ☑️ · 22 ✓ · 7 – | 58 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [Grid](controls/Grid.md) | 95 | 55 ✅ · 2 ☑️ · 36 ✓ · 1 – | 52 ✅ · 3 ☑️ · 38 ✓ · 1 – | 76 ✅ · 5 ☑️ · 12 ✓ · 2 – | 59 ✅ · 3 ☑️ · 27 ✓ · 5 – | 60 ✅ · 3 ☑️ · 24 ✓ · 8 – | 69 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [HStack](controls/HStack.md) | 95 | 56 ✅ · 2 ☑️ · 35 ✓ · 1 – | 52 ✅ · 3 ☑️ · 38 ✓ · 1 – | 76 ✅ · 5 ☑️ · 12 ✓ · 2 – | 60 ✅ · 3 ☑️ · 26 ✓ · 5 – | 60 ✅ · 3 ☑️ · 24 ✓ · 8 – | 69 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [Image](controls/Image.md) | 84 | 43 ✅ · 3 ☑️ · 36 ✓ · 1 – | 43 ✅ · 3 ☑️ · 36 ✓ · 1 – | 64 ✅ · 5 ☑️ · 10 ✓ · 2 – | 45 ✅ · 2 ☑️ · 29 ✓ · 7 – | 50 ✅ · 4 ☑️ · 22 ✓ · 7 – | 57 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [ItemsView](controls/ItemsView.md) | 99 | 51 ✅ · 3 ☑️ · 40 ✓ · 5 – | 49 ✅ · 3 ☑️ · 42 ✓ · 5 – | 77 ✅ · 5 ☑️ · 13 ✓ · 3 – | 60 ✅ · 3 ☑️ · 27 ✓ · 9 – | 61 ✅ · 3 ☑️ · 24 ✓ · 10 – | 69 ✅ · 2 ☑️ · 22 ✓ · 6 – |
+| [Line](controls/Line.md) | 90 | 50 ✅ · 3 ☑️ · 36 ✓ · 1 – | 50 ✅ · 3 ☑️ · 36 ✓ · 1 – | 72 ✅ · 5 ☑️ · 10 ✓ · 2 – | 52 ✅ · 2 ☑️ · 29 ✓ · 7 – | 57 ✅ · 4 ☑️ · 22 ✓ · 7 – | 64 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [Link](controls/Link.md) | 91 | 49 ✅ · 3 ☑️ · 37 ✓ · 2 – | 44 ✅ · 3 ☑️ · 39 ✓ · 5 – | 67 ✅ · 6 ☑️ · 13 ✓ · 4 – | 54 ✅ · 3 ☑️ · 28 ✓ · 6 – | 55 ✅ · 4 ☑️ · 25 ✓ · 7 – | 64 ✅ · 2 ☑️ · 22 ✓ · 3 – |
+| [Map](controls/Map.md) | 89 | 47 ✅ · 3 ☑️ · 37 ✓ · 2 – | 47 ✅ · 3 ☑️ · 37 ✓ · 2 – | 89 🧩 | 89 🧩 | 89 🧩 | 89 🧩 |
+| [MotionLayout](controls/MotionLayout.md) | 97 | 53 ✅ · 2 ☑️ · 36 ✓ · 2 – | 52 ✅ · 3 ☑️ · 38 ✓ · 2 – | 74 ✅ · 5 ☑️ · 12 ✓ · 3 – | 58 ✅ · 3 ☑️ · 27 ✓ · 8 – | 57 ✅ · 3 ☑️ · 24 ✓ · 9 – | 70 ✅ · 2 ☑️ · 21 ✓ · 4 – |
+| [Path](controls/Path.md) | 92 | 52 ✅ · 3 ☑️ · 36 ✓ · 1 – | 51 ✅ · 4 ☑️ · 36 ✓ · 1 – | 73 ✅ · 6 ☑️ · 10 ✓ · 2 – | 53 ✅ · 3 ☑️ · 29 ✓ · 7 – | 58 ✅ · 5 ☑️ · 22 ✓ · 7 – | 65 ✅ · 3 ☑️ · 21 ✓ · 3 – |
+| [Picker](controls/Picker.md) | 103 | 57 ✅ · 3 ☑️ · 37 ✓ · 3 – | 50 ✅ · 4 ☑️ · 41 ✓ · 5 – | 74 ✅ · 6 ☑️ · 13 ✓ · 5 – | 67 ✅ · 3 ☑️ · 27 ✓ · 6 – | 62 ✅ · 4 ☑️ · 24 ✓ · 13 – | 58 ✅ · 1 ☑️ · 20 ✓ · 16 – |
+| [Polygon](controls/Polygon.md) | 93 | 53 ✅ · 3 ☑️ · 36 ✓ · 1 – | 52 ✅ · 4 ☑️ · 36 ✓ · 1 – | 74 ✅ · 6 ☑️ · 10 ✓ · 2 – | 54 ✅ · 3 ☑️ · 29 ✓ · 7 – | 59 ✅ · 5 ☑️ · 22 ✓ · 7 – | 66 ✅ · 3 ☑️ · 21 ✓ · 3 – |
+| [Polyline](controls/Polyline.md) | 93 | 53 ✅ · 3 ☑️ · 36 ✓ · 1 – | 52 ✅ · 4 ☑️ · 36 ✓ · 1 – | 74 ✅ · 6 ☑️ · 10 ✓ · 2 – | 54 ✅ · 3 ☑️ · 29 ✓ · 7 – | 59 ✅ · 5 ☑️ · 22 ✓ · 7 – | 66 ✅ · 3 ☑️ · 21 ✓ · 3 – |
+| [ProgressBar](controls/ProgressBar.md) | 83 | 41 ✅ · 3 ☑️ · 36 ✓ · 3 – | 42 ✅ · 3 ☑️ · 36 ✓ · 2 – | 65 ✅ · 5 ☑️ · 10 ✓ · 2 – | 47 ✅ · 2 ☑️ · 27 ✓ · 7 – | 49 ✅ · 4 ☑️ · 23 ✓ · 7 – | 57 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [Rectangle](controls/Rectangle.md) | 92 | 54 ✅ · 3 ☑️ · 34 ✓ · 1 – | 53 ✅ · 4 ☑️ · 34 ✓ · 1 – | 73 ✅ · 6 ☑️ · 10 ✓ · 2 – | 53 ✅ · 3 ☑️ · 29 ✓ · 7 – | 60 ✅ · 5 ☑️ · 20 ✓ · 7 – | 67 ✅ · 3 ☑️ · 19 ✓ · 3 – |
+| [ScrollView](controls/ScrollView.md) | 98 | 49 ✅ · 4 ☑️ · 37 ✓ · 8 – | 51 ✅ · 3 ☑️ · 38 ✓ · 4 – | 73 ✅ · 5 ☑️ · 13 ✓ · 6 – | 59 ✅ · 3 ☑️ · 27 ✓ · 9 – | 61 ✅ · 3 ☑️ · 24 ✓ · 10 – | 66 ✅ · 2 ☑️ · 21 ✓ · 9 – |
+| [SearchField](controls/SearchField.md) | 111 | 61 ✅ · 5 ☑️ · 36 ✓ · 6 – | 68 ✅ · 3 ☑️ · 38 ✓ · 2 – | 89 ✅ · 6 ☑️ · 12 ✓ · 2 – | 69 ✅ · 7 ☑️ · 27 ✓ · 8 – | 70 ✅ · 6 ☑️ · 28 ✓ · 7 – | 85 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [Separator](controls/Separator.md) | 81 | 40 ✅ · 3 ☑️ · 36 ✓ · 2 – | 40 ✅ · 3 ☑️ · 36 ✓ · 2 – | 63 ✅ · 5 ☑️ · 10 ✓ · 2 – | 43 ✅ · 3 ☑️ · 28 ✓ · 6 – | 48 ✅ · 4 ☑️ · 22 ✓ · 7 – | 55 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [Slider](controls/Slider.md) | 93 | 49 ✅ · 3 ☑️ · 36 ✓ · 3 – | 45 ✅ · 3 ☑️ · 40 ✓ · 5 – | 69 ✅ · 5 ☑️ · 12 ✓ · 6 – | 55 ✅ · 3 ☑️ · 27 ✓ · 6 – | 55 ✅ · 4 ☑️ · 25 ✓ · 9 – | 67 ✅ · 1 ☑️ · 21 ✓ · 4 – |
+| [Space](controls/Space.md) | 84 | 45 ✅ · 2 ☑️ · 36 ✓ · 1 – | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 67 ✅ · 5 ☑️ · 10 ✓ · 2 – | 48 ✅ · 3 ☑️ · 29 ✓ · 4 – | 52 ✅ · 3 ☑️ · 22 ✓ · 7 – | 58 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [Spinner](controls/Spinner.md) | 83 | 40 ✅ · 3 ☑️ · 37 ✓ · 3 – | 42 ✅ · 3 ☑️ · 36 ✓ · 2 – | 65 ✅ · 5 ☑️ · 10 ✓ · 2 – | 44 ✅ · 3 ☑️ · 28 ✓ · 7 – | 50 ✅ · 4 ☑️ · 22 ✓ · 7 – | 57 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [Stepper](controls/Stepper.md) | 91 | 50 ✅ · 3 ☑️ · 36 ✓ · 2 – | 45 ✅ · 3 ☑️ · 38 ✓ · 5 – | 67 ✅ · 5 ☑️ · 12 ✓ · 6 – | 54 ✅ · 4 ☑️ · 27 ✓ · 6 – | 56 ✅ · 4 ☑️ · 24 ✓ · 7 – | 65 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [Switch](controls/Switch.md) | 92 | 50 ✅ · 3 ☑️ · 36 ✓ · 3 – | 46 ✅ · 3 ☑️ · 38 ✓ · 5 – | 68 ✅ · 6 ☑️ · 12 ✓ · 4 – | 56 ✅ · 3 ☑️ · 27 ✓ · 6 – | 56 ✅ · 3 ☑️ · 25 ✓ · 8 – | 66 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [Text](controls/Text.md) | 99 | 57 ✅ · 4 ☑️ · 36 ✓ · 1 – | 59 ✅ · 2 ☑️ · 36 ✓ · 1 – | 80 ✅ · 6 ☑️ · 10 ✓ · 1 – | 62 ✅ · 3 ☑️ · 28 ✓ · 6 – | 65 ✅ · 5 ☑️ · 23 ✓ · 6 – | 73 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [TextEditor](controls/TextEditor.md) | 110 | 67 ✅ · 4 ☑️ · 36 ✓ · 3 – | 67 ✅ · 3 ☑️ · 38 ✓ · 2 – | 88 ✅ · 6 ☑️ · 12 ✓ · 2 – | 73 ✅ · 4 ☑️ · 27 ✓ · 6 – | 69 ✅ · 6 ☑️ · 28 ✓ · 7 – | 84 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [TextField](controls/TextField.md) | 113 | 65 ✅ · 5 ☑️ · 36 ✓ · 4 – | 70 ✅ · 3 ☑️ · 38 ✓ · 2 – | 90 ✅ · 6 ☑️ · 12 ✓ · 3 – | 73 ✅ · 6 ☑️ · 27 ✓ · 6 – | 71 ✅ · 6 ☑️ · 28 ✓ · 8 – | 86 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [TimePicker](controls/TimePicker.md) | 99 | 51 ✅ · 3 ☑️ · 37 ✓ · 8 – | 45 ✅ · 2 ☑️ · 38 ✓ · 10 – | 74 ✅ · 6 ☑️ · 13 ✓ · 4 – | 58 ✅ · 4 ☑️ · 27 ✓ · 6 – | 62 ✅ · 4 ☑️ · 25 ✓ · 7 – | 68 ✅ · 2 ☑️ · 21 ✓ · 7 – |
+| [VStack](controls/VStack.md) | 92 | 52 ✅ · 2 ☑️ · 36 ✓ · 1 – | 50 ✅ · 3 ☑️ · 37 ✓ · 1 – | 74 ✅ · 5 ☑️ · 11 ✓ · 2 – | 56 ✅ · 3 ☑️ · 27 ✓ · 5 – | 58 ✅ · 3 ☑️ · 23 ✓ · 8 – | 66 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [WebView](controls/WebView.md) | 97 | 55 ✅ · 3 ☑️ · 37 ✓ · 2 – | 53 ✅ · 3 ☑️ · 39 ✓ · 2 – | 74 ✅ · 5 ☑️ · 12 ✓ · 5 – | 56 ✅ · 13 ✓ · 26 – | 62 ✅ · 4 ☑️ · 24 ✓ · 7 – | 65 ✅ · 2 ☑️ · 21 ✓ · 6 – |
+| [ZStack](controls/ZStack.md) | 91 | 51 ✅ · 2 ☑️ · 36 ✓ · 1 – | 48 ✅ · 3 ☑️ · 38 ✓ · 1 – | 72 ✅ · 5 ☑️ · 12 ✓ · 2 – | 55 ✅ · 3 ☑️ · 27 ✓ · 5 – | 56 ✅ · 3 ☑️ · 24 ✓ · 8 – | 65 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| ✅ |  | 1899 | 1841 | 2547 | 2016 | 2097 | 2390 |
 | ✓ |  | 1343 | 1386 | 398 | 984 | 853 | 755 |
-| – |  | 93 | 106 | 192 | 248 | 273 | 144 |
-| **Met** | 3432 | **3298** | **3296** | **3102** | **3212** | **3187** | **3253** |
-| 🧩 |  | 0 | 0 | 88 | 88 | 88 | 88 |
+| – |  | 93 | 106 | 193 | 248 | 273 | 144 |
+| **Met** | 3469 | **3335** | **3333** | **3138** | **3248** | **3223** | **3289** |
+| 🧩 |  | 0 | 0 | 89 | 89 | 89 | 89 |
 
 ### Application structure
 
@@ -572,7 +573,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | --- | --- | --- |
 | [AutomationElement](controls/tiers/AutomationElement.md) | `accessibilityIdentifier` | 1 |
 | [VisualElement](controls/tiers/VisualElement.md) | `accessibilityActionPerformed`, `accessibilityActions`, `onAccessibilityAdjusted` (`accessibilityAdjusted`), `accessibilityHeading`, `accessibilityHint`, `accessibilityLabel`, `accessibilityPresence`, `accessibilityRole`, `accessibilityValue`, `layoutFrame`, `presentationFrame`, `height`, `ignoresInput`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `tooltip`, `translationX`, `translationY`, `width`, `zIndex` | 33 |
-| [View](controls/tiers/View.md) | `allowsDrop`, `area`, `onDragEntered` (`dragEntered`), `onDragExited` (`dragExited`), `onDragStarting` (`dragStarting`), `dragText`, `onDropped` (`dropped`), `droppedFileTypes`, `onDragEnded` (`dragEnded`), `onDismissed` (`dismissed`), `onDropped` (`filesDropped`), `layoutFrameChanged`, `presentationFrameChanged`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `onLongPressed` (`longPressed`), `longPressDuration`, `horizontalAlignment`, `interaction`, `isDraggable`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `layoutBody`, `onPinchUpdated` (`pinchUpdated`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `onRotationUpdated` (`rotationUpdated`), `sharedPresentation`, `swipeDirections`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `transition`, `verticalAlignment` | 39 |
+| [View](controls/tiers/View.md) | `allowsDrop`, `area`, `onDragEntered` (`dragEntered`), `onDragExited` (`dragExited`), `onDragStarting` (`dragStarting`), `dragText`, `onDropped` (`dropped`), `droppedFileTypes`, `onDragEnded` (`dragEnded`), `onDismissed` (`dismissed`), `onDropped` (`filesDropped`), `layoutFrameChanged`, `presentationFrameChanged`, `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `onLongPressed` (`longPressed`), `longPressDuration`, `horizontalAlignment`, `interaction`, `isDraggable`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `layoutBody`, `onPinchUpdated` (`pinchUpdated`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `onRotationUpdated` (`rotationUpdated`), `swipeDirections`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `transition`, `transitionID`, `transitionScope`, `verticalAlignment` | 40 |
 | [Layout](controls/tiers/Layout.md) | `ignoresSafeArea`, `clipsContent`, `letsInputThrough`, `layoutBodies` | 4 |
 | [Stack](controls/tiers/Stack.md) | `spacing` | 1 |
 | [TextInput](controls/tiers/TextInput.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 9 |
@@ -717,16 +718,16 @@ realizes the element and each of its members.
 `presentation`, `presentationFrame`, `progress`, `region`, `role`, `rotation`,
 `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
 `scrollEdge`, `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
-`selectionLength`, `selectionMode`, `shape`, `sharedPresentation`,
-`showsBackButton`, `showsClearButton`, `showsCloseButton`, `showsMenuArrow`,
-`showsNavigationBar`, `showsSidebar`, `showsSidebarToggle`, `showsText`,
-`showsTitle`, `showsTraffic`, `showsUserLocation`, `sidebarBackground`,
-`sidebarOverlayBackground`, `sidebarOverlays`, `source`, `spacing`,
-`standsAlone`, `step`, `stroke`, `style`, `submitLabel`, `subtitle`,
-`swipeDirections`, `swipeThreshold`, `tapCount`, `text`, `textCase`,
-`textColor`, `textDecorations`, `textStyle`, `time`, `tint`, `title`, `to`,
-`toolbarSpacing`, `toolbarStyle`, `tooltip`, `tracking`, `transition`,
-`translationX`, `translationY`, `userAgent`, `value`, `verticalAlignment`,
+`selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
+`showsClearButton`, `showsCloseButton`, `showsMenuArrow`, `showsNavigationBar`,
+`showsSidebar`, `showsSidebarToggle`, `showsText`, `showsTitle`, `showsTraffic`,
+`showsUserLocation`, `sidebarBackground`, `sidebarOverlayBackground`,
+`sidebarOverlays`, `source`, `spacing`, `standsAlone`, `step`, `stroke`,
+`style`, `submitLabel`, `subtitle`, `swipeDirections`, `swipeThreshold`,
+`tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `textStyle`,
+`time`, `tint`, `title`, `to`, `toolbarSpacing`, `toolbarStyle`, `tooltip`,
+`tracking`, `transition`, `transitionID`, `transitionScope`, `translationX`,
+`translationY`, `userAgent`, `value`, `verticalAlignment`,
 `verticalScrollIndicator`, `verticalTextAlignment`, `width`, `windowKind`,
 `windowValue`, `wraps`, `x`, `y`, `zIndex`.
 

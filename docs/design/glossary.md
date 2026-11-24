@@ -60,7 +60,7 @@ and this table maps the two.
 | StateUI term | Common term | What it means here |
 | --- | --- | --- |
 | identity, `.id()`, `ElementID` | key | what keeps an element the same element across renders: an explicit `.id()`, then the builder path, then the position |
-| transition id, its scope (`transition(id:scope:)`) | shared element key | what two views drawn as one as one leaves and the other comes share - never who either is; the scope, where such views meet on a page |
+| transition id, its scope (`transitionID(_:)`, `transitionScope(_:)`) | shared element key | what two views drawn as one as one leaves and the other comes share - never who either is; the scope, where such views meet on a page |
 | render | reconcile | build the patch between the tree the host holds and the tree the state describes |
 | patch (`HostPatch`) | diff | the sparse change from one tree to the next |
 | road (walk, build, complete) | render mode | how a render reaches the elements it describes |

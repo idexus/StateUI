@@ -106,9 +106,10 @@ is one view, the one coming setting out from where the other is drawn. Their
 presentation is shared by the transition id written on each:
 
 ```text
-  .transition(id: value)                 on a view: what its presentation is shared by on its page
-  .transition(id: value, scope: where)   the same, met only by the views naming the scope
-                                         both write ViewContract.sharedPresentation, a number
+  .transitionID(value)       on a view: what its presentation is shared by on its page
+                             - ViewContract.transitionID, a number
+  .transitionScope(where)    on the same view: met only by the views naming the same scope
+                             - ViewContract.transitionScope, a number; with no id, said
 ```
 
 A transition id is what a view is drawn as, not who it is: `.id(_:)` keeps
@@ -126,7 +127,8 @@ each their own. A scope says where they meet within it: only the views naming
 the same scope, so the parts of a component - its title, its picture - written
 once meet the parts of the same card, and a page holding several numbered
 examples keeps them apart. A scope is any `Hashable`, a card's own id or a
-word.
+word, written on the same view as its id, in either order; a scope with no
+transition id makes the view one with nothing, and is said once.
 
 One view goes and one comes: a transition id that stands on more than one view
 of the page as the change runs - two leaving, two coming, or one staying beside

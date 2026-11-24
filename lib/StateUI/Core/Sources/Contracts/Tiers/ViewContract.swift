@@ -97,10 +97,13 @@ public enum ViewContract: Tier {
     /// its exit goes to.
     public static let transition = ElementProperty<Self, Transition>("transition", layer: .stateUI, travels: false)
 
-    /// What the view's presentation is shared by on its page: the number its `transition(id:)` - with the scope it
-    /// names - crosses as. A view leaving and a view entering of one such number are drawn as one.
-    public static let sharedPresentation = ElementProperty<Self, Int>(
-        "sharedPresentation", layer: .stateUI, travels: false)
+    /// What the view's presentation is shared by on its page: the number its `transitionID(_:)` crosses as. A view
+    /// leaving and a view entering of one such number, in one scope, are drawn as one.
+    public static let transitionID = ElementProperty<Self, Int>("transitionID", layer: .stateUI, travels: false)
+
+    /// Where the view's transition id meets another: the number its `transitionScope(_:)` crosses as; none, its
+    /// whole page.
+    public static let transitionScope = ElementProperty<Self, Int>("transitionScope", layer: .stateUI, travels: false)
 
     /// How many pointers a pan must have.
     public static let panTouchCount = ElementProperty<Self, Int>(
@@ -159,5 +162,5 @@ public enum ViewContract: Tier {
         "verticalAlignment", layer: .native)
 
     /// The tier's own members.
-    public static let members: [any ContractMember] = [allowsDrop, area, dragEntered, dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, dismissed, filesDropped, layoutFrameChanged, presentationFrameChanged, gridColumn, gridColumnSpan, gridRow, gridRowSpan, longPressed, longPressDuration, horizontalAlignment, interaction, isDraggable, margin, panTouchCount, panUpdated, layoutBody, pinchUpdated, pointerMoved, pointerPressed, pointerReleased, presentationSample, rotationUpdated, sharedPresentation, swipeDirections, swipeThreshold, swiped, tapCount, tapped, transition, verticalAlignment]
+    public static let members: [any ContractMember] = [allowsDrop, area, dragEntered, dragExited, dragStarting, dragText, dropped, droppedFileTypes, dragEnded, dismissed, filesDropped, layoutFrameChanged, presentationFrameChanged, gridColumn, gridColumnSpan, gridRow, gridRowSpan, longPressed, longPressDuration, horizontalAlignment, interaction, isDraggable, margin, panTouchCount, panUpdated, layoutBody, pinchUpdated, pointerMoved, pointerPressed, pointerReleased, presentationSample, rotationUpdated, swipeDirections, swipeThreshold, swiped, tapCount, tapped, transition, transitionID, transitionScope, verticalAlignment]
 }

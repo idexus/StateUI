@@ -137,11 +137,16 @@ extension Differ {
             .flatMap(\.chain)
             .filter { convertedOnce.insert(ObjectIdentifier($0)).inserted }
 
-        // A shared presentation's number is worn while the element says it.
-        let (said, was) = (node.props[.sharedPresentation]?.int, rendered?.props[.sharedPresentation]?.int)
-        if said != was {
+        // A transition id's number, and its scope's, are worn while the element says them; a scope with no id
+        // makes the view one with nothing, which is said.
+        for token in [Prop.transitionID, .transitionScope] {
+            let (said, was) = (node.props[token]?.int, rendered?.props[token]?.int)
+            guard said != was else { continue }
             if let was { Renderer.shared.sharedIdentities.unwear(was) }
             if let said { Renderer.shared.sharedIdentities.wear(said) }
+        }
+        if let scope = node.props[.transitionScope]?.int, node.props[.transitionID] == nil {
+            complain(Renderer.shared.sharedIdentities.scopeAlone(scope))
         }
 
         // Properties described last render and not now are named for the host to clear.

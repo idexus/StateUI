@@ -31,14 +31,14 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (88)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>47 ✅ · 3 ☑️ · 36 ✓ · 2 –</td><td><code>NSColorWell</code> opening the color panel</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>42 ✅ · 3 ☑️ · 38 ✓ · 5 –</td><td><code>UIColorWell</code> opening <code>UIColorPickerViewController</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">–</td><td>88 –</td><td>no honest native counterpart</td></tr>
+<thead><tr><th>Host</th><th>Created</th><th>Members (89)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>48 ✅ · 3 ☑️ · 36 ✓ · 2 –</td><td><code>NSColorWell</code> opening the color panel</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>43 ✅ · 3 ☑️ · 38 ✓ · 5 –</td><td><code>UIColorWell</code> opening <code>UIColorPickerViewController</code></td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">–</td><td>89 –</td><td>no honest native counterpart</td></tr>
 <tr><td colspan="3">Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>52 ✅ · 3 ☑️ · 27 ✓ · 6 –</td><td><code>DropDownButton</code> showing the color, its <code>Flyout</code> a <code>ColorPicker</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>53 ✅ · 4 ☑️ · 24 ✓ · 7 –</td><td><code>GtkColorDialogButton</code> opening a <code>GtkColorDialog</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>61 ✅ · 2 ☑️ · 21 ✓ · 4 –</td><td><code>&lt;input type=color&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>53 ✅ · 3 ☑️ · 27 ✓ · 6 –</td><td><code>DropDownButton</code> showing the color, its <code>Flyout</code> a <code>ColorPicker</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>54 ✅ · 4 ☑️ · 24 ✓ · 7 –</td><td><code>GtkColorDialogButton</code> opening a <code>GtkColorDialog</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>62 ✅ · 2 ☑️ · 21 ✓ · 4 –</td><td><code>&lt;input type=color&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/ColorPickerContract.swift`.
@@ -209,8 +209,6 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tr><td colspan="9">Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onRotationUpdated</code> (<code>rotationUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">–</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: rotate on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: rotate on ColorPicker: the view's listening handed the recognizer's states, no touch sent<br>Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.<br>WinUI 3: only through the host's own: rotate on ColorPicker: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: rotate on ColorPicker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>sharedPresentation</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeDirections</code></td><td>property</td><td><code>SwipeDirections</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">–</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pan on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent<br>Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.<br>WinUI 3: only through the host's own: pan on ColorPicker: the relay's report of the press dragged handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeThreshold</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">–</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
@@ -222,6 +220,10 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">–</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on ColorPicker: the view's listening handed the recognizer's states, no touch sent<br>Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.<br>WinUI 3: only through the host's own: pressDown on ColorPicker: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>transitionID</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>transitionScope</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">Android Views: Android has no color picker of its own: neither the platform nor its own libraries offer one.</td></tr></tbody>

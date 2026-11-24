@@ -39,7 +39,7 @@ extension MountedElement {
     /// Whether the element may come moving as it is given its first place: by the transition it declares, from a
     /// partner of its id, else fading in where its view `presentsOpacity` and no state owns it.
     public func entersMoving(presentsOpacity: Bool) -> Bool {
-        transition != nil || value(ViewContract.sharedPresentation.token) != nil
+        transition != nil || value(ViewContract.transitionID.token) != nil
             || (presentsOpacity && driven[.opacity] == nil)
     }
 

@@ -17,10 +17,10 @@ private struct CardBoard: View {
     var body: some View {
         VStack {
             if detailShown.wrappedValue {
-                Text("detail").id(5).transition(id: 5)
+                Text("detail").id(5).transitionID(5)
             } else {
                 MotionLayout([5, 6], parameters: State(wrappedValue: 0.0).projectedValue) { card in
-                    Text("card \(card)").id(card).transition(id: card)
+                    Text("card \(card)").id(card).transitionID(card)
                 } placements: { _, _ in
                     [Placement(Rect(x: 40, y: 40, width: 40, height: 40)), Placement(Rect(x: 90, y: 40, width: 40, height: 40))]
                 }
@@ -40,9 +40,9 @@ private struct SwappingDeck: View {
         VStack {
             MotionLayout([5], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
                 if itemDetailed.wrappedValue {
-                    Rectangle().id(5).transition(id: 5)
+                    Rectangle().id(5).transitionID(5)
                 } else {
-                    Text("small").id(5).transition(id: 5)
+                    Text("small").id(5).transitionID(5)
                 }
             } placements: { _, _ in
                 [Placement(Rect(x: 40, y: 40, width: 100, height: 60))]
@@ -124,10 +124,12 @@ final class SharedTransitionsTests: XCTestCase {
         var tree: MountedTree { runtime.tree }
         var root: MountedElement { tree.root! }
 
-        /// A text of `id` wearing `key`, leaving by a fade where `fades`.
-        static func keyed(_ id: String, _ key: Int, fades: Bool = false) -> HostPatch {
+        /// A text of `id` wearing `key` - in the scope numbered `scope`, where one is - leaving by a fade where
+        /// `fades`.
+        static func keyed(_ id: String, _ key: Int, scope: Int? = nil, fades: Bool = false) -> HostPatch {
             var patch = HostPatch(id: .manual(id), type: .text)
-            patch.properties = [.sharedPresentation: .number(Double(key))]
+            patch.properties = [.transitionID: .number(Double(key))]
+            if let scope { patch.properties[.transitionScope] = .number(Double(scope)) }
             if fades { patch.properties[.transition] = Transition(enter: .identity, exit: .opacity).propValue }
             return patch
         }
@@ -229,6 +231,20 @@ final class SharedTransitionsTests: XCTestCase {
         XCTAssertNil(bench.drawn(.scaleX, of: "detail"))
     }
 
+    /// A TRANSITION ID MEETS ITS PARTNER ONLY IN ITS SCOPE: a thumbnail and a detail of one id in two scopes each
+    /// come and go as their own; in one scope the detail enters from the thumbnail.
+    func testATransitionIDMeetsItsPartnerOnlyInItsScope() {
+        let apart = Bench()
+        listed(apart, thumbnails: [Bench.keyed("thumbnail", 5, scope: 1)])
+        paged(apart, details: [Bench.keyed("detail", 5, scope: 2)])
+        XCTAssertNil(apart.drawn(.translationX, of: "detail"), "another scope: its own")
+
+        let together = Bench()
+        listed(together, thumbnails: [Bench.keyed("thumbnail", 5, scope: 1)])
+        paged(together, details: [Bench.keyed("detail", 5, scope: 1)])
+        XCTAssertEqual(together.drawn(.translationX, of: "detail") ?? .nan, -60, accuracy: 0.001, "one scope: one")
+    }
+
     /// Where `element` is drawn in the window, standing at `place` with no transform in it: its own transform and
     /// that of every view holding it, up to the bench's root.
     private func drawn(_ element: MountedElement, at place: Rect, in bench: Bench) -> Rect {
@@ -252,7 +268,7 @@ final class SharedTransitionsTests: XCTestCase {
     /// A rectangle of `id` wearing `key`, rounded by `corner`.
     private static func rounded(_ id: String, _ key: Int, corner: Double) -> HostPatch {
         var patch = HostPatch(id: .manual(id), type: .rectangle)
-        patch.properties = [.sharedPresentation: .number(Double(key)), .cornerRadius: .number(corner)]
+        patch.properties = [.transitionID: .number(Double(key)), .cornerRadius: .number(corner)]
         return patch
     }
 
@@ -773,7 +789,7 @@ final class SharedTransitionsTests: XCTestCase {
         let heard = Heard()
         Complaints.route(to: { heard.words.append($0) })
         defer { Complaints.route(to: nil) }
-        func key(_ name: String) -> Int { Renderer.shared.sharedIdentities.number(for: SharedKey(id: name, scope: nil)) }
+        func key(_ name: String) -> Int { Renderer.shared.sharedIdentities.number(for: AnyHashable(name)) }
         func said(_ name: String) -> Bool { heard.words.contains { $0.contains("\"\(name)\" stands on more than one") } }
 
         let single = Bench(), one = key("alone on its page")

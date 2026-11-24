@@ -45,7 +45,7 @@ conditional beside them does not shift them.
 An id is who a view is, never what it is drawn as: what a view's presentation
 is shared by is its transition id
 ([a shared presentation](../views/transitions.md#a-shared-presentation)), which
-`transition(id:)` writes as a number (`ViewContract.sharedPresentation`) and
+`transitionID(_:)` writes as a number (`ViewContract.transitionID`) and
 `.id()`, `ForEach`'s stamp and the identities StateUI gives its own views never
 do. Among the same siblings, of one kind, an `.id()` still continues one
 element, whatever transition id it wears.

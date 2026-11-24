@@ -341,7 +341,9 @@ final class Differ {
         node.conversions.forEach(Renderer.shared.board.conversions.unwear)
 
         departures.forget(node.id)
-        if let worn = node.props[.sharedPresentation]?.int { Renderer.shared.sharedIdentities.unwear(worn) }
+        for worn in [node.props[.transitionID]?.int, node.props[.transitionScope]?.int].compactMap({ $0 }) {
+            Renderer.shared.sharedIdentities.unwear(worn)
+        }
 
         for child in node.children {
             forget(child)

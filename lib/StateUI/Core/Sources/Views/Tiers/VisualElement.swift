@@ -74,7 +74,7 @@ extension VisualElement {
     /// siblings is said.
     ///
     /// An id is who a view is, not what it is drawn as: two views drawn as
-    /// one as one leaves and the other comes share a `transition(id:)`.
+    /// one as one leaves and the other comes share a `transitionID(_:)`.
     ///
     /// - Parameter value: who this view is - distinct among its siblings and
     ///   the same across renders.

@@ -5,9 +5,9 @@ import XCTest
 
 @_spi(Host) @testable import StateUI
 
-/// A shared presentation's number as it crosses: a transition id gives the number the core keeps for it and its scope,
-/// the same for the view that leaves and the one that comes in one walk, never a number given again - and `.id()`,
-/// who a view is, gives none.
+/// A shared presentation's numbers as they cross: a transition id and its scope give the numbers the core keeps for
+/// them, the same for the view that leaves and the one that comes in one walk, never a number given again - and
+/// `.id()`, who a view is, gives none.
 @MainActor
 final class SharedPresentationIdentityTests: XCTestCase {
     /// An identity of this test's own: no other test's views wear one, so the numbers they keep are its alone.
@@ -20,9 +20,9 @@ final class SharedPresentationIdentityTests: XCTestCase {
         VStack {
             if let item {
                 if detailed {
-                    VStack { Text("detail").transition(id: Item(number: item)) }
+                    VStack { Text("detail").transitionID(Item(number: item)) }
                 } else {
-                    Text("thumbnail").transition(id: Item(number: item))
+                    Text("thumbnail").transitionID(Item(number: item))
                 }
             }
         }
@@ -33,7 +33,7 @@ final class SharedPresentationIdentityTests: XCTestCase {
     /// The number the message says, of whichever text says one.
     private func number(in message: HostPatch) throws -> Int {
         try XCTUnwrap(
-            message.subtree.filter { $0.type == .text }.compactMap { $0.properties[.sharedPresentation]?.int }.first,
+            message.subtree.filter { $0.type == .text }.compactMap { $0.properties[.transitionID]?.int }.first,
             "no number in the message")
     }
 
@@ -63,14 +63,35 @@ final class SharedPresentationIdentityTests: XCTestCase {
         XCTAssertFalse([seven, eight].contains(again), "worn by nobody for a walk: another number")
     }
 
-    /// A SCOPE IS WHERE THE VIEWS OF ONE TRANSITION ID MEET: one id in one scope is one number, in two scopes two,
-    /// and an id written with no scope is another number than the same id in one.
-    func testATransitionIDsScopeIsPartOfItsNumber() throws {
-        func number(_ text: some View) throws -> Int { try XCTUnwrap(text.node.props[.sharedPresentation]?.int) }
-        let first = try number(Text("title").transition(id: Item(number: 4), scope: "card 1"))
-        XCTAssertEqual(try number(Text("title").transition(id: Item(number: 4), scope: "card 1")), first, "the same pair")
-        XCTAssertNotEqual(try number(Text("title").transition(id: Item(number: 4), scope: "card 2")), first, "another scope")
-        XCTAssertNotEqual(try number(Text("title").transition(id: Item(number: 4))), first, "no scope")
+    /// AN ID AND ITS SCOPE CROSS AS TWO NUMBERS, WRITTEN IN EITHER ORDER: the same id is one number whatever its
+    /// scope, another scope another number, and a view naming no scope crosses with none.
+    func testATransitionIDAndItsScopeCrossAsTwoNumbersInEitherOrder() throws {
+        func numbers(_ text: some View) -> [Int?] {
+            [text.node.props[.transitionID]?.int, text.node.props[.transitionScope]?.int]
+        }
+        let first = numbers(Text("title").transitionID(Item(number: 4)).transitionScope("card 1"))
+        XCTAssertNotNil(first[0], "the id's number")
+        XCTAssertNotNil(first[1], "the scope's number")
+        XCTAssertEqual(numbers(Text("title").transitionScope("card 1").transitionID(Item(number: 4))), first,
+                       "the same written the other way round")
+        let other = numbers(Text("title").transitionID(Item(number: 4)).transitionScope("card 2"))
+        XCTAssertEqual(other[0], first[0], "the same id")
+        XCTAssertNotEqual(other[1], first[1], "another scope")
+        XCTAssertNil(numbers(Text("title").transitionID(Item(number: 4)))[1], "no scope")
+    }
+
+    /// What the library said, as a test hears it.
+    private final class Heard: @unchecked Sendable {
+        var words: [String] = []
+    }
+
+    /// A SCOPE WITH NO TRANSITION ID makes the view one with nothing, and is said once.
+    func testAScopeWithNoTransitionIDIsSaid() {
+        let heard = Heard()
+        Complaints.route(to: { heard.words.append($0) })
+        defer { Complaints.route(to: nil) }
+        Renders().render(VStack { Text("title").transitionScope("a card alone") }.node)
+        XCTAssertTrue(heard.words.contains { $0.contains("\"a card alone\" and no transition id") }, "\(heard.words)")
     }
 
     /// AN ID IS WHO A VIEW IS, NOT WHAT IT IS DRAWN AS: `.id()` alone shares no presentation, and a list's items,
@@ -80,6 +101,6 @@ final class SharedPresentationIdentityTests: XCTestCase {
             Text("thumbnail").id(Item(number: 3))
             ForEach([1, 2]) { Text("item \($0)") }
         }.node)
-        XCTAssertEqual(message.subtree.compactMap { $0.properties[.sharedPresentation] }.count, 0)
+        XCTAssertEqual(message.subtree.compactMap { $0.properties[.transitionID] }.count, 0)
     }
 }

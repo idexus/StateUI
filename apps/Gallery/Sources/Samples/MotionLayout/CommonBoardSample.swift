@@ -203,7 +203,7 @@ struct CommonBoardSample: SampleContent, ExampleContent {
                     .cornerRadius(16)
                     .height(200)
                     // THE CARD'S TRANSITION ID: the detail and its card are drawn as one.
-                    .transition(id: card.name)
+                    .transitionID(card.name)
                     // Slow enough to see the way.
                     .motion(.eased(.milliseconds(600), curve: .sineInOut))
                     .onPanUpdated { pan in pulled(pan) }
@@ -330,7 +330,7 @@ struct CommonBoardSample: SampleContent, ExampleContent {
             }
             // ONE TRANSITION ID WITH ITS DETAIL, its name: opened, the detail
             // grows from it; back, the detail shrinks into it as its deck comes.
-            .transition(id: card.name)
+            .transitionID(card.name)
             .motion(.eased(.milliseconds(600), curve: .sineInOut))
             .scale(held ? 1.1 : 1)
             // THE HAND TAKES THE CARD ITSELF once a press has stood still on it.

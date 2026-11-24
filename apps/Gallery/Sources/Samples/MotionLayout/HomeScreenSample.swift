@@ -332,7 +332,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                 }
                 .background(icon.color)
                 .shape(.roundedRectangle(24))
-                .transition(id: icon.name)
+                .transitionID(icon.name)
                 .motion(HomeScreenSample.opening)
             }
             // THE APP AS THE HAND DRAWS IT: moved, and scaled about its foot,
@@ -410,7 +410,7 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                     // ONE TRANSITION ID WITH ITS APP, the icon's name: the app
                     // grows out of the square and closes onto it, the two
                     // crossing over near the square.
-                    .transition(id: icon.name)
+                    .transitionID(icon.name)
                     .motion(HomeScreenSample.closing)
                 }
 

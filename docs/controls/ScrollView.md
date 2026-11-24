@@ -38,13 +38,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (97)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>48 ✅ · 4 ☑️ · 37 ✓ · 8 –</td><td><code>NSScrollView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>50 ✅ · 3 ☑️ · 38 ✓ · 4 –</td><td><code>UIScrollView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>72 ✅ · 5 ☑️ · 13 ✓ · 6 –</td><td><code>ScrollView</code> / <code>HorizontalScrollView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>58 ✅ · 3 ☑️ · 27 ✓ · 9 –</td><td><code>ScrollViewer</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>60 ✅ · 3 ☑️ · 24 ✓ · 10 –</td><td><code>GtkScrolledWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>65 ✅ · 2 ☑️ · 21 ✓ · 9 –</td><td><code>overflow: auto</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (98)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>49 ✅ · 4 ☑️ · 37 ✓ · 8 –</td><td><code>NSScrollView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>51 ✅ · 3 ☑️ · 38 ✓ · 4 –</td><td><code>UIScrollView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>73 ✅ · 5 ☑️ · 13 ✓ · 6 –</td><td><code>ScrollView</code> / <code>HorizontalScrollView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>59 ✅ · 3 ☑️ · 27 ✓ · 9 –</td><td><code>ScrollViewer</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>61 ✅ · 3 ☑️ · 24 ✓ · 10 –</td><td><code>GtkScrolledWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>66 ✅ · 2 ☑️ · 21 ✓ · 9 –</td><td><code>overflow: auto</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/ScrollViewContract.swift`.
@@ -192,7 +192,6 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td><code>presentationSample</code></td><td>act</td><td><code>() -&gt; PresentationSample</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onRotationUpdated</code> (<code>rotationUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: rotate on ScrollView: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: rotate on ScrollView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: rotate on ScrollView: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: rotate on ScrollView: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>sharedPresentation</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeDirections</code></td><td>property</td><td><code>SwipeDirections</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pan on ScrollView: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on ScrollView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pan on ScrollView: the relay's report of the press dragged handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeThreshold</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
@@ -204,6 +203,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on ScrollView: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on ScrollView: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on ScrollView: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>transitionID</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>transitionScope</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

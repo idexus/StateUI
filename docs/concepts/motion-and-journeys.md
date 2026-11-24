@@ -392,7 +392,7 @@ view declares.
 ## A shared presentation
 
 A thumbnail and its picture are two views and, to the user, one thing. A
-`.transition(id:)` written on each says so: as one leaves and the other comes
+`.transitionID(_:)` written on each says so: as one leaves and the other comes
 in the same change, anywhere on the page, the one coming sets out from where
 the other is drawn and grows onto its own place.
 
@@ -407,7 +407,7 @@ struct Catalog: View {
                     .fill(.indigo)
                     .width(240)
                     .height(160)
-                    .transition(id: chosen)
+                    .transitionID(chosen)
                     .onTapped { self.chosen = nil }
             } else {
                 HStack {
@@ -416,7 +416,7 @@ struct Catalog: View {
                             .fill(.indigo)
                             .width(48)
                             .height(32)
-                            .transition(id: item)
+                            .transitionID(item)
                             .onTapped { chosen = item }
                     }
                 }
@@ -435,8 +435,8 @@ what a view is drawn as, not who it is: `.id(_:)` and a `ForEach`'s items
 share nothing. Under one `.id(_:)` too, two views of one kind among the same
 siblings are one view continued, its layout moving it, and nothing is shared.
 
-Where the views meet is the page; `.transition(id:scope:)` narrows it to the
-views naming the same scope - a component's title, written once, meets only
+Where the views meet is the page; `.transitionScope(_:)` on the same view
+narrows it to the views naming the same scope - a component's title, written once, meets only
 the title of the same card:
 
 ```swift
@@ -447,7 +447,8 @@ struct CardTitle: View {
     var body: some View {
         Text("Card \(card)")
             .fontSize(large ? 28 : 15)
-            .transition(id: "title", scope: card)
+            .transitionID("title")
+            .transitionScope(card)
     }
 }
 ```
@@ -498,7 +499,7 @@ struct Tiles: View {
                             Rectangle()
                                 .fill(.indigo)
                                 .cornerRadius(12)
-                                .transition(id: tile)
+                                .transitionID(tile)
                                 .gridRow(tile / 3)
                                 .gridColumn(tile % 3)
                         }
@@ -513,7 +514,7 @@ struct Tiles: View {
                                 .cornerRadius(20)
                                 .width(40)
                                 .height(40)
-                                .transition(id: tile)
+                                .transitionID(tile)
                         }
                     }
                 }

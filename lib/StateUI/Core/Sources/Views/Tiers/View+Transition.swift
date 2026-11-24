@@ -23,29 +23,28 @@ extension ViewProperties {
     /// view it comes and goes by its `transition(_:)`.
     ///
     ///     if let chosen {
-    ///         Picture(chosen).transition(id: chosen.id)     // grows out of its thumbnail
+    ///         Picture(chosen).transitionID(chosen.id)     // grows out of its thumbnail
     ///     } else {
-    ///         HStack { ForEach(items, id: \.id) { Thumbnail($0).transition(id: $0.id) } }
+    ///         HStack { ForEach(items, id: \.id) { Thumbnail($0).transitionID($0.id) } }
     ///     }
     ///
-    /// The views of one transition id meet on their page. One leaves and one comes: an id standing on more than one
-    /// view there as the change runs makes nothing one, and is said once.
+    /// The views of one transition id meet on their page, in the scope `transitionScope(_:)` names where one is
+    /// named. One leaves and one comes: an id standing on more than one view there as the change runs makes nothing
+    /// one, and is said once.
     ///
     /// - Parameter id: what the two views drawn as one share; any `Hashable`.
-    public func transition(id: some Hashable) -> Modified {
-        setValue(ViewContract.sharedPresentation, Renderer.shared.sharedIdentities.number(for: SharedKey(id: id, scope: nil)))
+    public func transitionID(_ id: some Hashable) -> Modified {
+        setValue(ViewContract.transitionID, Renderer.shared.sharedIdentities.number(for: AnyHashable(id)))
     }
 
-    /// Draws the view as one with the view of the same transition id in `scope`, as `transition(id:)` does: only
-    /// the views naming the same scope meet, so the parts of a component - its title, its picture - are written
-    /// once for every card that holds one.
+    /// Where the view's transition id meets another: only views naming the same scope, and the same id, are drawn
+    /// as one - so the parts of a component, its title and its picture, are named once for every card that holds
+    /// one. A scope with no transition id makes the view one with nothing, and is said once.
     ///
-    ///     Text(card.title).transition(id: "title", scope: card.id)
+    ///     Text(card.title).transitionID("title").transitionScope(card.id)
     ///
-    /// - Parameters:
-    ///   - id: what the two views drawn as one share; any `Hashable`.
-    ///   - scope: where those views meet; any `Hashable`.
-    public func transition(id: some Hashable, scope: some Hashable) -> Modified {
-        setValue(ViewContract.sharedPresentation, Renderer.shared.sharedIdentities.number(for: SharedKey(id: id, scope: scope)))
+    /// - Parameter scope: where the view's transition id meets another; any `Hashable`.
+    public func transitionScope(_ scope: some Hashable) -> Modified {
+        setValue(ViewContract.transitionScope, Renderer.shared.sharedIdentities.number(for: AnyHashable(scope)))
     }
 }

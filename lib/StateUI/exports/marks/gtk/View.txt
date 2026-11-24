@@ -1,4 +1,4 @@
-# revision 46.1
+# revision 47.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.area: ✅
 Button.dismissed: ✅
@@ -31,13 +31,14 @@ Button.pointerReleased: ✅
 Button.presentationFrameChanged: ✅
 Button.presentationSample: ✅
 Button.rotationUpdated: ✓ rotate on Button: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Button.sharedPresentation: ✅
 Button.swipeDirections: ✅
 Button.swipeThreshold: ✅
 Button.swiped: ✅
 Button.tapCount: ✅
 Button.tapped: ✅
 Button.transition: ✅
+Button.transitionID: ✅
+Button.transitionScope: ✅
 Button.verticalAlignment: ✅
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.area: ✅
@@ -71,13 +72,14 @@ Canvas.pointerReleased: ✅
 Canvas.presentationFrameChanged: ✅
 Canvas.presentationSample: ✅
 Canvas.rotationUpdated: ✓ rotate on Canvas: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Canvas.sharedPresentation: ✅
 Canvas.swipeDirections: ✅
 Canvas.swipeThreshold: ✅
 Canvas.swiped: ✅
 Canvas.tapCount: ✅
 Canvas.tapped: ✅
 Canvas.transition: ✅
+Canvas.transitionID: ✅
+Canvas.transitionScope: ✅
 Canvas.verticalAlignment: ✅
 Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.area: ✅
@@ -111,13 +113,14 @@ Capsule.pointerReleased: ✅
 Capsule.presentationFrameChanged: ✅
 Capsule.presentationSample: ✅
 Capsule.rotationUpdated: ✓ rotate on Capsule: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Capsule.sharedPresentation: ✅
 Capsule.swipeDirections: ✅
 Capsule.swipeThreshold: ✅
 Capsule.swiped: ✅
 Capsule.tapCount: ✅
 Capsule.tapped: ✅
 Capsule.transition: ✅
+Capsule.transitionID: ✅
+Capsule.transitionScope: ✅
 Capsule.verticalAlignment: ✅
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.area: ✅
@@ -151,13 +154,14 @@ CheckBox.pointerReleased: ✅
 CheckBox.presentationFrameChanged: ✅
 CheckBox.presentationSample: ✅
 CheckBox.rotationUpdated: ✓ rotate on CheckBox: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-CheckBox.sharedPresentation: ✅
 CheckBox.swipeDirections: ✅
 CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
 CheckBox.transition: ✅
+CheckBox.transitionID: ✅
+CheckBox.transitionScope: ✅
 CheckBox.verticalAlignment: ✅
 ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.area: ✅
@@ -191,13 +195,14 @@ ColorPicker.pointerReleased: ✅
 ColorPicker.presentationFrameChanged: ✅
 ColorPicker.presentationSample: ✅
 ColorPicker.rotationUpdated: ✓ rotate on ColorPicker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-ColorPicker.sharedPresentation: ✅
 ColorPicker.swipeDirections: ✅
 ColorPicker.swipeThreshold: ✅
 ColorPicker.swiped: ✅
 ColorPicker.tapCount: ✅
 ColorPicker.tapped: ✅
 ColorPicker.transition: ✅
+ColorPicker.transitionID: ✅
+ColorPicker.transitionScope: ✅
 ColorPicker.verticalAlignment: ✅
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.area: ✅
@@ -231,13 +236,14 @@ DatePicker.pointerReleased: ✅
 DatePicker.presentationFrameChanged: ✅
 DatePicker.presentationSample: ✅
 DatePicker.rotationUpdated: ✓ rotate on DatePicker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-DatePicker.sharedPresentation: ✅
 DatePicker.swipeDirections: ✅
 DatePicker.swipeThreshold: ✅
 DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
 DatePicker.transition: ✅
+DatePicker.transitionID: ✅
+DatePicker.transitionScope: ✅
 DatePicker.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.area: ✅
@@ -271,13 +277,14 @@ Ellipse.pointerReleased: ✅
 Ellipse.presentationFrameChanged: ✅
 Ellipse.presentationSample: ✅
 Ellipse.rotationUpdated: ✓ rotate on Ellipse: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Ellipse.sharedPresentation: ✅
 Ellipse.swipeDirections: ✅
 Ellipse.swipeThreshold: ✅
 Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
 Ellipse.tapped: ✅
 Ellipse.transition: ✅
+Ellipse.transitionID: ✅
+Ellipse.transitionScope: ✅
 Ellipse.verticalAlignment: ✅
 Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.area: ✅
@@ -311,13 +318,14 @@ Fill.pointerReleased: ✅
 Fill.presentationFrameChanged: ✅
 Fill.presentationSample: ✅
 Fill.rotationUpdated: ✓ rotate on Fill: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Fill.sharedPresentation: ✅
 Fill.swipeDirections: ✅
 Fill.swipeThreshold: ✅
 Fill.swiped: ✅
 Fill.tapCount: ✅
 Fill.tapped: ✅
 Fill.transition: ✅
+Fill.transitionID: ✅
+Fill.transitionScope: ✅
 Fill.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.area: ✅
@@ -351,13 +359,14 @@ Grid.pointerReleased: ✅
 Grid.presentationFrameChanged: ✅
 Grid.presentationSample: ✅
 Grid.rotationUpdated: ✓ rotate on Grid: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Grid.sharedPresentation: ✅
 Grid.swipeDirections: ✅
 Grid.swipeThreshold: ✅
 Grid.swiped: ✅
 Grid.tapCount: ✅
 Grid.tapped: ✅
 Grid.transition: ✅
+Grid.transitionID: ✅
+Grid.transitionScope: ✅
 Grid.verticalAlignment: ✅
 HStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.area: ✅
@@ -391,13 +400,14 @@ HStack.pointerReleased: ✅
 HStack.presentationFrameChanged: ✅
 HStack.presentationSample: ✅
 HStack.rotationUpdated: ✓ rotate on HStack: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-HStack.sharedPresentation: ✅
 HStack.swipeDirections: ✅
 HStack.swipeThreshold: ✅
 HStack.swiped: ✅
 HStack.tapCount: ✅
 HStack.tapped: ✅
 HStack.transition: ✅
+HStack.transitionID: ✅
+HStack.transitionScope: ✅
 HStack.verticalAlignment: ✅
 Image.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.area: ✅
@@ -431,13 +441,14 @@ Image.pointerReleased: ✅
 Image.presentationFrameChanged: ✅
 Image.presentationSample: ✅
 Image.rotationUpdated: ✓ rotate on Image: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Image.sharedPresentation: ✅
 Image.swipeDirections: ✅
 Image.swipeThreshold: ✅
 Image.swiped: ✅
 Image.tapCount: ✅
 Image.tapped: ✅
 Image.transition: ✅
+Image.transitionID: ✅
+Image.transitionScope: ✅
 Image.verticalAlignment: ✅
 ItemsView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.area: ✅
@@ -471,13 +482,14 @@ ItemsView.pointerReleased: ✅
 ItemsView.presentationFrameChanged: ✅
 ItemsView.presentationSample: ✅
 ItemsView.rotationUpdated: ✓ rotate on ItemsView: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-ItemsView.sharedPresentation: ✅
 ItemsView.swipeDirections: ✅
 ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
 ItemsView.transition: ✅
+ItemsView.transitionID: ✅
+ItemsView.transitionScope: ✅
 ItemsView.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.area: ✅
@@ -511,13 +523,14 @@ Line.pointerReleased: ✅
 Line.presentationFrameChanged: ✅
 Line.presentationSample: ✅
 Line.rotationUpdated: ✓ rotate on Line: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Line.sharedPresentation: ✅
 Line.swipeDirections: ✅
 Line.swipeThreshold: ✅
 Line.swiped: ✅
 Line.tapCount: ✅
 Line.tapped: ✅
 Line.transition: ✅
+Line.transitionID: ✅
+Line.transitionScope: ✅
 Line.verticalAlignment: ✅
 Link.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.area: ✅
@@ -551,13 +564,14 @@ Link.pointerReleased: ✅
 Link.presentationFrameChanged: ✅
 Link.presentationSample: ✅
 Link.rotationUpdated: ✓ rotate on Link: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Link.sharedPresentation: ✅
 Link.swipeDirections: ✅
 Link.swipeThreshold: ✅
 Link.swiped: ✅
 Link.tapCount: ✅
 Link.tapped: ✅
 Link.transition: ✅
+Link.transitionID: ✅
+Link.transitionScope: ✅
 Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
@@ -591,13 +605,14 @@ Map.pointerReleased: 🧩
 Map.presentationFrameChanged: 🧩
 Map.presentationSample: 🧩
 Map.rotationUpdated: 🧩
-Map.sharedPresentation: 🧩
 Map.swipeDirections: 🧩
 Map.swipeThreshold: 🧩
 Map.swiped: 🧩
 Map.tapCount: 🧩
 Map.tapped: 🧩
 Map.transition: 🧩
+Map.transitionID: 🧩
+Map.transitionScope: 🧩
 Map.verticalAlignment: 🧩
 MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.area: ✅
@@ -631,13 +646,14 @@ MotionLayout.pointerReleased: ✅
 MotionLayout.presentationFrameChanged: ✅
 MotionLayout.presentationSample: ✅
 MotionLayout.rotationUpdated: ✓ rotate on MotionLayout: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-MotionLayout.sharedPresentation: ✅
 MotionLayout.swipeDirections: ✅
 MotionLayout.swipeThreshold: ✅
 MotionLayout.swiped: ✅
 MotionLayout.tapCount: ✅
 MotionLayout.tapped: ✅
 MotionLayout.transition: ✅
+MotionLayout.transitionID: ✅
+MotionLayout.transitionScope: ✅
 MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.area: ✅
@@ -671,13 +687,14 @@ Path.pointerReleased: ✅
 Path.presentationFrameChanged: ✅
 Path.presentationSample: ✅
 Path.rotationUpdated: ✓ rotate on Path: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Path.sharedPresentation: ✅
 Path.swipeDirections: ✅
 Path.swipeThreshold: ✅
 Path.swiped: ✅
 Path.tapCount: ✅
 Path.tapped: ✅
 Path.transition: ✅
+Path.transitionID: ✅
+Path.transitionScope: ✅
 Path.verticalAlignment: ✅
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.area: ✅
@@ -711,13 +728,14 @@ Picker.pointerReleased: ✅
 Picker.presentationFrameChanged: ✅
 Picker.presentationSample: ✅
 Picker.rotationUpdated: ✓ rotate on Picker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Picker.sharedPresentation: ✅
 Picker.swipeDirections: ✅
 Picker.swipeThreshold: ✅
 Picker.swiped: ✅
 Picker.tapCount: ✅
 Picker.tapped: ✅
 Picker.transition: ✅
+Picker.transitionID: ✅
+Picker.transitionScope: ✅
 Picker.verticalAlignment: ✅
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.area: ✅
@@ -751,13 +769,14 @@ Polygon.pointerReleased: ✅
 Polygon.presentationFrameChanged: ✅
 Polygon.presentationSample: ✅
 Polygon.rotationUpdated: ✓ rotate on Polygon: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Polygon.sharedPresentation: ✅
 Polygon.swipeDirections: ✅
 Polygon.swipeThreshold: ✅
 Polygon.swiped: ✅
 Polygon.tapCount: ✅
 Polygon.tapped: ✅
 Polygon.transition: ✅
+Polygon.transitionID: ✅
+Polygon.transitionScope: ✅
 Polygon.verticalAlignment: ✅
 Polyline.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.area: ✅
@@ -791,13 +810,14 @@ Polyline.pointerReleased: ✅
 Polyline.presentationFrameChanged: ✅
 Polyline.presentationSample: ✅
 Polyline.rotationUpdated: ✓ rotate on Polyline: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Polyline.sharedPresentation: ✅
 Polyline.swipeDirections: ✅
 Polyline.swipeThreshold: ✅
 Polyline.swiped: ✅
 Polyline.tapCount: ✅
 Polyline.tapped: ✅
 Polyline.transition: ✅
+Polyline.transitionID: ✅
+Polyline.transitionScope: ✅
 Polyline.verticalAlignment: ✅
 ProgressBar.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.area: ✅
@@ -831,13 +851,14 @@ ProgressBar.pointerReleased: ✅
 ProgressBar.presentationFrameChanged: ✅
 ProgressBar.presentationSample: ✅
 ProgressBar.rotationUpdated: ✓ rotate on ProgressBar: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-ProgressBar.sharedPresentation: ✅
 ProgressBar.swipeDirections: ✅
 ProgressBar.swipeThreshold: ✅
 ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
 ProgressBar.tapped: ✅
 ProgressBar.transition: ✅
+ProgressBar.transitionID: ✅
+ProgressBar.transitionScope: ✅
 ProgressBar.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.area: ✅
@@ -871,13 +892,14 @@ Rectangle.pointerReleased: ✅
 Rectangle.presentationFrameChanged: ✅
 Rectangle.presentationSample: ✅
 Rectangle.rotationUpdated: ✓ rotate on Rectangle: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Rectangle.sharedPresentation: ✅
 Rectangle.swipeDirections: ✅
 Rectangle.swipeThreshold: ✅
 Rectangle.swiped: ✅
 Rectangle.tapCount: ✅
 Rectangle.tapped: ✅
 Rectangle.transition: ✅
+Rectangle.transitionID: ✅
+Rectangle.transitionScope: ✅
 Rectangle.verticalAlignment: ✅
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.area: ✅
@@ -911,13 +933,14 @@ ScrollView.pointerReleased: ✅
 ScrollView.presentationFrameChanged: ✅
 ScrollView.presentationSample: ✅
 ScrollView.rotationUpdated: ✓ rotate on ScrollView: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-ScrollView.sharedPresentation: ✅
 ScrollView.swipeDirections: ✅
 ScrollView.swipeThreshold: ✅
 ScrollView.swiped: ✅
 ScrollView.tapCount: ✅
 ScrollView.tapped: ✅
 ScrollView.transition: ✅
+ScrollView.transitionID: ✅
+ScrollView.transitionScope: ✅
 ScrollView.verticalAlignment: ✅
 SearchField.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.area: ✅
@@ -951,13 +974,14 @@ SearchField.pointerReleased: ✅
 SearchField.presentationFrameChanged: ✅
 SearchField.presentationSample: ✅
 SearchField.rotationUpdated: ✓ rotate on SearchField: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-SearchField.sharedPresentation: ✅
 SearchField.swipeDirections: ✅
 SearchField.swipeThreshold: ✅
 SearchField.swiped: ✅
 SearchField.tapCount: ✅
 SearchField.tapped: ✅
 SearchField.transition: ✅
+SearchField.transitionID: ✅
+SearchField.transitionScope: ✅
 SearchField.verticalAlignment: ✅
 Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.area: ✅
@@ -991,13 +1015,14 @@ Separator.pointerReleased: ✅
 Separator.presentationFrameChanged: ✅
 Separator.presentationSample: ✅
 Separator.rotationUpdated: ✓ rotate on Separator: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Separator.sharedPresentation: ✅
 Separator.swipeDirections: ✅
 Separator.swipeThreshold: ✅
 Separator.swiped: ✅
 Separator.tapCount: ✅
 Separator.tapped: ✅
 Separator.transition: ✅
+Separator.transitionID: ✅
+Separator.transitionScope: ✅
 Separator.verticalAlignment: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.area: ✅
@@ -1031,13 +1056,14 @@ Slider.pointerReleased: ✅
 Slider.presentationFrameChanged: ✅
 Slider.presentationSample: ✅
 Slider.rotationUpdated: ✓ rotate on Slider: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Slider.sharedPresentation: ✅
 Slider.swipeDirections: ✅
 Slider.swipeThreshold: ✅
 Slider.swiped: ✅
 Slider.tapCount: ✅
 Slider.tapped: ✅
 Slider.transition: ✅
+Slider.transitionID: ✅
+Slider.transitionScope: ✅
 Slider.verticalAlignment: ✅
 Space.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.area: ✅
@@ -1071,13 +1097,14 @@ Space.pointerReleased: ✅
 Space.presentationFrameChanged: ✅
 Space.presentationSample: ✅
 Space.rotationUpdated: ✓ rotate on Space: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Space.sharedPresentation: ✅
 Space.swipeDirections: ✅
 Space.swipeThreshold: ✅
 Space.swiped: ✅
 Space.tapCount: ✅
 Space.tapped: ✅
 Space.transition: ✅
+Space.transitionID: ✅
+Space.transitionScope: ✅
 Space.verticalAlignment: ✅
 Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.area: ✅
@@ -1111,13 +1138,14 @@ Spinner.pointerReleased: ✅
 Spinner.presentationFrameChanged: ✅
 Spinner.presentationSample: ✅
 Spinner.rotationUpdated: ✓ rotate on Spinner: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Spinner.sharedPresentation: ✅
 Spinner.swipeDirections: ✅
 Spinner.swipeThreshold: ✅
 Spinner.swiped: ✅
 Spinner.tapCount: ✅
 Spinner.tapped: ✅
 Spinner.transition: ✅
+Spinner.transitionID: ✅
+Spinner.transitionScope: ✅
 Spinner.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.area: ✅
@@ -1151,13 +1179,14 @@ Stepper.pointerReleased: ✅
 Stepper.presentationFrameChanged: ✅
 Stepper.presentationSample: ✅
 Stepper.rotationUpdated: ✓ rotate on Stepper: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Stepper.sharedPresentation: ✅
 Stepper.swipeDirections: ✅
 Stepper.swipeThreshold: ✅
 Stepper.swiped: ✅
 Stepper.tapCount: ✅
 Stepper.tapped: ✅
 Stepper.transition: ✅
+Stepper.transitionID: ✅
+Stepper.transitionScope: ✅
 Stepper.verticalAlignment: ✅
 Switch.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.area: ✅
@@ -1191,13 +1220,14 @@ Switch.pointerReleased: ✅
 Switch.presentationFrameChanged: ✅
 Switch.presentationSample: ✅
 Switch.rotationUpdated: ✓ rotate on Switch: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Switch.sharedPresentation: ✅
 Switch.swipeDirections: ✅
 Switch.swipeThreshold: ✅
 Switch.swiped: ✅
 Switch.tapCount: ✅
 Switch.tapped: ✅
 Switch.transition: ✅
+Switch.transitionID: ✅
+Switch.transitionScope: ✅
 Switch.verticalAlignment: ✅
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.area: ✅
@@ -1231,13 +1261,14 @@ Text.pointerReleased: ✅
 Text.presentationFrameChanged: ✅
 Text.presentationSample: ✅
 Text.rotationUpdated: ✓ rotate on Text: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-Text.sharedPresentation: ✅
 Text.swipeDirections: ✅
 Text.swipeThreshold: ✅
 Text.swiped: ✅
 Text.tapCount: ✅
 Text.tapped: ✅
 Text.transition: ✅
+Text.transitionID: ✅
+Text.transitionScope: ✅
 Text.verticalAlignment: ✅
 TextEditor.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.area: ✅
@@ -1271,13 +1302,14 @@ TextEditor.pointerReleased: ✅
 TextEditor.presentationFrameChanged: ✅
 TextEditor.presentationSample: ✅
 TextEditor.rotationUpdated: ✓ rotate on TextEditor: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-TextEditor.sharedPresentation: ✅
 TextEditor.swipeDirections: ✅
 TextEditor.swipeThreshold: ✅
 TextEditor.swiped: ✅
 TextEditor.tapCount: ✅
 TextEditor.tapped: ✅
 TextEditor.transition: ✅
+TextEditor.transitionID: ✅
+TextEditor.transitionScope: ✅
 TextEditor.verticalAlignment: ✅
 TextField.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.area: ✅
@@ -1311,13 +1343,14 @@ TextField.pointerReleased: ✅
 TextField.presentationFrameChanged: ✅
 TextField.presentationSample: ✅
 TextField.rotationUpdated: ✓ rotate on TextField: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-TextField.sharedPresentation: ✅
 TextField.swipeDirections: ✅
 TextField.swipeThreshold: ✅
 TextField.swiped: ✅
 TextField.tapCount: ✅
 TextField.tapped: ✅
 TextField.transition: ✅
+TextField.transitionID: ✅
+TextField.transitionScope: ✅
 TextField.verticalAlignment: ✅
 TimePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.area: ✅
@@ -1351,13 +1384,14 @@ TimePicker.pointerReleased: ✅
 TimePicker.presentationFrameChanged: ✅
 TimePicker.presentationSample: ✅
 TimePicker.rotationUpdated: ✓ rotate on TimePicker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-TimePicker.sharedPresentation: ✅
 TimePicker.swipeDirections: ✅
 TimePicker.swipeThreshold: ✅
 TimePicker.swiped: ✅
 TimePicker.tapCount: ✅
 TimePicker.tapped: ✅
 TimePicker.transition: ✅
+TimePicker.transitionID: ✅
+TimePicker.transitionScope: ✅
 TimePicker.verticalAlignment: ✅
 VStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.area: ✅
@@ -1391,13 +1425,14 @@ VStack.pointerReleased: ✅
 VStack.presentationFrameChanged: ✅
 VStack.presentationSample: ✅
 VStack.rotationUpdated: ✓ rotate on VStack: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-VStack.sharedPresentation: ✅
 VStack.swipeDirections: ✅
 VStack.swipeThreshold: ✅
 VStack.swiped: ✅
 VStack.tapCount: ✅
 VStack.tapped: ✅
 VStack.transition: ✅
+VStack.transitionID: ✅
+VStack.transitionScope: ✅
 VStack.verticalAlignment: ✅
 WebView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.area: ✅
@@ -1431,13 +1466,14 @@ WebView.pointerReleased: ✅
 WebView.presentationFrameChanged: ✅
 WebView.presentationSample: ✅
 WebView.rotationUpdated: ✓ rotate on WebView: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-WebView.sharedPresentation: ✅
 WebView.swipeDirections: ✅
 WebView.swipeThreshold: ✅
 WebView.swiped: ✅
 WebView.tapCount: ✅
 WebView.tapped: ✅
 WebView.transition: ✅
+WebView.transitionID: ✅
+WebView.transitionScope: ✅
 WebView.verticalAlignment: ✅
 ZStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.area: ✅
@@ -1471,11 +1507,12 @@ ZStack.pointerReleased: ✅
 ZStack.presentationFrameChanged: ✅
 ZStack.presentationSample: ✅
 ZStack.rotationUpdated: ✓ rotate on ZStack: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
-ZStack.sharedPresentation: ✅
 ZStack.swipeDirections: ✅
 ZStack.swipeThreshold: ✅
 ZStack.swiped: ✅
 ZStack.tapCount: ✅
 ZStack.tapped: ✅
 ZStack.transition: ✅
+ZStack.transitionID: ✅
+ZStack.transitionScope: ✅
 ZStack.verticalAlignment: ✅

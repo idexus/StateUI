@@ -224,14 +224,14 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   - takes the press it began from, as a pan does: a view lifted by a long press and put down where it stood is no
   longer tapped open by its release, whatever its platform tells.
 
-- **Two views of one transition id are one to the eye.** `.transition(id:)` shares a view's presentation on its
+- **Two views of one transition id are one to the eye.** `.transitionID(_:)` shares a view's presentation on its
   page: as a view of that id leaves and one of the same id comes elsewhere on the page in the same change - in
   another holder, or another kind of view in its place - the one coming takes over from the one leaving where it
   was drawn, how fast it was moving and its corner, and grows onto its own place under its own `.motion(_:)`;
   going back during the movement turns it from where it has got to, as fast as it was going. The two stay two
-  views, of any kinds: what is shared is where each is drawn, its size and its corner. `.transition(id:scope:)`
-  narrows where the views meet to those naming the same scope, so a component's title written once meets only
-  the title of the same card. A transition id is what a view is drawn as, not who it is: `.id(_:)` and a
+  views, of any kinds: what is shared is where each is drawn, its size and its corner. `.transitionScope(_:)` on
+  the same view narrows where the views meet to those naming the same scope, so a component's title written once
+  meets only the title of the same card; a scope with no transition id is said. A transition id is what a view is drawn as, not who it is: `.id(_:)` and a
   `ForEach`'s items share nothing, and among the same siblings one `.id(_:)` on two views of one kind is one view
   continued. One change carries as many transition ids as it holds: a row of tiles laid out again as a grid
   sends each tile onto its own cell, with no `MotionLayout`. Where no single partner is found - none, two of one

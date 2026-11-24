@@ -423,11 +423,12 @@ ZStack
   scale
   scaleX
   scaleY
-  sharedPresentation
   swipeDirections
   swipeThreshold
   tapCount
   transition
+  transitionID
+  transitionScope
   translationX
   translationY
   verticalAlignment

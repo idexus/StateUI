@@ -32,13 +32,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (98)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>50 ✅ · 3 ☑️ · 37 ✓ · 8 –</td><td><code>NSDatePicker</code> showing hour and minute</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>44 ✅ · 2 ☑️ · 38 ✓ · 10 –</td><td><code>UIDatePicker</code> in time mode</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>73 ✅ · 6 ☑️ · 13 ✓ · 4 –</td><td><code>TextView</code> opening a <code>TimePickerDialog</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>57 ✅ · 4 ☑️ · 27 ✓ · 6 –</td><td><code>TimePicker</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>61 ✅ · 4 ☑️ · 25 ✓ · 7 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkMenuButton</code>'s <code>GtkPopover</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>67 ✅ · 2 ☑️ · 21 ✓ · 7 –</td><td><code>&lt;input type=time&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (99)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>51 ✅ · 3 ☑️ · 37 ✓ · 8 –</td><td><code>NSDatePicker</code> showing hour and minute</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>45 ✅ · 2 ☑️ · 38 ✓ · 10 –</td><td><code>UIDatePicker</code> in time mode</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>74 ✅ · 6 ☑️ · 13 ✓ · 4 –</td><td><code>TextView</code> opening a <code>TimePickerDialog</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>58 ✅ · 4 ☑️ · 27 ✓ · 6 –</td><td><code>TimePicker</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>62 ✅ · 4 ☑️ · 25 ✓ · 7 –</td><td>an hour's and a minute's <code>GtkSpinButton</code> in a <code>GtkMenuButton</code>'s <code>GtkPopover</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>68 ✅ · 2 ☑️ · 21 ✓ · 7 –</td><td><code>&lt;input type=time&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/TimePickerContract.swift`.
@@ -184,7 +184,6 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td><code>presentationSample</code></td><td>act</td><td><code>() -&gt; PresentationSample</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>onRotationUpdated</code> (<code>rotationUpdated</code>)</td><td>event</td><td><code>(GesturePhase, Double, Double)</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: rotate on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: rotate on TimePicker: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: rotate on TimePicker: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: rotate on TimePicker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>sharedPresentation</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeDirections</code></td><td>property</td><td><code>SwipeDirections</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pan on TimePicker: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pan on TimePicker: the relay's report of the press dragged handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>swipeThreshold</code></td><td>property</td><td><code>Double</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
@@ -196,6 +195,8 @@ What every view a layout positions has: where it sits in its layout, the space k
 <tbody><tr></tr><tr><td rowspan="2"><code>onTapped</code> (<code>tapped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on TimePicker: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on TimePicker: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on TimePicker: the relay's report of the press handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>transition</code></td><td>property</td><td><code>Transition</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>transitionID</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>transitionScope</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>verticalAlignment</code></td><td>property</td><td><code>Alignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 

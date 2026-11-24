@@ -416,7 +416,7 @@ final class AppKitLayoutMotionTests: XCTestCase {
         let law = HostLayoutMotion(motion: .eased(.milliseconds(700), curve: .linear), lanes: .all)
         func keyed(_ id: String, _ key: Int, width: Double?, height: Double) -> HostPatch {
             var box = HostPatch(id: .manual(id), type: .rectangle)
-            box.properties[.sharedPresentation] = .number(Double(key))
+            box.properties[.transitionID] = .number(Double(key))
             if let width { box.properties[VisualElementContract.width.token] = .number(width) }
             box.properties[VisualElementContract.height.token] = .number(height)
             box.motion = law
@@ -475,10 +475,10 @@ final class AppKitLayoutMotionTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             VStack {
                 if opened.wrappedValue {
-                    Rectangle().id(5).transition(id: 5).height(200).motion(way)
+                    Rectangle().id(5).transitionID(5).height(200).motion(way)
                 } else {
                     MotionLayout([5, 6], parameters: State(wrappedValue: 0.0).projectedValue) { card in
-                        Rectangle().id(card).transition(id: card).motion(way)
+                        Rectangle().id(card).transitionID(card).motion(way)
                     } placements: { _, _ in
                         [Placement(Rect(x: 40, y: 40, width: 60, height: 80)),
                          Placement(Rect(x: 110, y: 40, width: 60, height: 80), transform: .scale(0.8))]

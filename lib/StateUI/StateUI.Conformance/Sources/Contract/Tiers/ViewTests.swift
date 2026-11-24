@@ -21,7 +21,7 @@
             [
                 margined(element), drawn(element), sampled(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
                 tapped(element), pressedAsAButton(element), longPressed(element), longPressedAfterItsTime(element), panned(element), moved(element), pressedByItself(element), taken(element), thrown(element), pressTakenAway(element), takenFromTheHand(element), swiped(element), pinched(element), rotated(element), pointed(element),
-                dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element), entered(element), joined(element), left(element), returned(element), shared(element),
+                dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element), entered(element), joined(element), left(element), returned(element), shared(element), sharedInItsScope(element),
             ]
         } + Specimens.wearing(LayoutContract.self).flatMap { element in
             [sharedIn(element)] + (SettingOut.kinds.contains(element) ? [drawnInFront(element)] : [])
@@ -423,7 +423,7 @@
     @MainActor
     static func shared(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aViewMadeEntersFromWhereItsPartnerWasDrawn", proves: [
-            Covered(ViewContract.sharedPresentation, on: element),
+            Covered(ViewContract.transitionID, on: element),
         ], needs: [
             Covered(ViewContract.presentationFrameChanged, on: element),
             Covered(ClickElementContract.clicked, on: ButtonContract.self),
@@ -440,7 +440,7 @@
                                 Write(VisualElementContract.width, 160), Write(VisualElementContract.height, 80),
                                 Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
                             ], id: "picture")
-                            .transition(id: "picture")
+                            .transitionID("picture")
                             .motion(.eased(.milliseconds(600), curve: .linear))
                         }
                         .id("detail")
@@ -448,7 +448,7 @@
                         Specimens.view(element, [
                             Write(VisualElementContract.width, 40), Write(VisualElementContract.height, 40),
                         ], id: "picture")
-                        .transition(id: "picture")
+                        .transitionID("picture")
                     }
                 }
                 .horizontalAlignment(.start)
@@ -464,6 +464,63 @@
             s.frames(of: clock, until: 1_400)
             s.settle { drawn.values.last.map(FrameReport.size) == [160, 80] }
             s.expect(drawn.values.last.map(FrameReport.size), [160, 80], "and grows onto its own place")
+        }
+    }
+
+    /// A view made with a transition id enters from the view of that id dropped with it only in their scope: named
+    /// apart, it comes at its own size; named alike, it sets out as large as its partner was drawn.
+    @MainActor
+    static func sharedInItsScope(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aViewMadeEntersFromItsPartnerOnlyInTheirScope", proves: [
+            Covered(ViewContract.transitionScope, on: element),
+        ], needs: [
+            Covered(ViewContract.transitionID, on: element),
+            Covered(ViewContract.presentationFrameChanged, on: element),
+            Covered(ClickElementContract.clicked, on: ButtonContract.self),
+        ]) { s in
+            let clock = TestClock()
+            let (detailed, apart) = (State(wrappedValue: false), State(wrappedValue: true))
+            let drawn = Received<[Double]>()
+            s.start(clock: clock) {
+                VStack {
+                    Button("Toggle").onClicked { detailed.wrappedValue.toggle() }.id("toggle")
+                    if detailed.wrappedValue {
+                        HStack {
+                            Specimens.view(element, [
+                                Write(VisualElementContract.width, 160), Write(VisualElementContract.height, 80),
+                                Hear(ViewContract.presentationFrameChanged) { numbers in drawn.values.append(numbers) },
+                            ], id: "picture")
+                            .transitionID("picture")
+                            .transitionScope(apart.wrappedValue ? "detail" : "both")
+                            .motion(.eased(.milliseconds(600), curve: .linear))
+                        }
+                        .id("detail")
+                    } else {
+                        Specimens.view(element, [
+                            Write(VisualElementContract.width, 40), Write(VisualElementContract.height, 40),
+                        ], id: "picture")
+                        .transitionID("picture")
+                        .transitionScope(apart.wrappedValue ? "thumbnail" : "both")
+                    }
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.frames(of: clock, until: 200)
+
+            try s.perform(.activate, on: s.element("toggle"))
+            s.settle { !drawn.values.isEmpty }
+            s.expect(drawn.values.first.map(FrameReport.size)?.map { $0.rounded() }, [160, 80],
+                     "named apart, it comes at its own size")
+
+            apart.wrappedValue = false
+            try s.perform(.activate, on: s.element("toggle"))
+            s.frames(of: clock, until: 1_600)
+            drawn.values = []
+            try s.perform(.activate, on: s.element("toggle"))
+            s.settle { !drawn.values.isEmpty }
+            s.expect(drawn.values.first.map(FrameReport.size)?.map { $0.rounded() }, [40, 40],
+                     "named alike, it sets out as large as its partner was drawn")
         }
     }
 
