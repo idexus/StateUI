@@ -622,6 +622,13 @@ namespace {
             return painted(box, what.substr(4));
         }
         auto pictured = pictureShown(object);
+        if (pictured && what == "imagesMet") {
+            int32_t met = 0;
+            for (auto const &each : object.as<controls::Border>().Child().as<controls::Grid>().Children())
+                if (xaml::Automation::AutomationProperties::GetAccessibilityView(each)
+                    != xaml::Automation::Peers::AccessibilityView::Raw) ++met;
+            return number(met);
+        }
         if (auto box = pictured ? pictured.try_as<controls::Viewbox>() : nullptr) {
             if (what == "stretch") return number(static_cast<int32_t>(box.Stretch()));
             if (what == "source") return winrt::to_string(shownName(box.Child()));

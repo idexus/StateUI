@@ -126,31 +126,64 @@ final class WinUIImageViewTests: XCTestCase {
     /// screen still shows blank.
     func testAPictureDrawnAgainKeepsItsDrawingUntilTheNewOneIsDrawn() throws {
         try onUIThread {
-            let folder = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-winui-drawn-again")
-            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
-            let name = "card-\(UUID().uuidString).svg"
-            try "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"30\" height=\"20\"><rect width=\"30\" height=\"20\"/></svg>"
-                .write(to: folder.appendingPathComponent(name), atomically: true, encoding: .utf8)
-            stateui_winui_set_pictures(folder.path)
-            defer { stateui_winui_set_pictures("") }
+            try Self.withCard { name in
+                let host = WinUIRenderer.running {
+                    VStack { Image(ImageSource(name)).width(30).height(20) }
+                        .horizontalAlignment(.start)
+                        .verticalAlignment(.start)
+                }
+                let image = try XCTUnwrap(host.views(WinUIImageView.self).first)
+                host.settle { Self.pixelsAcross(image) > 0 }
+                let first = Self.pixelsAcross(image)
+                XCTAssertGreaterThan(first, 0, "drawn at first")
 
-            let host = WinUIRenderer.running {
-                VStack { Image(ImageSource(name)).width(30).height(20) }
-                    .horizontalAlignment(.start)
-                    .verticalAlignment(.start)
+                // Placed ten times larger, nothing pumped: WinUI has drawn nothing new yet.
+                image.layout(Rect(x: 0, y: 0, width: 300, height: 200))
+                XCTAssertEqual(Self.pixelsAcross(image), first, "the drawing shown stays while the new one is drawn")
+
+                host.settle { Self.pixelsAcross(image) > first }
+                XCTAssertGreaterThan(Self.pixelsAcross(image), first, "the new drawing shown once drawn")
             }
-            let image = try XCTUnwrap(host.views(WinUIImageView.self).first)
-            host.settle { Self.pixelsAcross(image) > 0 }
-            let first = Self.pixelsAcross(image)
-            XCTAssertGreaterThan(first, 0, "drawn at first")
-
-            // Placed ten times larger, nothing pumped: WinUI has drawn nothing new yet.
-            image.layout(Rect(x: 0, y: 0, width: 300, height: 200))
-            XCTAssertEqual(Self.pixelsAcross(image), first, "the drawing shown stays while the new one is drawn")
-
-            host.settle { Self.pixelsAcross(image) > first }
-            XCTAssertGreaterThan(Self.pixelsAcross(image), first, "the new drawing shown once drawn")
         }
+    }
+
+    /// A PICTURE DRAWN AGAIN IS MET ONCE, AS IT IS NAMED: assistive technology meets the image a picture shows - not
+    /// the border it stands in, nor the image drawing it again under the one shown. An identifier alone, as a name
+    /// read through the border all the same.
+    func testAPictureDrawnAgainIsMetOnceAsItIsNamed() throws {
+        try onUIThread {
+            try Self.withCard { name in
+                let host = WinUIRenderer.running {
+                    VStack { Image(ImageSource(name)).accessibilityIdentifier("card").width(30).height(20) }
+                        .horizontalAlignment(.start)
+                        .verticalAlignment(.start)
+                }
+                let image = try XCTUnwrap(host.views(WinUIImageView.self).first)
+                host.settle { Self.pixelsAcross(image) > 0 }
+                let first = Self.pixelsAcross(image)
+                XCTAssertEqual(image.automationWords.identifier, "card", "met as it is named")
+
+                image.layout(Rect(x: 0, y: 0, width: 300, height: 200))
+                XCTAssertEqual(Self.held(image, "imagesMet"), "1", "the image drawing it again is met by nobody")
+                XCTAssertEqual(image.automationWords.identifier, "card", "the one shown, as it is named")
+
+                host.settle { Self.pixelsAcross(image) > first }
+                XCTAssertEqual(Self.held(image, "imagesMet"), "1", "the new drawing shown is met alone")
+                XCTAssertEqual(image.automationWords.identifier, "card", "named the same")
+            }
+        }
+    }
+
+    /// Lays a 30 by 20 SVG card, named its own, among the pictures for `body`, and takes the pictures away after.
+    @MainActor private static func withCard(_ body: (String) throws -> Void) throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-winui-drawn-again")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        let name = "card-\(UUID().uuidString).svg"
+        try "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"30\" height=\"20\"><rect width=\"30\" height=\"20\"/></svg>"
+            .write(to: folder.appendingPathComponent(name), atomically: true, encoding: .utf8)
+        stateui_winui_set_pictures(folder.path)
+        defer { stateui_winui_set_pictures("") }
+        try body(name)
     }
 
     /// How many pixels across the drawing of the SVG `view` shows holds; nought for none.

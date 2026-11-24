@@ -435,7 +435,11 @@ layout places it, and not at WinUI's own size first: each drawing is a
 rasterization the picture stands blank through. A later drawing is made by
 a second image under the one shown, which keeps its drawing until the new
 source says it is drawn (`Opened`); then the new image takes its place and
-what assistive technology met of the old. Only an image still drawing that
+what assistive technology met of the old. Until then it is met by nobody
+(`AccessibilityView` raw): assistive technology meets a picture once, as the
+image it shows - past the border and the panel it stands in. The trap: given
+to the border, an identifier, a heading or a hint reached nobody, while a
+name still read through it. Only an image still drawing that
 source hears it: one given another picture or another drawing meanwhile waits
 for it no more. A source already drawn - another
 picture showing it at that size - is shown at once. The trap: a ring of

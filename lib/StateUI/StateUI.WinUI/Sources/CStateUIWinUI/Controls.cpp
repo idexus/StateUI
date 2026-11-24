@@ -53,9 +53,11 @@ controls::TextBlock stateui::captionOf(IInspectable const &element) {
 xaml::UIElement stateui::metOf(IInspectable const &element) {
     if (auto border = element.try_as<controls::Border>()) {
         if (auto block = border.Child().try_as<controls::TextBlock>()) return block;
-        // A picture's image, or its icon's glyph in a box.
-        if (auto image = border.Child().try_as<controls::Image>()) return image;
-        if (auto box = border.Child().try_as<controls::Viewbox>()) return box.Child();
+    }
+    // A picture's image shown, or its icon's glyph in a box: not one drawing under it.
+    if (auto shown = pictureShown(element)) {
+        if (auto box = shown.try_as<controls::Viewbox>()) return box.Child();
+        return shown;
     }
     return element.as<xaml::UIElement>();
 }

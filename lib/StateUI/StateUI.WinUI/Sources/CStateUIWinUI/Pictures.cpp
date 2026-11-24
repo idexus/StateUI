@@ -654,7 +654,10 @@ extern "C" bool stateui_winui_image_draw(StateUIObjectRef handle, int64_t view, 
         // Else drawn by an image under the one shown, which keeps its drawing until this one is drawn.
         auto coming = comingIn(stage);
         if (!coming) {
+            // Met by nobody until it is shown: assistive technology meets the picture once, the image shown.
             coming = controls::Image();
+            xaml::Automation::AutomationProperties::SetAccessibilityView(
+                coming, xaml::Automation::Peers::AccessibilityView::Raw);
             stage.Children().InsertAt(0, coming);
         }
         coming.Tag(image.Tag());
@@ -677,6 +680,7 @@ extern "C" void stateui_winui_image_take(StateUIObjectRef handle) {
         auto stage = stageOf(handle);
         if (!comingIn(stage)) return;
         auto children = stage.Children();
+        children.GetAt(0).ClearValue(xaml::Automation::AutomationProperties::AccessibilityViewProperty());
         takeOver(children.GetAt(children.Size() - 1), children.GetAt(0));
         children.RemoveAt(children.Size() - 1);
     } catch (...) {
@@ -685,7 +689,9 @@ extern "C" void stateui_winui_image_take(StateUIObjectRef handle) {
 }
 
 xaml::UIElement stateui::pictureShown(IInspectable const &element) {
+    // A picture's stage holds images and icons' boxes alone: a sheet's card is a border holding a grid too.
     auto frame = element.try_as<controls::Border>();
     auto stage = frame ? frame.Child().try_as<controls::Grid>() : nullptr;
-    return stage ? shownIn(stage) : nullptr;
+    auto shown = stage ? shownIn(stage) : nullptr;
+    return shown && (shown.try_as<controls::Image>() || shown.try_as<controls::Viewbox>()) ? shown : nullptr;
 }
