@@ -58,6 +58,16 @@
         return (document, direction.places(place, in: Rect(x: 0, y: 0, width: document.width, height: document.height)))
     }
 
+    /// The room a scroller keeping `clearance` clear lays its content in: its `bounds` less the clearance across the
+    /// ways it does not move - between its sides where it moves only down, between its top and foot where only
+    /// across - while along the way it moves its content scrolls under the clearance.
+    /// Design: docs/design/host/layout.md#the-safe-area
+    public static func viewport(_ bounds: LayoutSize, keeping clearance: Clearance, axes: ScrollAxes) -> LayoutSize {
+        LayoutSize(
+            width: axes.contains(.horizontal) ? bounds.width : max(0, bounds.width - clearance.left - clearance.right),
+            height: axes.contains(.vertical) ? bounds.height : max(0, bounds.height - clearance.top - clearance.bottom))
+    }
+
     /// Whether the content is held to the scroller's width: it scrolls only down, or not at all.
     private static func fitsWidth(_ axes: ScrollAxes) -> Bool {
         !axes.contains(.horizontal)

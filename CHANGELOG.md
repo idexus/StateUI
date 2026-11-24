@@ -408,6 +408,9 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   pressed with another did nothing: a layout gave every finger of the touch to the view the first landed on, which
   took the second for a pinch.
 
+- **On an iPhone in landscape a page's scroller stays on the screen.** A scroller let under the bars laid what it
+  scrolls down as wide as the screen, moved in by the left side and past the right; it lays it between the sides it
+  keeps clear.
 - **On Android a picture growing under the fingers no longer stops them.** A picture shown larger was read again at
   more pixels on the UI thread - a ring of cards spread past a step stood still for half a second on a phone. A
   later reading is now made beside the UI thread while the view shows what it holds.

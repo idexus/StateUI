@@ -34,6 +34,18 @@ final class BottomBarTests: XCTestCase {
                        Clearance(top: 60, left: 0, bottom: 80, right: 0))
     }
 
+    /// A SCROLLER KEEPING ITS SIDES CLEAR lays its content between them where it moves only down, its top and foot
+    /// scrolled under; one moving only across lays it between its top and foot; one moving both ways in all of it.
+    func testAScrollerLaysItsContentClearAcrossTheWaysItDoesNotMove() {
+        let bounds = LayoutSize(width: 400, height: 300)
+        let clearance = Clearance(top: 20, left: 40, bottom: 30, right: 30)
+        XCTAssertEqual(ScrollArithmetic.viewport(bounds, keeping: clearance, axes: .vertical),
+                       LayoutSize(width: 330, height: 300))
+        XCTAssertEqual(ScrollArithmetic.viewport(bounds, keeping: clearance, axes: .horizontal),
+                       LayoutSize(width: 400, height: 250))
+        XCTAssertEqual(ScrollArithmetic.viewport(bounds, keeping: clearance, axes: [.horizontal, .vertical]), bounds)
+    }
+
     /// Something stands under the bar while the page's rows run under it short of their end, or while content with
     /// no scroller runs under it; nothing where the content stands clear of the foot, or its scroller stands at its
     /// end, its last row clear above the bar.

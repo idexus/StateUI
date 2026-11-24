@@ -42,6 +42,24 @@ final class UIKitScrollViewTests: XCTestCase {
         XCTAssertEqual(offset.wrappedValue.y, -40, accuracy: 0.001, "and the state follows it")
     }
 
+    /// A SCROLLER KEEPING ITS SIDES CLEAR lays what it scrolls down between them: a page's scroller let under a
+    /// phone's sides in landscape stood its content as wide as the screen, moved in by the left side, past the right.
+    @MainActor
+    func testAScrollerKeepingItsSidesClearLaysItsContentBetweenThem() throws {
+        let host = UIKitRenderer.running {
+            VStack { ScrollView { Rectangle().fill(.steelBlue).height(2000) }.width(400).height(300) }
+        }
+        defer { host.finish() }
+        let view = try XCTUnwrap(host.views(UIKitScrollView.self).first)
+        host.settle { view.scroller.contentSize.width > 0 }
+        XCTAssertEqual(view.scroller.contentSize.width, 400, "as wide as the scroller, keeping nothing clear")
+
+        view.keepClear(Clearance(top: 20, left: 40, bottom: 30, right: 30))
+        view.layoutIfNeeded()
+        XCTAssertEqual(view.scroller.contentSize.width, 330, "as wide as the room between its sides")
+        XCTAssertEqual(view.scroller.contentSize.height, 2000, "as tall as it is, scrolling under the top and foot")
+    }
+
     /// A DRAG TAKES THE KEYBOARD DOWN WITH IT: a scroller's and a list's, the keyboard following the finger down -
     /// the road out of an editor, whose return starts a new line.
     /// Design: docs/design/types/keyboard.md#the-keyboard-down

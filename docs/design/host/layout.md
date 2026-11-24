@@ -680,7 +680,12 @@ toolkit lays the page under that column, the page's room starts at its edge. A s
 the depth of what stands over it there (`SafeAreaArithmetic.clearance`): its
 content scrolls under the bars and its first and last rows stop clear of
 them, as the platform's own lists do, and its offset counts from its first
-row clear (`offset`, `native`) - the tree's nothing is that row in place. A
+row clear (`offset`, `native`) - the tree's nothing is that row in place.
+Across the ways it does not move its content stands clear of them: a
+scroller moving only down lays its content between the sides it keeps clear,
+one moving only across between its top and foot (`ScrollArithmetic.viewport`).
+The trap: a phone's page scroller in landscape stood its content as wide as
+the screen, moved in by the left side, past the right edge. A
 host gives each room's insets as its toolkit has them; a bar its platform
 stands beside the page rather than over it insets nothing, and a desktop
 window with nothing over its content has its whole room safe. The page's

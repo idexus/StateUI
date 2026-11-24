@@ -107,7 +107,9 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefresh
     override func arrange(in bounds: Rect) {
         let frame = CGRect(x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height)
         if scroller.frame != frame { scroller.frame = frame }
-        let size = document.documentSize(in: LayoutSize(width: bounds.width, height: bounds.height))
+        let viewport = ScrollArithmetic.viewport(
+            LayoutSize(width: bounds.width, height: bounds.height), keeping: kept.clearance, axes: axes)
+        let size = document.documentSize(in: viewport)
         let documentSize = CGSize(width: size.width, height: size.height)
         if document.frame.size != documentSize { document.frame = CGRect(origin: .zero, size: documentSize) }
         if scroller.contentSize != documentSize { scroller.contentSize = documentSize }
@@ -122,7 +124,9 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefresh
     /// its end, a move of its own told as the user's is (`ScrollArithmetic.keptAtEnd`).
     /// Design: docs/design/host/layout.md#a-bar-at-the-foot
     func keepClear(_ clearance: Clearance) {
+        guard clearance != kept.clearance else { return }
         kept.keep(clearance, on: scroller) { move in ProgramWrite.perform(move) }
+        setNeedsLayout()
     }
 
     /// The toolkit's offset for the scroller to stand at `offset`, counted from its first content kept clear.

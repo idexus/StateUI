@@ -58,7 +58,9 @@ down - with the content standing in it; several children are stacked down in
 one. A page's scroller let under the bars at any of its edges keeps them clear
 (`UIKitScrollClearance.keep`): its content inset and its indicators' on every
 edge, its offsets counted from its first content kept clear, and its end kept
-where the clearance changes.
+where the clearance changes; its document is laid out in the room between
+the edges it keeps clear across the way it does not move
+([the safe area](../../host/layout.md#the-safe-area)).
 
 What the user does to it is said on the display's frames by the host layer's
 reading of it: a finger taking the scroller holds the movement, its moves are
